@@ -15,7 +15,7 @@ bl_info = {
     "name" : "SwarmTest",
     "author" : "Me",
     "description" : "",
-    "blender" : (3, 30, 0),
+    "blender" : (3, 3, 2),
     "version" : (0, 0, 1),
     "location" : "View3D",
     "warning" : "",
@@ -24,10 +24,10 @@ bl_info = {
 
 import bpy
 from .test_op import Test_OT_Cancel_All, Test_OT_Place_Agent
-from .test_panel import Test_PT_Panel
+from .test_panel import SWARM_PT_Panel
 from .agent import Agent
 
-classes = (Test_OT_Cancel_All, Test_PT_Panel, Test_OT_Place_Agent)
+classes = (Test_OT_Cancel_All, SWARM_PT_Panel, Test_OT_Place_Agent)
 
 def register():
     for c in classes:

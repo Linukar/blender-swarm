@@ -1,10 +1,13 @@
 import bpy
 import mathutils
 
+def testPrint():
+    print("test")
+
 class Agent():
 
     def __init__(self):
-        bpy.app.handlers.frame_change_pre
+        bpy.app.handlers.frame_change_pre.append(testPrint)
         self.empty = bpy.data.objects.new("TestAgent", None)
         self.position = mathutils.Vector((0, 0, 0))
         print("init")
