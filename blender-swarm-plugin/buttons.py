@@ -1,5 +1,6 @@
 import bpy
 import mathutils
+import bmesh
 from bpy.types import Operator
 
 from .agent import Agent
@@ -15,16 +16,17 @@ def context_override():
                         return {'window': window, 'screen': screen, 'area': area, 'region': region, 'scene': bpy.context.scene} 
 
 
-class Test_OT_Cancel_All(Operator):
-    bl_idname = "object.cancel_all_mods"
-    bl_label = "Test1"
+class Swarm_OT_Sculpt_Test(Operator):
+    bl_idname = "swarm.test1"
+    bl_label = "Sculpt"
     bl_description = "Test1"
 
     def update():
         print("op update")
 
     def execute(self, context):
-        print("button1")
+
+        bpy.ops.object.mode_set(mode="SCULPT")
 
         bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
 
@@ -49,25 +51,42 @@ class Test_OT_Cancel_All(Operator):
 
     @classmethod
     def poll(cls, context):
-        obj = context.object
-        if obj is not None:
-            if obj.mode == "SCULPT":
-                return True
-
-        return False
+        return True
 
 
-class Test_OT_Place_Agent(Operator):
-    bl_idname = "object.place_agent"
-    bl_label = "Test2"
-    bl_description = "Test2"
+class Swarm_OT_Spawn_Plane(Operator):
+    bl_idname = "swarm.spawn_plane"
+    bl_label = "Spawn Plane"
+    bl_description = "Spawns plane with subdivisions"
 
     def __init__(self):
         self.agents = []
 
     def execute(self, context):    
-        print("button2")
-        self.agents.append(Agent())
+
+        bpy.ops.mesh.primitive_plane_add(size = 2)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.subdivide(number_cuts=100)
+        bpy.ops.object.mode_set(mode="OBJECT")
+
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+class Swarm_OT_Remove_Selected(Operator):
+    bl_idname = "swarm.remove_selected"
+    bl_label = "Remove Selected"
+    bl_description = "Remove Selected"
+
+    def __init__(self):
+        self.agents = []
+
+    def execute(self, context):    
+
+        if context.mode == "SCULPT":
+            bpy.data.objects.remove(bpy.context.active_object)
 
         return {'FINISHED'}
 

@@ -23,11 +23,11 @@ bl_info = {
 }
 
 import bpy
-from .test_op import Test_OT_Cancel_All, Test_OT_Place_Agent
-from .test_panel import SWARM_PT_Panel
+from .buttons import Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected
+from .panel import SWARM_PT_Panel
 from .agent import Agent
 
-classes = (Test_OT_Cancel_All, SWARM_PT_Panel, Test_OT_Place_Agent)
+classes = (Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, SWARM_PT_Panel)
 
 def register():
     for c in classes:
