@@ -14,6 +14,6 @@ class SWARM_PT_Panel(Panel):
 
         row = layout.row()
         col = row.column()
-        col.operator("swarm.test1", text = "Sculpt Test1")
-        col.operator("swarm.spawn_plane", text = "Spawn Plane")
         col.operator("swarm.remove_selected", text = "Remove selected Object")
+        col.operator("swarm.spawn_plane", text = "Spawn Plane")
+        col.operator("swarm.test1", text = "Sculpt Test1")

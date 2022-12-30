@@ -8,23 +8,23 @@ class Swarm_OT_Sculpt_Test(Operator):
     bl_idname = "swarm.test1"
     bl_label = "Sculpt"
     bl_description = "Test1"
+    hive = None
 
     def update():
         print("op update")
 
     def execute(self, context):
 
-        # bpy.ops.object.mode_set(mode="SCULPT")
-        bpy.ops.sculpt.sculptmode_toggle()
+        bpy.ops.object.mode_set(mode="SCULPT")
 
         bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
-        Hive(10)
+        Swarm_OT_Sculpt_Test.hive = Hive(50)
 
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
-        return True
+        return Swarm_OT_Sculpt_Test.hive == None or not Swarm_OT_Sculpt_Test.hive.isRunning()
 
 
 class Swarm_OT_Spawn_Plane(Operator):

@@ -1,36 +1,41 @@
+import math
+from random import randrange
 import bpy
 import mathutils
 
 from .utils import context_override
 
+
 def testPrint():
     print("test")
+
 
 class Agent():
 
     def __init__(self):
         self.position = mathutils.Vector((0, 0, 0))
+        self.forward = mathutils.Vector((1, 0, 0))
+        eul = mathutils.Euler((0, 0, math.radians(randrange(0, 360))))
+        self.forward.rotate(eul)
 
-    def update(self):
-        self.position = mathutils.Vector((self.position.x, self.position.y + 0.04, self.position.z))    
+    def update(self, step: int):
 
-        stroke = []
+        self.position += self.forward * step * 0.001
 
-        for i in range (2):
-            stroke.append({
+        stroke = [{
                 "name": "stroke",
-                "is_start": i == 0,
-                "location": (self.position.x, self.position.y + i * 0.2, self.position.z),
-                "mouse": (0,0),
+                "is_start": True,
+                "location": self.position,
+                "mouse": (0, 0),
                 "mouse_event": (0.0, 0.0),
-                "pen_flip" : True,
+                "pen_flip": True,
                 "pressure": 1,
                 "size": 2,
                 "time": 1,
                 "x_tilt": 0,
                 "y_tilt": 0
-            })
+            }]
 
-        bpy.ops.paint.brush_select(sculpt_tool="DRAW", toggle=False)
+        bpy.ops.paint.brush_select(sculpt_tool = "DRAW", toggle = False)
 
-        bpy.ops.sculpt.brush_stroke(context_override(), stroke=stroke)
+        bpy.ops.sculpt.brush_stroke(context_override(), stroke = stroke)
