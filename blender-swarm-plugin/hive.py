@@ -7,9 +7,9 @@ class Hive:
 
     def __init__(self, totalSteps: int):
         self.agents: List[Agent] = []
-        self.agents.append(Agent())
-        self.agents.append(Agent())
-        self.agents.append(Agent())
+        self.agents.append(Agent("DRAW"))
+        self.agents.append(Agent("CLAY"))
+        self.agents.append(Agent("CREASE"))
 
 
         self.totalSteps = totalSteps

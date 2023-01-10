@@ -12,11 +12,12 @@ def testPrint():
 
 class Agent():
 
-    def __init__(self):
+    def __init__(self, sculptTool):
         self.position = mathutils.Vector((0, 0, 0))
         self.forward = mathutils.Vector((1, 0, 0))
         eul = mathutils.Euler((0, 0, math.radians(randrange(0, 360))))
         self.forward.rotate(eul)
+        self.sculpt_tool = sculptTool
 
     def update(self, step: int):
 
@@ -36,6 +37,6 @@ class Agent():
                 "y_tilt": 0
             }]
 
-        bpy.ops.paint.brush_select(sculpt_tool = "DRAW", toggle = False)
+        bpy.ops.paint.brush_select(sculpt_tool = self.sculpt_tool, toggle = False)
 
-        bpy.ops.sculpt.brush_stroke(context_override(), stroke = stroke)
+        bpy.ops.sculpt.brush_stroke(context_override(), stroke = stroke, mode = "INVERT", ignore_background_click = False)
