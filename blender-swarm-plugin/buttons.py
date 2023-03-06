@@ -3,7 +3,6 @@ import mathutils
 from bpy.types import Operator
 from .hive import Hive
 
-
 class Swarm_OT_Sculpt_Test(Operator):
     bl_idname = "swarm.test1"
     bl_label = "Sculpt"
@@ -16,7 +15,6 @@ class Swarm_OT_Sculpt_Test(Operator):
     def execute(self, context):
 
         bpy.ops.object.mode_set(mode="SCULPT")
-
         bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
         Swarm_OT_Sculpt_Test.hive = Hive(50)
 

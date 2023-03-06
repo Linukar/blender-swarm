@@ -22,6 +22,9 @@ class Hive:
 
             self.step += 1
             if self.step > self.totalSteps:
+                for agent in self.agents:
+                    agent.onStop()
+
                 bpy.app.timers.unregister(self.updateFunc)
             
             return 0.2
