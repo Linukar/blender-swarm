@@ -11,11 +11,13 @@ class Hive:
 
     def __init__(self, totalSteps: int):
         possibleTools = ["DRAW", "CLAY", "CREASE"]
+        agentCount = 20
+        spawnCubeSize = 0.3
 
         self.agents: List[Agent] = []
 
-        for _ in range (0, 20):
-            self.agents.append(Agent(random.choice(possibleTools)))
+        for _ in range (0, agentCount):
+            self.agents.append(Agent(random.choice(possibleTools), spawnCubeSize))
 
         self.totalSteps = totalSteps
         self.step = 0;

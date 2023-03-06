@@ -1,5 +1,5 @@
 import math
-from random import randrange
+import random
 import bpy
 import mathutils
 
@@ -10,16 +10,25 @@ from typing import List
 
 class Agent:
 
-    def __init__(self, sculptTool):
+    def __init__(self, sculptTool: str, spawnCubeSize: float):
         # boid
         self.noClumpRadius = 0.0002
-        self.localAreaRadius = 1
+        self.localAreaRadius = 5
         self.speed = 0.3
         self.steeringSpeed = 10
 
-        self.position = mathutils.Vector((0, 0, 0.2))
+        self.position = mathutils.Vector((
+            random.uniform(-spawnCubeSize, spawnCubeSize), 
+            random.uniform(-spawnCubeSize, spawnCubeSize), 
+            random.uniform(-spawnCubeSize, spawnCubeSize)
+            ))
+        
         self.forward = mathutils.Vector((1, 0, 0))
-        eul = mathutils.Euler((math.radians(randrange(0, 360)), math.radians(randrange(0, 360)), math.radians(randrange(0, 360))))
+        eul = mathutils.Euler((
+            math.radians(random.uniform(0, 360)), 
+            math.radians(random.uniform(0, 360)), 
+            math.radians(random.uniform(0, 360))
+            ))
         self.forward.rotate(eul)
 
         self.sculpt_tool = sculptTool
