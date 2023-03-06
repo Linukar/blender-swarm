@@ -16,7 +16,7 @@ class Swarm_OT_Sculpt_Test(Operator):
 
         bpy.ops.object.mode_set(mode="SCULPT")
         bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
-        Swarm_OT_Sculpt_Test.hive = Hive(50)
+        Swarm_OT_Sculpt_Test.hive = Hive(200)
 
         return {'FINISHED'}
 

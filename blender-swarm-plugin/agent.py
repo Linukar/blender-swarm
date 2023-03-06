@@ -5,27 +5,33 @@ import mathutils
 
 from .utils import context_override
 from .DrawPoint import drawPoint
+from typing import List
 
 
-def testPrint():
-    print("test")
-
-
-class Agent():
+class Agent:
 
     def __init__(self, sculptTool):
+        # boid
+        self.noClumpRadius = 0.0002
+        self.localAreaRadius = 1
+        self.speed = 0.3
+        self.steeringSpeed = 10
+
         self.position = mathutils.Vector((0, 0, 0.2))
         self.forward = mathutils.Vector((1, 0, 0))
-        eul = mathutils.Euler((0, 0, math.radians(randrange(0, 360))))
+        eul = mathutils.Euler((math.radians(randrange(0, 360)), math.radians(randrange(0, 360)), math.radians(randrange(0, 360))))
         self.forward.rotate(eul)
+
         self.sculpt_tool = sculptTool
         args = (self.position, (0.99, 0.05, 0.29))
         self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
 
-    def update(self, step: int):
 
-        self.position += self.forward * step * 0.001
+    def onStop(self):
+        bpy.types.SpaceView3D.draw_handler_remove(self.handler)
 
+
+    def applyBrush(self):
         stroke = [{
                 "name": "stroke",
                 "is_start": True,
@@ -44,5 +50,57 @@ class Agent():
 
         bpy.ops.sculpt.brush_stroke(context_override(), stroke = stroke, mode = "INVERT", ignore_background_click = False)
 
-    def onStop(self):
-        bpy.types.SpaceView3D.draw_handler_remove(self.handler)
+
+    def update(self, deltaTime: float, step: int, agents: List["Agent"]):
+
+        steering = mathutils.Vector()
+
+        separationDirection = mathutils.Vector()
+        separationCount = 0
+
+        alignmentDirection = mathutils.Vector()
+        alignmentCount = 0
+
+        cohesionDirection = mathutils.Vector()
+        cohesionCount = 0
+
+        for other in agents:
+            if(other == self): continue
+
+            distance = math.dist(self.position, other.position)
+
+            if(distance < self.noClumpRadius):
+                separationDirection += other.position - self.position
+                separationCount += 1
+
+            if(distance < self.localAreaRadius):
+                alignmentDirection += other.forward
+                alignmentCount += 1
+
+                cohesionDirection += other.position - self.position
+                cohesionCount += 1
+
+        if(separationCount > 0):
+            separationDirection /= separationCount
+            separationDirection.normalize()
+            separationDirection.negate()
+            steering = separationDirection
+
+        if(alignmentCount > 0):
+            alignmentDirection /= alignmentCount
+            alignmentDirection.normalize()
+            steering += alignmentDirection
+
+        if(cohesionCount > 0):
+            cohesionDirection /= cohesionCount
+            cohesionDirection.normalize()
+            cohesionDirection.negate()
+            steering += cohesionDirection
+
+        if(steering.length_squared != 0):
+            self.forward = self.forward.slerp(steering, deltaTime * self.steeringSpeed).normalized()
+
+        self.position += self.forward * self.speed * deltaTime
+
+
+        self.applyBrush()
