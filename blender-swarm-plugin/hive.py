@@ -27,7 +27,7 @@ class Hive:
 
                 bpy.app.timers.unregister(self.updateFunc)
             
-            return 0.2
+            return 0.033 # 30 fps
 
         self.updateFunc = update
 
