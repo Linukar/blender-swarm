@@ -5,26 +5,26 @@ import random
 from typing import List
 from .agent import Agent
 
-class Hive:
+class Swarm:
 
     deltaTime = 0.033 # 30 fps
 
-    def __init__(self, totalSteps: int, context: bpy.types.Context):
+    def __init__(self, context: bpy.types.Context):
         possibleTools = ["DRAW", "CLAY", "CREASE"]
-        agentCount = context.scene.swarm_settings.agent_count
-        spawnCubeSize = 0.3
+        agentCount = context.scene.swarm_settings.swarm_agentCount
+        spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
         self.agents: List[Agent] = []
 
         for _ in range (0, agentCount):
             self.agents.append(Agent(random.choice(possibleTools), spawnCubeSize, context))
 
-        self.totalSteps = totalSteps
+        self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;
 
         def update():
             for agent in self.agents:
-                agent.update(Hive.deltaTime, self.step, self.agents)
+                agent.update(Swarm.deltaTime, self.step, self.agents)
                 print("Step: " + str(self.step))
 
 
@@ -37,7 +37,7 @@ class Hive:
                 bpy.app.timers.unregister(self.updateFunc)
 
             
-            return Hive.deltaTime
+            return Swarm.deltaTime
         
 
         self.updateFunc = update

@@ -18,4 +18,15 @@ class SWARM_PT_Panel(Panel):
         col.operator("swarm.spawn_plane", text = "Spawn Plane")
         col.operator("swarm.test1", text = "Sculpt Test1")
 
-        col.prop(context.scene.swarm_settings, "agent_count", text="Agent Count")
+        col.label(text="General Swarm Settings")
+        swarmSettings = col.box()
+        swarmSettings.prop(context.scene.swarm_settings, "swarm_agentCount", text="Agent Count")
+        swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")
+        swarmSettings.prop(context.scene.swarm_settings, "swarm_maxSimulationSteps", text="Simulation Steps")
+        
+        col.label(text="Agent Behaviour Settings")
+        agentSettings = col.box()
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_noClumpRadius", text="Separation Radius")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_localAreaRadius", text="Neighbour Radius")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_speed", text="Agent Speed")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_steeringSpeed", text="Agent Steering Speed")

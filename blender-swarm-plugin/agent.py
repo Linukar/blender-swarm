@@ -12,11 +12,11 @@ class Agent:
 
     def __init__(self, sculptTool: str, spawnCubeSize: float, context: bpy.types.Context):
         # boid
-        self.noClumpRadius = 0.0002
-        self.localAreaRadius = 5
+        self.noClumpRadius = context.scene.swarm_settings.agent_general_noClumpRadius
+        self.localAreaRadius = context.scene.swarm_settings.agent_general_localAreaRadius
 
-        self.speed = 0.3
-        self.steeringSpeed = 10
+        self.speed = context.scene.swarm_settings.agent_general_speed
+        self.steeringSpeed = context.scene.swarm_settings.agent_general_steeringSpeed
 
         self.position = mathutils.Vector((
             random.uniform(-spawnCubeSize, spawnCubeSize), 

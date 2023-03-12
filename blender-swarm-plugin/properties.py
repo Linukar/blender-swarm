@@ -7,4 +7,13 @@ def unregisterProperies():
     del bpy.types.Scene.swarm_settings
 
 class SwarmSettings(bpy.types.PropertyGroup):
-    agent_count: bpy.props.IntProperty(min=1, max=10000)
+    # general swarm properties
+    swarm_agentCount: bpy.props.IntProperty(default=20, min=1, max=10000)
+    swarm_spawnAreaSize: bpy.props.FloatProperty(default=0.3, min=0, precision=3)
+    swarm_maxSimulationSteps: bpy.props.IntProperty(default=200, min=1)
+
+    # agent properties
+    agent_general_noClumpRadius: bpy.props.FloatProperty(default=0.0002, min=0, max=10, step=0.00001, precision=6)
+    agent_general_localAreaRadius: bpy.props.FloatProperty(default=5, min=0, precision=3)
+    agent_general_speed: bpy.props.FloatProperty(default=0.3, min=0, precision=3)
+    agent_general_steeringSpeed: bpy.props.FloatProperty(default=5, min=0, precision=3)
