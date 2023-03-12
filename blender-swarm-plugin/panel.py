@@ -17,3 +17,5 @@ class SWARM_PT_Panel(Panel):
         col.operator("swarm.remove_selected", text = "Remove selected Object")
         col.operator("swarm.spawn_plane", text = "Spawn Plane")
         col.operator("swarm.test1", text = "Sculpt Test1")
+
+        col.prop(context.scene.swarm_settings, "agent_count", text="Agent Count")

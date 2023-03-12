@@ -25,13 +25,18 @@ bl_info = {
 import bpy
 from .buttons import Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected
 from .panel import SWARM_PT_Panel
+from .properties import SwarmSettings, registerProperties, unregisterProperies
 
-classes = (Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, SWARM_PT_Panel)
+classes = (Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, SWARM_PT_Panel, SwarmSettings)
 
 def register():
     for c in classes:
         bpy.utils.register_class(c)
+    
+    registerProperties()
 
 def unregister():
     for c in classes:
         bpy.utils.unregister_class(c)
+    
+    unregisterProperies()

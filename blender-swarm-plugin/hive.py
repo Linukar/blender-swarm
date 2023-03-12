@@ -9,15 +9,15 @@ class Hive:
 
     deltaTime = 0.033 # 30 fps
 
-    def __init__(self, totalSteps: int):
+    def __init__(self, totalSteps: int, context: bpy.types.Context):
         possibleTools = ["DRAW", "CLAY", "CREASE"]
-        agentCount = 20
+        agentCount = context.scene.swarm_settings.agent_count
         spawnCubeSize = 0.3
 
         self.agents: List[Agent] = []
 
         for _ in range (0, agentCount):
-            self.agents.append(Agent(random.choice(possibleTools), spawnCubeSize))
+            self.agents.append(Agent(random.choice(possibleTools), spawnCubeSize, context))
 
         self.totalSteps = totalSteps
         self.step = 0;

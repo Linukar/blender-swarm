@@ -10,10 +10,11 @@ from typing import List
 
 class Agent:
 
-    def __init__(self, sculptTool: str, spawnCubeSize: float):
+    def __init__(self, sculptTool: str, spawnCubeSize: float, context: bpy.types.Context):
         # boid
         self.noClumpRadius = 0.0002
         self.localAreaRadius = 5
+
         self.speed = 0.3
         self.steeringSpeed = 10
 
@@ -37,7 +38,7 @@ class Agent:
 
 
     def onStop(self):
-        bpy.types.SpaceView3D.draw_handler_remove(self.handler)
+        bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
 
     def applyBrush(self):
