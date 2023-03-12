@@ -1,28 +1,23 @@
 import bpy
 import mathutils
 from bpy.types import Operator
-from .swarm import Swarm
+from .swarmManager import SwarmManager
 
 class Swarm_OT_Sculpt_Test(Operator):
     bl_idname = "swarm.test1"
     bl_label = "Sculpt"
     bl_description = "Test1"
-    swarm = None
 
     def update():
         print("op update")
 
     def execute(self, context):
-
-        bpy.ops.object.mode_set(mode="SCULPT")
-        bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
-        Swarm_OT_Sculpt_Test.swarm = Swarm(context)
-
+        SwarmManager.startSwarm(context)
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
-        return Swarm_OT_Sculpt_Test.swarm == None or not Swarm_OT_Sculpt_Test.swarm.isRunning()
+        return not SwarmManager.isRunning()
 
 
 class Swarm_OT_Spawn_Plane(Operator):
@@ -50,6 +45,20 @@ class Swarm_OT_Remove_Selected(Operator):
 
     def execute(self, context):    
         bpy.data.objects.remove(bpy.context.active_object)
+
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+    
+class Swarm_OT_Stop_Simulation(Operator):
+    bl_idname = "swarm.stop_simulation"
+    bl_label = "Stop Simulation"
+    bl_description = "Stop Simulation"
+
+    def execute(self, context):    
+        SwarmManager.stopSwarm()
 
         return {'FINISHED'}
 

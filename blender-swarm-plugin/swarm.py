@@ -1,6 +1,7 @@
 import bpy
 import itertools
 import random
+import time
 
 from typing import List
 from .agent import Agent
@@ -21,23 +22,31 @@ class Swarm:
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;
+        self.shouldStop = False
 
         def update():
+            startTime = time.time()
             for agent in self.agents:
                 agent.update(Swarm.deltaTime, self.step, self.agents)
-                print("Step: " + str(self.step))
 
-
+            endTime = time.time()
 
             self.step += 1
+
             if self.step > self.totalSteps:
+                self.shouldStop = True
+
+            if self.shouldStop:
                 for agent in self.agents:
-                    agent.onStop()
+                    agent.onStop(context)
 
                 bpy.app.timers.unregister(self.updateFunc)
 
             
-            return Swarm.deltaTime
+            if context.scene.swarm_settings.swarm_visualizeAgents:
+                return min(Swarm.deltaTime - (endTime - startTime), 0)
+            else:
+                return 0 
         
 
         self.updateFunc = update
@@ -46,4 +55,8 @@ class Swarm:
 
 
     def isRunning(self):
-        return self.step < self.totalSteps
+        return self.step < self.totalSteps and not self.shouldStop
+    
+    def stop(self):
+        self.shouldStop = True
+

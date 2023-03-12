@@ -34,11 +34,14 @@ class Agent:
 
         self.sculpt_tool = sculptTool
         args = (self.position, (0.99, 0.05, 0.29))
-        self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
+
+        if context.scene.swarm_settings.swarm_visualizeAgents:
+            self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
 
 
-    def onStop(self):
-        bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
+    def onStop(self, context: bpy.types.Context):
+        if context.scene.swarm_settings.swarm_visualizeAgents:
+            bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
 
     def applyBrush(self):
