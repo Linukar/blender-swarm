@@ -64,7 +64,7 @@ class Agent:
         bpy.ops.sculpt.brush_stroke(context_override(), stroke = stroke, mode = "INVERT", ignore_background_click = False)
 
 
-    def update(self, deltaTime: float, step: int, agents: List["Agent"]):
+    def update(self, fixedTimeStep: float, step: int, agents: List["Agent"]):
 
         steering = mathutils.Vector()
 
@@ -111,9 +111,9 @@ class Agent:
             steering += cohesionDirection
 
         if(steering.length_squared != 0):
-            self.forward = self.forward.slerp(steering, deltaTime * self.steeringSpeed).normalized()
+            self.forward = self.forward.slerp(steering, fixedTimeStep * self.steeringSpeed).normalized()
 
-        self.position += self.forward * self.speed * deltaTime
+        self.position += self.forward * self.speed * fixedTimeStep
 
 
         self.applyBrush()

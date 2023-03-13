@@ -5,10 +5,11 @@ import time
 
 from typing import List
 from .agent import Agent
+from .utils import printProgressBar
 
 class Swarm:
 
-    deltaTime = 0.033 # 30 fps
+    fixedTimeStep = 0.033 # 30 fps
 
     def __init__(self, context: bpy.types.Context):
         possibleTools = ["DRAW", "CLAY", "CREASE"]
@@ -41,14 +42,15 @@ class Swarm:
         for agent in self.agents:
             agent.onStop(self.context)
 
-        print("Finished in:" + str(time.time() - self.startTime))
+        print("Finished in: " + str(time.time() - self.startTime))
 
 
     def update(self):
+        printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
 
         for agent in self.agents:
-            agent.update(Swarm.deltaTime, self.step, self.agents)
+            agent.update(Swarm.fixedTimeStep, self.step, self.agents)
 
         self.step += 1
 
@@ -61,9 +63,6 @@ class Swarm:
 
         if self.context.scene.swarm_settings.swarm_visualizeAgents:
             timeDiff = (time.time() - self.updateStartTime)
-            print("Update duration:" + str(timeDiff))
-            result = max(Swarm.deltaTime - timeDiff, 0)
-            print(result)
-            return result
+            return max(Swarm.fixedTimeStep - timeDiff, 0)
         else:
             return 0
