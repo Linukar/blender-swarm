@@ -23,40 +23,47 @@ class Swarm:
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;
         self.shouldStop = False
+        self.context = context
+        self.startTime = time.time()
 
-        def update():
-            startTime = time.time()
-            for agent in self.agents:
-                agent.update(Swarm.deltaTime, self.step, self.agents)
-
-            endTime = time.time()
-
-            self.step += 1
-
-            if self.step > self.totalSteps:
-                self.shouldStop = True
-
-            if self.shouldStop:
-                for agent in self.agents:
-                    agent.onStop(context)
-
-                bpy.app.timers.unregister(self.updateFunc)
-
-            
-            if context.scene.swarm_settings.swarm_visualizeAgents:
-                return min(Swarm.deltaTime - (endTime - startTime), 0)
-            else:
-                return 0 
-        
-
-        self.updateFunc = update
-
-        bpy.app.timers.register(self.updateFunc)
+        bpy.app.timers.register(self.update)
 
 
     def isRunning(self):
         return self.step < self.totalSteps and not self.shouldStop
     
+
     def stop(self):
         self.shouldStop = True
 
+
+    def onStop(self):
+        for agent in self.agents:
+            agent.onStop(self.context)
+
+        print("Finished in:" + str(time.time() - self.startTime))
+
+
+    def update(self):
+        self.updateStartTime = time.time()
+
+        for agent in self.agents:
+            agent.update(Swarm.deltaTime, self.step, self.agents)
+
+        self.step += 1
+
+        if self.step > self.totalSteps:
+            self.shouldStop = True
+
+        if self.shouldStop:
+           self.onStop()
+           return None
+
+        if self.context.scene.swarm_settings.swarm_visualizeAgents:
+            timeDiff = (time.time() - self.updateStartTime)
+            print("Update duration:" + str(timeDiff))
+            result = max(Swarm.deltaTime - timeDiff, 0)
+            print(result)
+            return result
+        else:
+            return 0
