@@ -25,6 +25,7 @@ class SWARM_PT_Panel(Panel):
         swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_maxSimulationSteps", text="Simulation Steps")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_visualizeAgents", text="Visualize Agents")
+        swarmSettings.prop(context.scene.swarm_settings, "swarm_useSculpting", text="use Sculpting")
         
         col.label(text="Agent Behaviour Settings")
         agentSettings = col.box()

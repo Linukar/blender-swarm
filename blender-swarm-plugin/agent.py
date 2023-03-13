@@ -35,6 +35,8 @@ class Agent:
         self.sculpt_tool = sculptTool
         args = (self.position, (0.99, 0.05, 0.29))
 
+        self.context = context
+
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
 
@@ -116,4 +118,4 @@ class Agent:
         self.position += self.forward * self.speed * fixedTimeStep
 
 
-        self.applyBrush()
+        if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
