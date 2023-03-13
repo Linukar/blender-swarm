@@ -11,6 +11,9 @@ from typing import List
 class Agent:
 
     def __init__(self, sculptTool: str, spawnCubeSize: float, context: bpy.types.Context):
+
+        self.context = context
+        
         # boid
         self.noClumpRadius = context.scene.swarm_settings.agent_general_noClumpRadius
         self.localAreaRadius = context.scene.swarm_settings.agent_general_localAreaRadius
@@ -30,13 +33,12 @@ class Agent:
             math.radians(random.uniform(0, 360)), 
             math.radians(random.uniform(0, 360))
             ))
-        self.forward.rotate(eul)
+        
+        self.rotation = eul.to_quaternion()
+        self.forward.rotate(self.rotation)
 
         self.sculpt_tool = sculptTool
-        args = (self.position, (0.99, 0.05, 0.29))
-
-        self.context = context
-
+        args = (self.position, self.rotation, (0.99, 0.05, 0.29))
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
 
@@ -113,7 +115,11 @@ class Agent:
             steering += cohesionDirection
 
         if(steering.length_squared != 0):
-            self.forward = self.forward.slerp(steering, fixedTimeStep * self.steeringSpeed).normalized()
+            self.forward = mathutils.Vector((0, 1, 0))
+            self.forward.rotate(self.rotation)
+            self.forward.normalize()
+            quatDiff = self.forward.rotation_difference(steering)
+            self.rotation = self.rotation.slerp(quatDiff, fixedTimeStep)
 
         self.position += self.forward * self.speed * fixedTimeStep
 
