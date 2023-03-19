@@ -34,7 +34,8 @@ class Agent:
             math.radians(random.uniform(0, 360))
             ))
         
-        self.rotation = eul.to_quaternion()
+        self.rotation = mathutils.Quaternion()
+        self.rotation.identity()
         self.forward.rotate(self.rotation)
 
         self.sculpt_tool = sculptTool
@@ -69,7 +70,22 @@ class Agent:
 
 
     def update(self, fixedTimeStep: float, step: int, agents: List["Agent"]):
+        self.recalcForward()
+        self.boidMovement(fixedTimeStep, agents)
 
+        self.position += self.forward * self.speed * fixedTimeStep
+        # self.rotation.rotate(mathutils.Euler((0, 0, 0.01)))
+
+        if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
+
+
+    def recalcForward(self):
+        self.forward = mathutils.Vector((1, 0, 0))
+        self.forward.rotate(self.rotation)
+
+    
+    def boidMovement(self, fixedTimeStep: float, agents: List["Agent"]):
+        
         steering = mathutils.Vector()
 
         separationDirection = mathutils.Vector()
@@ -114,14 +130,6 @@ class Agent:
             cohesionDirection.negate()
             steering += cohesionDirection
 
-        if(steering.length_squared != 0):
-            self.forward = mathutils.Vector((0, 1, 0))
-            self.forward.rotate(self.rotation)
-            self.forward.normalize()
+        if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
             self.rotation = self.rotation.slerp(quatDiff, fixedTimeStep)
-
-        self.position += self.forward * self.speed * fixedTimeStep
-
-
-        if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()

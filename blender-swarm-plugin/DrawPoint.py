@@ -40,7 +40,7 @@ fragment_shader = '''
     }
 '''
 
-coords = [(0.05, 0, 0), (-0.05, 0, 0), (0, 0.3, 0)]
+coords = [(0, 0.05, 0), (0, -0.05, 0), (0.3, 0, 0)]
 shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
 
