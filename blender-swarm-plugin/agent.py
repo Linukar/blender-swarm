@@ -39,7 +39,7 @@ class Agent:
         self.forward.rotate(self.rotation)
 
         self.sculpt_tool = sculptTool
-        args = (self.position, self.rotation, (0.99, 0.05, 0.29))
+        args = (self.position, self.rotation, (0.99, 0.05, 0.29)) # uses reference -> won't work, if new object is saved in member
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
 
@@ -74,7 +74,6 @@ class Agent:
         self.boidMovement(fixedTimeStep, agents)
 
         self.position += self.forward * self.speed * fixedTimeStep
-        # self.rotation.rotate(mathutils.Euler((0.01, 0.01, 0.01)))
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 
@@ -119,17 +118,24 @@ class Agent:
             separationDirection.negate()
             steering = separationDirection
 
-        if(alignmentCount > 0):
-            alignmentDirection /= alignmentCount
-            alignmentDirection.normalize()
-            steering += alignmentDirection
+        # if(alignmentCount > 0):
+        #     alignmentDirection /= alignmentCount
+        #     alignmentDirection.normalize()
+        #     steering += alignmentDirection
 
-        if(cohesionCount > 0):
-            cohesionDirection /= cohesionCount
-            cohesionDirection.normalize()
-            cohesionDirection.negate()
-            steering += cohesionDirection
+        # if(cohesionCount > 0):
+        #     cohesionDirection /= cohesionCount
+        #     cohesionDirection.normalize()
+        #     cohesionDirection.negate()
+        #     steering += cohesionDirection
 
         if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
-            self.rotation.rotate(quatDiff)
+            self.setRotation(self.rotation.slerp(quatDiff, fixedTimeStep * self.steeringSpeed))
+
+
+    def setRotation(self, rotation: mathutils.Quaternion):
+        self.rotation.x = rotation.x
+        self.rotation.y = rotation.y
+        self.rotation.z = rotation.z
+        self.rotation.w = rotation.w
