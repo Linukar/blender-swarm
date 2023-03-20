@@ -43,14 +43,17 @@ fragment_shader = '''
 coords = [(0, 0.05, 0), (0, -0.05, 0), (0.3, 0, 0)]
 shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
-
+scaleMultiplier = 0.03
 
 def drawPoint(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
-    modelMat = mathutils.Matrix.LocRotScale(position, rotation, mathutils.Vector((1, 1, 1)))
+    viewMat = gpu.matrix.get_model_view_matrix()
+    cameraDistance = viewMat.translation.magnitude
+    scale = cameraDistance * scaleMultiplier
+    modelMat = mathutils.Matrix.LocRotScale(position, rotation, mathutils.Vector((scale, scale, scale)))
 
     shader.bind()
     shader.uniform_float("projection", gpu.matrix.get_projection_matrix())
-    shader.uniform_float("view", gpu.matrix.get_model_view_matrix())
+    shader.uniform_float("view", viewMat)
 
     shader.uniform_float("color", color)
     shader.uniform_float("model", modelMat)
