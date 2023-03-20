@@ -74,7 +74,7 @@ class Agent:
         self.boidMovement(fixedTimeStep, agents)
 
         self.position += self.forward * self.speed * fixedTimeStep
-        # self.rotation.rotate(mathutils.Euler((0, 0, 0.01)))
+        # self.rotation.rotate(mathutils.Euler((0.01, 0.01, 0.01)))
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 
@@ -132,4 +132,4 @@ class Agent:
 
         if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
-            self.rotation = self.rotation.slerp(quatDiff, fixedTimeStep)
+            self.rotation.rotate(quatDiff)
