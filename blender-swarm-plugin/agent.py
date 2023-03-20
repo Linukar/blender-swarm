@@ -34,8 +34,7 @@ class Agent:
             math.radians(random.uniform(0, 360))
             ))
         
-        self.rotation = mathutils.Quaternion()
-        self.rotation.identity()
+        self.rotation = eul.to_quaternion()
         self.forward.rotate(self.rotation)
 
         self.sculpt_tool = sculptTool
@@ -121,16 +120,15 @@ class Agent:
             separationDirection.negate()
             steering = separationDirection
 
-        # if(alignmentCount > 0):
-        #     alignmentDirection /= alignmentCount
-        #     alignmentDirection.normalize()
-        #     steering += alignmentDirection
+        if(alignmentCount > 0):
+            alignmentDirection /= alignmentCount
+            alignmentDirection.normalize()
+            steering += alignmentDirection
 
-        # if(cohesionCount > 0):
-        #     cohesionDirection /= cohesionCount
-        #     cohesionDirection.normalize()
-        #     cohesionDirection.negate()
-        #     steering += cohesionDirection
+        if(cohesionCount > 0):
+            cohesionDirection /= cohesionCount
+            cohesionDirection.normalize()
+            steering += cohesionDirection
 
         if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
