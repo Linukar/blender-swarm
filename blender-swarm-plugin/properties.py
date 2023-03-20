@@ -19,5 +19,5 @@ class SwarmSettings(bpy.types.PropertyGroup):
     # agent properties
     agent_general_noClumpRadius: bpy.props.FloatProperty(default=0.2, min=0, max=10, step=0.01, precision=3)
     agent_general_localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
-    agent_general_speed: bpy.props.FloatProperty(default=0.3, min=0, precision=3)
-    agent_general_steeringSpeed: bpy.props.FloatProperty(default=0.1, min=0, precision=3)
+    agent_general_speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
+    agent_general_steeringSpeed: bpy.props.FloatProperty(default=1, min=0, precision=3)

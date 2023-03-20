@@ -118,17 +118,17 @@ class Agent:
             separationDirection /= separationCount
             separationDirection.normalize()
             separationDirection.negate()
-            steering = separationDirection
+            steering += separationDirection * 0.2
 
         if(alignmentCount > 0):
             alignmentDirection /= alignmentCount
             alignmentDirection.normalize()
-            steering += alignmentDirection
+            steering += alignmentDirection * 0.2
 
         if(cohesionCount > 0):
             cohesionDirection /= cohesionCount
             cohesionDirection.normalize()
-            steering += cohesionDirection
+            steering += cohesionDirection * 0.6
 
         if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
