@@ -39,10 +39,13 @@ class Agent:
         self.forward.rotate(self.rotation)
 
         self.sculpt_tool = sculptTool
-        args = (self.position, self.rotation, (0.99, 0.05, 0.29)) # uses reference -> won't work, if new object is saved in member
         if context.scene.swarm_settings.swarm_visualizeAgents:
-            self.handler = bpy.types.SpaceView3D.draw_handler_add(drawPoint, args, 'WINDOW', 'POST_VIEW')
+            self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
 
+
+    def onDraw(self):
+        # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
+        drawPoint(self.position, self.rotation, (0.99, 0.05, 0.29))
 
     def onStop(self, context: bpy.types.Context):
         if context.scene.swarm_settings.swarm_visualizeAgents:
@@ -131,11 +134,5 @@ class Agent:
 
         if(steering.length != 0):
             quatDiff = self.forward.rotation_difference(steering)
-            self.setRotation(self.rotation.slerp(quatDiff, fixedTimeStep * self.steeringSpeed))
+            self.rotation = self.rotation.slerp(quatDiff, fixedTimeStep * self.steeringSpeed)
 
-
-    def setRotation(self, rotation: mathutils.Quaternion):
-        self.rotation.x = rotation.x
-        self.rotation.y = rotation.y
-        self.rotation.z = rotation.z
-        self.rotation.w = rotation.w
