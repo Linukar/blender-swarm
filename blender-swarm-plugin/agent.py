@@ -45,7 +45,9 @@ class Agent:
     def onDraw(self):
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
         drawPoint(self.position, self.rotation, (0.99, 0.05, 0.29))
-        drawLine(self.position, self.position + self.steering)
+
+        # draw steering vector for debugging
+        # drawLine(self.position, self.position + self.steering)
 
     def onStop(self, context: bpy.types.Context):
         if context.scene.swarm_settings.swarm_visualizeAgents:
@@ -99,37 +101,37 @@ class Agent:
         cohesionDirection = mathutils.Vector()
         cohesionCount = 0
 
-        # for other in agents:
-        #     if(other == self): continue
+        for other in agents:
+            if(other == self): continue
 
-        #     distance = math.dist(self.position, other.position)
+            distance = math.dist(self.position, other.position)
 
-        #     if(distance < self.noClumpRadius):
-        #         separationDirection += other.position - self.position
-        #         separationCount += 1
+            if(distance < self.noClumpRadius):
+                separationDirection += other.position - self.position
+                separationCount += 1
 
-        #     if(distance < self.localAreaRadius):
-        #         alignmentDirection += other.forward
-        #         alignmentCount += 1
+            if(distance < self.localAreaRadius):
+                alignmentDirection += other.forward
+                alignmentCount += 1
 
-        #         cohesionDirection += other.position - self.position
-        #         cohesionCount += 1
+                cohesionDirection += other.position - self.position
+                cohesionCount += 1
 
-        # if(separationCount > 0):
-        #     separationDirection /= separationCount
-        #     separationDirection.normalize()
-        #     separationDirection.negate()
-        #     steering += separationDirection * self.context.scene.swarm_settings.agent_general_separationWeight
+        if(separationCount > 0):
+            separationDirection /= separationCount
+            separationDirection.normalize()
+            separationDirection.negate()
+            self.steering += separationDirection * self.context.scene.swarm_settings.agent_general_separationWeight
 
-        # if(alignmentCount > 0):
-        #     alignmentDirection /= alignmentCount
-        #     alignmentDirection.normalize()
-        #     steering += alignmentDirection * self.context.scene.swarm_settings.agent_general_alignementWeight
+        if(alignmentCount > 0):
+            alignmentDirection /= alignmentCount
+            alignmentDirection.normalize()
+            self.steering += alignmentDirection * self.context.scene.swarm_settings.agent_general_alignementWeight
 
-        # if(cohesionCount > 0):
-        #     cohesionDirection /= cohesionCount
-        #     cohesionDirection.normalize()
-        #     steering += cohesionDirection * self.context.scene.swarm_settings.agent_general_cohesionWeight
+        if(cohesionCount > 0):
+            cohesionDirection /= cohesionCount
+            cohesionDirection.normalize()
+            self.steering += cohesionDirection * self.context.scene.swarm_settings.agent_general_cohesionWeight
 
         self.directionToCenter = -self.position
         self.steering += self.directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
@@ -137,6 +139,5 @@ class Agent:
         if(self.steering.length != 0):
             self.steering.normalize()
             quatDiff = self.forward.rotation_difference(self.steering)
-            # self.rotation = self.rotation.slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
-            self.rotation = quatDiff
+            self.rotation.rotate(mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1)))
 

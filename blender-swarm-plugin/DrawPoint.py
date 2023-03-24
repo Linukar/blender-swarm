@@ -9,11 +9,9 @@ shaderLine = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
 
 def drawLine(start: mathutils.Vector, end: mathutils.Vector):
     batchLine = batch_for_shader(shaderLine, 'LINES', {"pos": [start.to_tuple(), end.to_tuple()]})
-
     shaderLine.bind()
     shaderLine.uniform_float("color", (1, 1, 0, 1))
     batchLine.draw(shaderLine)
-    print("drawLine")
 
 
 vertex_shader = '''
