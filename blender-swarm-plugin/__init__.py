@@ -23,11 +23,11 @@ bl_info = {
 }
 
 import bpy
-from .buttons import Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, Swarm_OT_Stop_Simulation
+from .operators import *
 from .panel import SWARM_PT_Panel
 from .properties import SwarmSettings, registerProperties, unregisterProperies
 
-classes = (Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, Swarm_OT_Stop_Simulation,
+classes = (Swarm_OT_Sculpt_Test, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, Swarm_OT_Stop_Simulation, Swarm_OT_Start_Simulation,
             SWARM_PT_Panel, SwarmSettings)
 
 def register():

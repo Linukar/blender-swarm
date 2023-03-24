@@ -65,3 +65,55 @@ class Swarm_OT_Stop_Simulation(Operator):
     @classmethod
     def poll(cls, context):
         return True
+
+
+
+class Swarm_OT_Start_Simulation(Operator):
+    bl_idname = "swarm.modal_simulation"
+    bl_label = "Simple Modal Operator"
+
+    def __init__(self):
+        print("Start")
+
+    def __del__(self):
+        print("End")
+
+    def execute(self, context):
+        wm = context.window_manager
+        self._timer = wm.event_timer_add(4)
+        wm.modal_handler_add(self)
+        self.isRunning = True
+        return {'RUNNING_MODAL'}
+
+    def modal(self, context, event):
+        print("update - pre check")
+        if(self == None): print("self is none")
+        print("self is not none")
+        print(self)
+        print("printed self")
+        if(not self.isRunning):
+            print("update - not running")
+            return {'CANCELLED'}
+        print("update - post check")
+        if event.type == 'TIMER':  # Apply
+            print("update")
+        elif event.type == 'ESC':  # Cancel
+            self.stop(context)
+            return {'CANCELLED'}
+
+        return {'PASS_THROUGH'}
+
+    def stop(self, context: bpy.types.Context):
+        print("1")
+        wm = context.window_manager
+        print("2")
+        wm.event_timer_remove(self._timer)
+        print("3")
+        self.isRunning = False
+
+
+    def invoke(self, context, event):
+        self.execute(context)
+
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}

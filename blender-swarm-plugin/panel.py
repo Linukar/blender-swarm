@@ -17,6 +17,7 @@ class SWARM_PT_Panel(Panel):
         col.operator("swarm.remove_selected", text = "Remove selected Object")
         col.operator("swarm.spawn_plane", text = "Spawn Plane")
         col.operator("swarm.test1", text = "Begin Simulation")
+        # col.operator("swarm.modal_simulation", text = "Modal Simulation")
         col.operator("swarm.stop_simulation", text = "Stop Simulation")
 
         col.label(text="General Swarm Settings")
