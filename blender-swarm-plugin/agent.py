@@ -6,7 +6,7 @@ import mathutils
 from .utils import context_override, clamp
 from .DrawPoint import drawPoint, drawLine
 from typing import List
-
+from .boidrules import *
 
 class Agent:
 
@@ -14,10 +14,6 @@ class Agent:
 
         self.context = context
         
-        # boid
-        self.noClumpRadius = context.scene.swarm_settings.agent_general_noClumpRadius
-        self.localAreaRadius = context.scene.swarm_settings.agent_general_localAreaRadius
-
         self.speed = context.scene.swarm_settings.agent_general_speed
         self.steeringSpeed = context.scene.swarm_settings.agent_general_steeringSpeed
 
@@ -36,6 +32,8 @@ class Agent:
         
         self.rotation = eul.to_quaternion()
         self.forward.rotate(self.rotation)
+
+        self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context)]
 
         self.sculpt_tool = sculptTool
         if context.scene.swarm_settings.swarm_visualizeAgents:
@@ -92,49 +90,17 @@ class Agent:
         
         self.steering = mathutils.Vector()
 
-        separationDirection = mathutils.Vector()
-        separationCount = 0
-
-        alignmentDirection = mathutils.Vector()
-        alignmentCount = 0
-
-        cohesionDirection = mathutils.Vector()
-        cohesionCount = 0
-
         for other in agents:
             if(other == self): continue
 
             distance = math.dist(self.position, other.position)
 
-            if(distance < self.noClumpRadius):
-                separationDirection += other.position - self.position
-                separationCount += 1
+            for rule in self.boidRules:
+                rule.compareWithOther(distance, agent=self, other=other)
 
-            if(distance < self.localAreaRadius):
-                alignmentDirection += other.forward
-                alignmentCount += 1
 
-                cohesionDirection += other.position - self.position
-                cohesionCount += 1
-
-        if(separationCount > 0):
-            separationDirection /= separationCount
-            separationDirection.normalize()
-            separationDirection.negate()
-            self.steering += separationDirection * self.context.scene.swarm_settings.agent_general_separationWeight
-
-        if(alignmentCount > 0):
-            alignmentDirection /= alignmentCount
-            alignmentDirection.normalize()
-            self.steering += alignmentDirection * self.context.scene.swarm_settings.agent_general_alignementWeight
-
-        if(cohesionCount > 0):
-            cohesionDirection /= cohesionCount
-            cohesionDirection.normalize()
-            self.steering += cohesionDirection * self.context.scene.swarm_settings.agent_general_cohesionWeight
-
-        self.directionToCenter = -self.position
-        self.steering += self.directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
+        for rule in self.boidRules:
+            self.steering += rule.calcDirection(self)
 
         if(self.steering.length != 0):
             self.steering.normalize()
