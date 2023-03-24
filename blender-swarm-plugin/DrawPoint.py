@@ -4,12 +4,12 @@ import mathutils
 
 from gpu_extras.batch import batch_for_shader
 
-coordsLine = [(1, 1, 1), (-2, 0, 0), (-2, -1, 3), (0, 1, 1)]
 shaderLine = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
-batchLine = batch_for_shader(shaderLine, 'LINES', {"pos": coordsLine})
 
 
-def drawLines():
+def drawLine(start: mathutils.Vector, end: mathutils.Vector):
+    batchLine = batch_for_shader(shaderLine, 'LINES', {"pos": [start.to_tuple(), end.to_tuple()]})
+
     shaderLine.bind()
     shaderLine.uniform_float("color", (1, 1, 0, 1))
     batchLine.draw(shaderLine)
