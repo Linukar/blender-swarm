@@ -3,7 +3,7 @@ import random
 import bpy
 import mathutils
 
-from .utils import context_override
+from .utils import context_override, clamp
 from .DrawPoint import drawPoint
 from typing import List
 
@@ -72,6 +72,7 @@ class Agent:
 
 
     def update(self, fixedTimeStep: float, step: int, agents: List["Agent"]):
+    
         self.recalcForward()
         self.boidMovement(fixedTimeStep, agents)
 
@@ -118,19 +119,23 @@ class Agent:
             separationDirection /= separationCount
             separationDirection.normalize()
             separationDirection.negate()
-            steering += separationDirection * 0.2
+            steering += separationDirection * self.context.scene.swarm_settings.agent_general_separationWeight
 
         if(alignmentCount > 0):
             alignmentDirection /= alignmentCount
             alignmentDirection.normalize()
-            steering += alignmentDirection * 0.2
+            steering += alignmentDirection * self.context.scene.swarm_settings.agent_general_alignementWeight
 
         if(cohesionCount > 0):
             cohesionDirection /= cohesionCount
             cohesionDirection.normalize()
-            steering += cohesionDirection * 0.6
+            steering += cohesionDirection * self.context.scene.swarm_settings.agent_general_cohesionWeight
+
+        directionToCenter = -self.position
+        steering += directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
 
         if(steering.length != 0):
+            steering.normalize()
             quatDiff = self.forward.rotation_difference(steering)
-            self.rotation = self.rotation.slerp(quatDiff, fixedTimeStep * self.steeringSpeed)
+            self.rotation = self.rotation.slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
 

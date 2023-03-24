@@ -33,3 +33,9 @@ class SWARM_PT_Panel(Panel):
         agentSettings.prop(context.scene.swarm_settings, "agent_general_localAreaRadius", text="Neighbour Radius")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_speed", text="Agent Speed")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_steeringSpeed", text="Agent Steering Speed")
+
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_separationWeight", text="Separation Weight")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_alignementWeight", text="Alignement Weight")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_cohesionWeight", text="Cohesion Weight")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_centerUrgeWeight", text="Center Weight")
+

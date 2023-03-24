@@ -31,3 +31,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     # Print New Line on Complete
     if iteration == total: 
         print()
+
+
+def clamp(value, lower, upper):
+    return lower if value < lower else upper if value > upper else value

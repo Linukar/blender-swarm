@@ -9,9 +9,9 @@ def unregisterProperies():
 class SwarmSettings(bpy.types.PropertyGroup):
 
     # general swarm properties
-    swarm_agentCount: bpy.props.IntProperty(default=20, min=1, max=10000)
+    swarm_agentCount: bpy.props.IntProperty(default=100, min=1, max=10000)
     swarm_spawnAreaSize: bpy.props.FloatProperty(default=0.3, min=0, precision=3)
-    swarm_maxSimulationSteps: bpy.props.IntProperty(default=200, min=1)
+    swarm_maxSimulationSteps: bpy.props.IntProperty(default=10000, min=1)
     swarm_visualizeAgents: bpy.props.BoolProperty(default=True)
     swarm_useSculpting: bpy.props.BoolProperty(default=True)
 
@@ -21,3 +21,8 @@ class SwarmSettings(bpy.types.PropertyGroup):
     agent_general_localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
     agent_general_speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
     agent_general_steeringSpeed: bpy.props.FloatProperty(default=1, min=0, precision=3)
+
+    agent_general_separationWeight: bpy.props.FloatProperty(default=0.3, min=0, max = 1, precision=2)
+    agent_general_alignementWeight: bpy.props.FloatProperty(default=0.3, min=0, max = 1, precision=2)
+    agent_general_cohesionWeight: bpy.props.FloatProperty(default=0.3, min=0, max = 1, precision=2)
+    agent_general_centerUrgeWeight: bpy.props.FloatProperty(default=0.3, min=0, max = 1, precision=2)
