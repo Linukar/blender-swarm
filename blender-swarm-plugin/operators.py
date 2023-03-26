@@ -27,9 +27,9 @@ class Swarm_OT_Spawn_Plane(Operator):
 
     def execute(self, context):    
 
-        bpy.ops.mesh.primitive_plane_add(size = 2)
+        bpy.ops.mesh.primitive_plane_add(size = 10)
         bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.subdivide(number_cuts=100)
+        bpy.ops.mesh.subdivide(number_cuts=1000)
         bpy.ops.object.mode_set(mode="OBJECT")
 
         return {'FINISHED'}

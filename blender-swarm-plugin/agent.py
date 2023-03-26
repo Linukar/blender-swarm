@@ -2,6 +2,7 @@ import math
 import random
 import bpy
 import mathutils
+import random
 
 from .utils import context_override, clamp
 from .DrawPoint import drawPoint, drawLine
@@ -10,12 +11,17 @@ from .boidrules import *
 
 class Agent:
 
-    def __init__(self, sculptTool: str, spawnCubeSize: float, context: bpy.types.Context):
+    possibleTools = ["DRAW", "CLAY", "CREASE"]
+
+
+    def __init__(self, context: bpy.types.Context):
 
         self.context = context
         
         self.speed = context.scene.swarm_settings.agent_general_speed
         self.steeringSpeed = context.scene.swarm_settings.agent_general_steeringSpeed
+
+        spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
         self.position = mathutils.Vector((
             random.uniform(-spawnCubeSize, spawnCubeSize), 
@@ -38,7 +44,8 @@ class Agent:
 
         self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context)]
 
-        self.sculpt_tool = sculptTool
+        self.sculpt_tool = random.choice(Agent.possibleTools)
+
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
 
