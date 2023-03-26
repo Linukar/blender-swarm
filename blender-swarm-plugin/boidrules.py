@@ -79,5 +79,7 @@ class CenterUrge(BoidRule):
 
     def calcDirection(self, agent):
         directionToCenter = -agent.position
-        return directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
+        if(directionToCenter.magnitude > self.context.scene.swarm_settings.agent_general_centerMaxDistance):
+            return directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
+        return mathutils.Vector()
             

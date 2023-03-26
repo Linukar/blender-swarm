@@ -23,7 +23,6 @@ class Agent:
             random.uniform(-spawnCubeSize, spawnCubeSize)
             ))
         
-        self.forward = mathutils.Vector((1, 0, 0))
         eul = mathutils.Euler((
             math.radians(random.uniform(0, 360)), 
             math.radians(random.uniform(0, 360)), 
@@ -31,7 +30,11 @@ class Agent:
             ))
         
         self.rotation = eul.to_quaternion()
+
+        self.forward = mathutils.Vector((1, 0, 0))
         self.forward.rotate(self.rotation)
+
+        self.steering = self.forward
 
         self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context)]
 
@@ -76,14 +79,20 @@ class Agent:
         self.recalcForward()
         self.boidMovement(fixedTimeStep, agents)
 
+        #debug flying in circles
+        # self.steering = self.rotation @ mathutils.Vector((1, 0, 0))
+        # self.steering.rotate(mathutils.Euler((0, 0, 45)))
+        # quatDiff = self.forward.rotation_difference(self.steering)
+        # rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
+        # self.rotation = rot @ self.rotation
+
         self.position += self.forward * self.speed * fixedTimeStep
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 
 
     def recalcForward(self):
-        self.forward = mathutils.Vector((1, 0, 0))
-        self.forward.rotate(self.rotation)
+        self.forward = self.rotation @ mathutils.Vector((1, 0, 0))
 
     
     def boidMovement(self, fixedTimeStep: float, agents: List["Agent"]):
@@ -105,5 +114,5 @@ class Agent:
         if(self.steering.length != 0):
             self.steering.normalize()
             quatDiff = self.forward.rotation_difference(self.steering)
-            self.rotation.rotate(mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1)))
-
+            rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
+            self.rotation = rot @ self.rotation

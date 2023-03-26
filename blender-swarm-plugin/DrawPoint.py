@@ -41,7 +41,7 @@ fragment_shader = '''
 coords = [(0, 0.05, 0), (0, -0.05, 0), (0.3, 0, 0)]
 shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
-scaleMultiplier = 0.03
+scaleMultiplier = 0.09
 
 def drawPoint(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()
