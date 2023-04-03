@@ -25,6 +25,7 @@ class SwarmSettings(bpy.types.PropertyGroup):
     agent_general_separationWeight: bpy.props.FloatProperty(default=0.5, min=0, max = 1, precision=2)
     agent_general_alignementWeight: bpy.props.FloatProperty(default=0.35, min=0, max = 1, precision=2)
     agent_general_cohesionWeight: bpy.props.FloatProperty(default=0.16, min=0, max = 1, precision=2)
+    agent_general_leaderWeight: bpy.props.FloatProperty(default=0.5, min=0, max=1, precision=2)    
     agent_general_centerUrgeWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
     agent_general_centerMaxDistance: bpy.props.FloatProperty(default=12, min=0, precision=1)
 

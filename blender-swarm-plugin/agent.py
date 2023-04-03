@@ -109,10 +109,12 @@ class Agent:
         for other in agents:
             if(other == self): continue
 
-            distance = math.dist(self.position, other.position)
+            vec = other.position - self.position
+            distance = abs(vec.magnitude)
+            angle = vec.angle(self.forward)
 
             for rule in self.boidRules:
-                rule.compareWithOther(distance, agent=self, other=other)
+                rule.compareWithOther(distance=distance, angle=angle, agent=self, other=other)
 
 
         for rule in self.boidRules:
