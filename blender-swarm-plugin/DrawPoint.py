@@ -34,7 +34,8 @@ fragment_shader = '''
 
     void main()
     {
-        FragColor = vec4(color, 1.0);
+        float gamma = 0.3;
+        FragColor.rgb = pow(color.rgb, vec3(1.0/gamma));
     }
 '''
 

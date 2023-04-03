@@ -14,8 +14,11 @@ class Swarm:
 
         self.agents: List[Agent] = []
 
-        for _ in range (0, agentCount):
-            self.agents.append(Agent(context))
+        i = 0
+        for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
+            i += 1
+            for _ in range (0, agentCount):
+                self.agents.append(Agent(context, swarmIndex=i))
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;

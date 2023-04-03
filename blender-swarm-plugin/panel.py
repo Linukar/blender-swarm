@@ -23,6 +23,7 @@ class SWARM_PT_Panel(Panel):
         col.label(text="General Swarm Settings")
         swarmSettings = col.box()
         swarmSettings.prop(context.scene.swarm_settings, "swarm_agentCount", text="Agent Count")
+        swarmSettings.prop(context.scene.swarm_settings, "swarm_swarmCount", text="Swarm Count")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_maxSimulationSteps", text="Simulation Steps")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_visualizeAgents", text="Visualize Agents")

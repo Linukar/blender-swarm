@@ -74,12 +74,14 @@ class Cohesion(BoidRule):
 
 
 class CenterUrge(BoidRule):
-    def __init__(self, context):
+    def __init__(self, context: bpy.types.Context):
+        self.center = context.active_object.location
         super().__init__(context)
 
     def calcDirection(self, agent):
-        directionToCenter = -agent.position
+        directionToCenter = self.center - agent.position
         if(directionToCenter.magnitude > self.context.scene.swarm_settings.agent_general_centerMaxDistance):
+            directionToCenter.normalize()
             return directionToCenter * self.context.scene.swarm_settings.agent_general_centerUrgeWeight
         return mathutils.Vector()
     
