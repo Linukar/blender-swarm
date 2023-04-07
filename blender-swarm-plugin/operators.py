@@ -127,6 +127,7 @@ class Swarm_OT_DeleteAll(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        bpy.context.view_layer.objects.active = None
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False)
         return {'FINISHED'}

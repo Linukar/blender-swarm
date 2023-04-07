@@ -1,13 +1,15 @@
 import bpy
 
-def context_override():
+def context_override(context: bpy.types.Context):
     for window in bpy.context.window_manager.windows:
         screen = window.screen
         for area in screen.areas:
             if area.type == 'VIEW_3D':
                 for region in area.regions:
                     if region.type == 'WINDOW':
-                        return {'window': window, 'screen': screen, 'area': area, 'region': region, 'scene': bpy.context.scene} 
+                        return {'window': window, 'screen': screen, 'area': area, 'region': region, 'scene': context.scene, "object": context.active_object} 
+
+    return context.copy()
 
 
 # Print iterations progress
