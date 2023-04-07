@@ -117,3 +117,16 @@ class Swarm_OT_Start_Simulation(Operator):
 
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
+
+
+
+class Swarm_OT_DeleteAll(bpy.types.Operator):
+    """Delete all objects"""
+    bl_idname = "object.delete_all"
+    bl_label = "Delete All Objects"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete(use_global=False)
+        return {'FINISHED'}
