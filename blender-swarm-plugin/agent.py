@@ -62,7 +62,6 @@ class Agent:
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
 
-        self.initial_camera_distance = Agent.get_viewport_camera_location(context).magnitude
 
     def onDraw(self):
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
@@ -75,114 +74,7 @@ class Agent:
         if context.scene.swarm_settings.swarm_visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
-
-    def get_viewport_camera_location(context: Context) -> Vector:
-        area = next(area for area in context.screen.areas if area.type == 'VIEW_3D')
-        region = next(region for region in area.regions if region.type == 'WINDOW')
-        rv3d = next(space for space in area.spaces if space.type == 'VIEW_3D')
-        
-        if rv3d.region_3d.view_perspective == 'CAMERA':
-            return context.scene.camera.matrix_world.to_translation()
-        else:
-            depth_location = view3d_utils.region_2d_to_location_3d(region, rv3d.region_3d, (region.width / 2.0, region.height / 2.0), rv3d.region_3d.view_distance * mathutils.Vector((1.0, 1.0, 1.0)))
-            return depth_location
-
-    def get_distance_to_object(camera_location: Vector, obj_location: Vector) -> float:
-        distance = (camera_location - obj_location).length
-        return distance
-
-
-    def normalize_distance(distance:float , reference_distance: float) -> float:
-        return distance / reference_distance
-
-    def calculate_size_value(relative_distance: float, object_dimensions: Vector, size_scale_factor: float) -> float:
-        object_size = max(object_dimensions)
-        size_value = object_size * relative_distance * size_scale_factor
-        return size_value
-
-    def create_visualization_sphere(location, size_value):
-        bpy.ops.mesh.primitive_uv_sphere_add(location=location)
-        sphere = bpy.context.active_object
-        sphere.name = "visualization_sphere"
-        sphere.scale = (size_value, size_value, size_value)
-        return sphere
-
-    def calculate_screen_space_size_value(relative_size: float, object_camera_distance: float, depth_location: float, screen_width: int) -> float:
-        return relative_size * (depth_location / (object_camera_distance ** 2)) * screen_width
-
-    def calculate_compensated_size_value(relative_size: float, object_camera_distance: float, viewport_camera_distance: float) -> float:
-        return relative_size * (viewport_camera_distance / object_camera_distance)
-
-
-    def linear_scaling(relative_size: float, initial_camera_distance: float, current_camera_distance: float) -> float:
-        inverse_scaling_factor = initial_camera_distance / current_camera_distance
-        return relative_size * inverse_scaling_factor
-
-    def logarithmic_scaling(relative_size: float, initial_camera_distance: float, current_camera_distance: float, base: float = 2) -> float:
-        inverse_scaling_factor = math.log(initial_camera_distance, base) / math.log(current_camera_distance, base)
-        return relative_size * inverse_scaling_factor
-
-    def quadratic_scaling(relative_size: float, initial_camera_distance: float, current_camera_distance: float) -> float:
-        inverse_scaling_factor = (initial_camera_distance ** 2) / (current_camera_distance ** 2)
-        return relative_size * inverse_scaling_factor
-
-
-
     def applyBrush(self):
-        # Set a reference distance to normalize the camera distance
-        reference_distance = 10.0
-        # Set a size scale factor to control the size value
-        size_scale_factor = 0.001
-
-        # viewport_camera_depth_location, screen_width = Agent.get_viewport_camera_location(self.context)
-        # object_location = obj.matrix_world.to_translation()
-
-        # Get the distance between the camera and the object
-        # distance = Agent.get_distance_to_object(viewport_camera_depth_location, object_location)
-        # Normalize the distance using the reference distance
-        # normalized_distance = Agent.normalize_distance(distance, reference_distance)
-
-        # Get the object's dimensions
-        # object_dimensions = obj.dimensions
-
-        # Calculate the size value based on the object's dimensions and normalized distance
-        # size_value = Agent.calculate_screen_space_size_value(relative_size, normalized_distance, viewport_camera_depth_location.length, screen_width)
-
-        obj = self.context.active_object
-
-        object_location = obj.matrix_world.to_translation()
-        viewport_camera_location = Agent.get_viewport_camera_location(self.context)
-        camera_distance = (object_location - viewport_camera_location).magnitude
-
-        current_camera_distance = (object_location - viewport_camera_location).magnitude
-        inverse_scaling_factor = self.initial_camera_distance / current_camera_distance
-
-
-        relative_size = 50  # Set the desired relative size in Blender units
-        compensated_size_value = relative_size * inverse_scaling_factor
-        # Choose the desired scaling method
-        compensated_size_value = Agent.linear_scaling(relative_size, self.initial_camera_distance, current_camera_distance)
-        # compensated_size_value = Agent.logarithmic_scaling(relative_size, self.initial_camera_distance, current_camera_distance)
-        # compensated_size_value = Agent.quadratic_scaling(relative_size, self.initial_camera_distance, current_camera_distance)
-
-        # original_active_object = self.context.active_object
-        # visualization_sphere = Agent.create_visualization_sphere(object_location, size_value/100)
-        # self.context.view_layer.objects.active = original_active_object
-
-        self.context.scene.tool_settings.sculpt.brush.size = int(compensated_size_value)
-
-        import bpy
-
-        # Create a custom brush
-        custom_brush = bpy.data.brushes.new(name="CustomBrush", mode='SCULPT')
-
-        # Assign the custom brush to the sculpt tool
-        bpy.context.tool_settings.sculpt.brush = custom_brush
-
-        # Set the custom brush properties
-        custom_brush.sculpt_tool = self.sculpt_tool
-        custom_brush.size = int(compensated_size_value)
-
         stroke = [{
                 "name": "stroke",
                 "is_start": True,
@@ -191,15 +83,14 @@ class Agent:
                 "mouse_event": (0.0, 0.0),
                 "pen_flip": True,
                 "pressure": 1,
-                "size": compensated_size_value,
+                "size": 0.5,
                 "time": 1,
                 "x_tilt": 0,
                 "y_tilt": 0
             }]
 
-        print(compensated_size_value)
 
-        # bpy.ops.paint.brush_select(sculpt_tool = self.sculpt_tool, toggle = False)
+        bpy.ops.paint.brush_select(sculpt_tool = self.sculpt_tool, toggle = False)
 
         bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "INVERT", ignore_background_click = False)
 
@@ -215,7 +106,7 @@ class Agent:
         # rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
         # self.rotation = rot @ self.rotation
 
-        # self.position += self.forward * self.maxSpeed * fixedTimeStep
+        self.position += self.forward * self.maxSpeed * fixedTimeStep
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 
