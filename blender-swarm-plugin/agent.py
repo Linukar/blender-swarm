@@ -6,7 +6,7 @@ import random
 import gpu
 
 from .utils import context_override, clamp
-from .DrawPoint import drawPoint, drawLine
+from .visualization import drawTriangle, drawLine
 from typing import List
 from .boidrules import *
 
@@ -19,7 +19,9 @@ from typing import Tuple
 
 class Agent:
 
-    possibleTools = ["DRAW", "CLAY"]
+    possibleTools = ["DRAW"]
+
+
     colors = [(0.13, 0.1, 0.17), (0.54, 0.2, 0.31), (0.88, 0.43, 0.32), (1, 0.82, 0.4), (0.02, 0.84, 0.63), (0.36, 0.09, 0.31), (0.15, 0.33, 0.49), (0.5, 1, 0.93), 
               (0.22, 0.18, 0.35), (0.2, 0.62, 0.36), (0.93, 0.81, 0.56), (0.89, 0.52, 0.07)]
 
@@ -57,7 +59,7 @@ class Agent:
 
         self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context)]
 
-        self.sculpt_tool = random.choice(Agent.possibleTools)
+        self.sculpt_tool = context.scene.swarm_settings.agent_general_tool
 
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
@@ -65,7 +67,7 @@ class Agent:
 
     def onDraw(self):
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
-        drawPoint(self.position, self.rotation, self.color)
+        drawTriangle(self.position, self.rotation, self.color)
 
         # draw steering vector for debugging
         # drawLine(self.position, self.position + self.steering)
@@ -92,7 +94,7 @@ class Agent:
 
         bpy.ops.paint.brush_select(sculpt_tool = self.sculpt_tool, toggle = False)
 
-        bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "INVERT", ignore_background_click = False)
+        bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)
 
 
     def update(self, fixedTimeStep: float, step: int, agents: List["Agent"]):

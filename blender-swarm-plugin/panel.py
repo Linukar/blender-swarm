@@ -32,6 +32,7 @@ class SWARM_PT_Panel(Panel):
         
         col.label(text="Agent Behaviour Settings")
         agentSettings = col.box()
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_tool", text="Tool to use")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_noClumpRadius", text="Separation Radius")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_localAreaRadius", text="Neighbour Radius")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_speed", text="Agent Speed")

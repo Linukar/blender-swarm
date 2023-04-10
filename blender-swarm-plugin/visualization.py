@@ -44,7 +44,7 @@ shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
 scaleMultiplier = 0.09
 
-def drawPoint(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
+def drawTriangle(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()
     cameraDistance = viewMat.translation.magnitude
     scale = cameraDistance * scaleMultiplier
