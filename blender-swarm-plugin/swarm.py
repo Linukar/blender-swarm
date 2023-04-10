@@ -1,5 +1,6 @@
 import bpy
 import time
+import random
 
 from typing import List
 from .agent import Agent
@@ -11,6 +12,7 @@ class Swarm:
 
     def __init__(self, context: bpy.types.Context):
         agentCount = context.scene.swarm_settings.swarm_agentCount
+        random.seed(context.scene.swarm_settings.swarm_seed)
 
         self.agents: List[Agent] = []
 

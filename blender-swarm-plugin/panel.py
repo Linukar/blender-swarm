@@ -17,12 +17,17 @@ class SWARM_PT_Panel(Panel):
         col.operator("swarm.remove_selected", text = "Remove selected Object")
         col.operator("object.delete_all")
         col.operator("swarm.spawn_plane", text = "Spawn Plane")
-        col.operator("swarm.test1", text = "Begin Simulation")
+        col.operator("swarm.start_simulation", text = "Begin Simulation")
         # col.operator("swarm.modal_simulation", text = "Modal Simulation")
         col.operator("swarm.stop_simulation", text = "Stop Simulation")
 
         col.label(text="General Swarm Settings")
         swarmSettings = col.box()
+
+        seedRow = swarmSettings.row()
+        seedRow.prop(context.scene.swarm_settings, "swarm_seed", text="Seed")
+        seedRow.operator("swarm.new_seed", text="New Seed")
+
         swarmSettings.prop(context.scene.swarm_settings, "swarm_agentCount", text="Agent Count")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_swarmCount", text="Swarm Count")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")

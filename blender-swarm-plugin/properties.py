@@ -1,6 +1,9 @@
 import bpy
+import random
+import sys
 
 from .sculptTools import tools
+from .constants import maxPropSize
 
 def registerProperties():
     bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
@@ -11,7 +14,7 @@ def unregisterProperies():
 class SwarmSettings(bpy.types.PropertyGroup):
 
     # general swarm properties
-
+    swarm_seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
     swarm_agentCount: bpy.props.IntProperty(default=30, min=1, max=10000)
     swarm_swarmCount: bpy.props.IntProperty(default=3, min=1, max=1000)
 

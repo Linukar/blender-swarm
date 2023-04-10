@@ -1,10 +1,14 @@
 import bpy
 import mathutils
+import random
+import sys
+
 from bpy.types import Operator
 from .swarmManager import SwarmManager
+from .constants import maxPropSize
 
-class Swarm_OT_Sculpt_Test(Operator):
-    bl_idname = "swarm.test1"
+class Swarm_OT_Start_Simulation(Operator):
+    bl_idname = "swarm.start_simulation"
     bl_label = "Sculpt"
     bl_description = "Test1"
 
@@ -68,7 +72,7 @@ class Swarm_OT_Stop_Simulation(Operator):
 
 
 
-class Swarm_OT_Start_Simulation(Operator):
+class Swarm_OT_Start_Modal_Simulation(Operator):
     bl_idname = "swarm.modal_simulation"
     bl_label = "Simple Modal Operator"
 
@@ -130,4 +134,15 @@ class Swarm_OT_DeleteAll(bpy.types.Operator):
         bpy.context.view_layer.objects.active = None
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False)
+        return {'FINISHED'}
+
+
+class Swarm_OT_NewSeed(bpy.types.Operator):
+    bl_idname = "swarm.new_seed"
+    bl_label = "Set Random Swarm Seed"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        random.seed(None)
+        context.scene.swarm_settings.swarm_seed = random.randint(0, maxPropSize)
         return {'FINISHED'}
