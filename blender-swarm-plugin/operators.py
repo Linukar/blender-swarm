@@ -2,10 +2,12 @@ import bpy
 import mathutils
 import random
 import sys
+import bpy_extras
 
 from bpy.types import Operator
 from .swarmManager import SwarmManager
 from .constants import maxPropSize
+from .presets import importPresets, exportPresets
 
 class Swarm_OT_Start_Simulation(Operator):
     bl_idname = "swarm.start_simulation"
@@ -145,4 +147,44 @@ class Swarm_OT_NewSeed(bpy.types.Operator):
     def execute(self, context):
         random.seed(None)
         context.scene.swarm_settings.swarm_seed = random.randint(0, maxPropSize)
+        return {'FINISHED'}
+    
+
+class SWARM_OT_SavePresets(bpy.types.Operator, bpy_extras.io_utils.ExportHelper):
+    bl_idname = "swarm.save_presets"
+    bl_label = "Save Presets"
+    bl_options = {'REGISTER'}
+
+    filename_ext = ".json"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.json",
+        options={'HIDDEN'},
+        maxlen=255,
+    )
+
+    def execute(self, context):
+        addonPrefs = context.preferences.addons[__package__].preferences
+        exportPresets(self.filepath, addonPrefs, context)
+        return {'FINISHED'}
+
+
+
+class SWARM_OT_LoadPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
+    bl_idname = "swarm.load_presets"
+    bl_label = "Load Presets"
+    bl_options = {'REGISTER'}
+
+    filename_ext = ".json"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.json",
+        options={'HIDDEN'},
+        maxlen=255,
+    )
+
+    def execute(self, context):
+        propertyGroupTemplate = context.scene.swarm_settings
+        addonPrefs = context.preferences.addons[__package__].preferences
+        importPresets(self.filepath, addonPrefs)
         return {'FINISHED'}

@@ -21,9 +21,13 @@ class SWARM_PT_Panel(Panel):
         # col.operator("swarm.modal_simulation", text = "Modal Simulation")
         col.operator("swarm.stop_simulation", text = "Stop Simulation")
 
+        col.operator("swarm.load_presets", text="Load")
+        col.operator("swarm.save_presets", text="Save")
+        col.prop(context.scene.swarm_settings, "presetEnum")
+
         col.label(text="General Swarm Settings")
         swarmSettings = col.box()
-
+        swarmSettings.prop(context.scene.swarm_settings, "name")
         seedRow = swarmSettings.row()
         seedRow.prop(context.scene.swarm_settings, "swarm_seed", text="Seed")
         seedRow.operator("swarm.new_seed", text="New Seed")

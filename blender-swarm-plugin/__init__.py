@@ -12,7 +12,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bl_info = {
-    "name" : "SwarmTest",
+    "name" : "Swarm",
     "author" : "Me",
     "description" : "",
     "blender" : (3, 3, 2),
@@ -22,13 +22,25 @@ bl_info = {
     "category" : "Object"
 }
 
+__package__ = "blender-swarm-plugin"
+
 import bpy
 from .operators import *
 from .panel import SWARM_PT_Panel
 from .properties import SwarmSettings, registerProperties, unregisterProperies
+from .presets import SwarmPreferences
 
-classes = (Swarm_OT_Start_Simulation, Swarm_OT_Spawn_Plane, Swarm_OT_Remove_Selected, Swarm_OT_DeleteAll, Swarm_OT_Stop_Simulation, 
-           Swarm_OT_Start_Modal_Simulation, Swarm_OT_NewSeed, SWARM_PT_Panel, SwarmSettings)
+classes = (Swarm_OT_Start_Simulation, 
+           Swarm_OT_Spawn_Plane, 
+           Swarm_OT_Remove_Selected, 
+           Swarm_OT_DeleteAll, 
+           Swarm_OT_Stop_Simulation, 
+           Swarm_OT_Start_Modal_Simulation, 
+           Swarm_OT_NewSeed, 
+           SWARM_OT_SavePresets,
+           SWARM_OT_LoadPresets,
+           
+           SWARM_PT_Panel, SwarmSettings, SwarmPreferences)
 
 def register():
     for c in classes:

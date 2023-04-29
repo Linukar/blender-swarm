@@ -11,7 +11,27 @@ def registerProperties():
 def unregisterProperies():
     del bpy.types.Scene.swarm_settings
 
+
+def updatePreset(propGroup: bpy.types.PropertyGroup, context: bpy.types.Context):
+    addonPrefs = context.preferences.addons[__package__].preferences
+    selected_preset = addonPrefs.presets[int(propGroup.presetEnum)]
+
+    for prop in propGroup.bl_rna.properties:
+        if prop.identifier == "rna_type" or prop.identifier == "presetEnum":
+            continue
+        setattr(propGroup, prop.identifier, getattr(selected_preset, prop.identifier))
+
+    
+
 class SwarmSettings(bpy.types.PropertyGroup):
+
+    presetEnum: bpy.props.EnumProperty(
+        name="Presets",
+        items=lambda self, context: [(str(i), preset.name, "") for i, preset in enumerate(context.preferences.addons[__package__].preferences.presets)],
+        update=lambda self, context: updatePreset(self, context),
+    )
+
+    name: bpy.props.StringProperty(name="Preset Name", default="")
 
     # general swarm properties
     swarm_seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
