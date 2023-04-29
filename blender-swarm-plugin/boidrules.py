@@ -1,5 +1,8 @@
 import mathutils
 import bpy
+import bmesh
+
+from mathutils.bvhtree import BVHTree
 
 class BoidRule:
 
@@ -11,8 +14,8 @@ class BoidRule:
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         pass
 
-    def calcDirection(self, agent):
-        return self.direction
+    def calcDirection(self, swarm, agent):
+        return mathutils.Vector()
 
 
 class Separation(BoidRule):
@@ -25,12 +28,14 @@ class Separation(BoidRule):
             self.direction += other.position - agent.position
             self.count += 1
 
-    def calcDirection(self, agent):
-        if(self.count > 0):
-            self.direction /= self.count
-            self.direction.normalize()
-            self.direction.negate()
-            self.direction *= self.context.scene.swarm_settings.agent_general_separationWeight
+    def calcDirection(self, swarm, agent):
+        if(self.count <= 0):
+            return mathutils.Vector()
+        
+        self.direction /= self.count
+        self.direction.normalize()
+        self.direction.negate()
+        self.direction *= self.context.scene.swarm_settings.agent_general_separationWeight
             
         return self.direction
 
@@ -45,11 +50,13 @@ class Alignement(BoidRule):
             self.direction += other.forward
             self.count += 1
 
-    def calcDirection(self, agent):
-        if(self.count > 0):
-            self.direction /= self.count
-            self.direction.normalize()
-            self.direction *= self.context.scene.swarm_settings.agent_general_alignementWeight
+    def calcDirection(self, swarm, agent):
+        if(self.count <= 0):
+            return mathutils.Vector()
+        
+        self.direction /= self.count
+        self.direction.normalize()
+        self.direction *= self.context.scene.swarm_settings.agent_general_alignementWeight
             
         return self.direction
 
@@ -64,11 +71,13 @@ class Cohesion(BoidRule):
             self.direction += other.position - agent.position
             self.count += 1
 
-    def calcDirection(self, agent):
-        if(self.count > 0):
-            self.direction /= self.count
-            self.direction.normalize()
-            self.direction *= self.context.scene.swarm_settings.agent_general_cohesionWeight
+    def calcDirection(self, swarm, agent):
+        if(self.count <= 0):
+            return mathutils.Vector()
+        
+        self.direction /= self.count
+        self.direction.normalize()
+        self.direction *= self.context.scene.swarm_settings.agent_general_cohesionWeight
             
         return self.direction
 
@@ -78,7 +87,7 @@ class CenterUrge(BoidRule):
         self.center = context.active_object.location
         super().__init__(context)
 
-    def calcDirection(self, agent):
+    def calcDirection(self, swarm, agent):
         directionToCenter = self.center - agent.position
         if(directionToCenter.magnitude > self.context.scene.swarm_settings.agent_general_centerMaxDistance):
             directionToCenter.normalize()
@@ -97,10 +106,44 @@ class Leadership(BoidRule):
                 self.leaderAgent = other;
                 self.leaderAngle = angle;
 
-    def calcDirection(self, agent):
-        if (self.leaderAgent is not None):
-            vecToLeader = self.leaderAgent.position - agent.position
-            vecToLeader.normalize()
-            return vecToLeader * self.context.scene.swarm_settings.agent_general_leaderWeight;
+    def calcDirection(self, swarm, agent):
+        if (self.leaderAgent is None):
+            return mathutils.Vector()
+
+        vecToLeader = self.leaderAgent.position - agent.position
+        vecToLeader.normalize()
+        return vecToLeader * self.context.scene.swarm_settings.agent_general_leaderWeight;
+
+
+class Surface(BoidRule):
+    def __init__(self, context: bpy.types.Context):
+        self.object = context.active_object
+        super().__init__(context)
+
+    def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
+        pass
+
+    def calcDirection(self, swarm, agent):
+        closestPoint = self.findClosestPoint(swarm.bvhTree, swarm.bmesh, agent.position)
+
+        if closestPoint is None:
+            return mathutils.Vector()
+
+        dirToClosest = closestPoint - agent.position
+        return dirToClosest * self.context.scene.swarm_settings.agent_general_surfaceWeight
+    
+    def findClosestPoint(self, bvhTree: BVHTree, bmesh: bmesh.types.BMesh , point: mathutils.Vector):
+        closestPoint, _, __, ___ = bvhTree.find_nearest(point)
+
+        # If no nearest point is found, return None
+        if closestPoint is None:
+            bmesh.free()
+            return None
+
+        # Return the closest point
+        bmesh.free()
+        return closestPoint
+
+
     
             

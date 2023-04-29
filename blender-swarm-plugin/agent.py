@@ -57,7 +57,7 @@ class Agent:
 
         self.steering = self.forward
 
-        self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context)]
+        self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context), Surface(context)]
 
         self.sculpt_tool = context.scene.swarm_settings.agent_general_tool
 
@@ -97,9 +97,9 @@ class Agent:
         bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)
 
 
-    def update(self, fixedTimeStep: float, step: int, agents: List["Agent"]):
+    def update(self, swarm, fixedTimeStep: float, step: int, agents: List["Agent"]):
         self.recalcForward()
-        self.boidMovement(fixedTimeStep, agents)
+        self.boidMovement(swarm, fixedTimeStep, agents)
 
         #debug flying in circles
         # self.steering = self.rotation @ mathutils.Vector((1, 0, 0))
@@ -117,7 +117,7 @@ class Agent:
         self.forward = self.rotation @ mathutils.Vector((1, 0, 0))
 
     
-    def boidMovement(self, fixedTimeStep: float, agents: List["Agent"]):
+    def boidMovement(self, swarm, fixedTimeStep: float, agents: List["Agent"]):
         
         self.steering = mathutils.Vector()
 
@@ -133,7 +133,7 @@ class Agent:
 
 
         for rule in self.boidRules:
-            self.steering += rule.calcDirection(self)
+            self.steering += rule.calcDirection(swarm, self)
 
         if(self.steering.length != 0):
             self.steering.normalize()

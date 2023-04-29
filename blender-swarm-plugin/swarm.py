@@ -4,7 +4,7 @@ import random
 
 from typing import List
 from .agent import Agent
-from .utils import printProgressBar
+from .utils import printProgressBar, createBVH
 
 class Swarm:
 
@@ -50,8 +50,10 @@ class Swarm:
         printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
 
+        self.bvhTree, self.bmesh = createBVH(self.context.active_object)
+
         for agent in self.agents:
-            agent.update(Swarm.fixedTimeStep, self.step, self.agents)
+            agent.update(self, Swarm.fixedTimeStep, self.step, self.agents)
 
         self.step += 1
 

@@ -49,4 +49,6 @@ class SWARM_PT_Panel(Panel):
         agentSettings.prop(context.scene.swarm_settings, "agent_general_leaderWeight", text="Leader Weight")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_centerUrgeWeight", text="Center Weight")
         agentSettings.prop(context.scene.swarm_settings, "agent_general_centerMaxDistance", text="Max Distance to Center")
+        agentSettings.prop(context.scene.swarm_settings, "agent_general_surfaceWeight", text="Surface Urge")
+
 

@@ -36,6 +36,8 @@ class SwarmSettings(bpy.types.PropertyGroup):
     agent_general_leaderWeight: bpy.props.FloatProperty(default=0.5, min=0, max=1, precision=2)    
     agent_general_centerUrgeWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
     agent_general_centerMaxDistance: bpy.props.FloatProperty(default=12, min=0, precision=1)
+    agent_general_surfaceWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
     agent_general_tool: bpy.props.EnumProperty(items=tools)
+
 

@@ -1,4 +1,7 @@
 import bpy
+import bmesh
+
+from mathutils.bvhtree import BVHTree
 
 def context_override(context: bpy.types.Context):
     for window in bpy.context.window_manager.windows:
@@ -37,3 +40,19 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
 def clamp(value, lower, upper):
     return lower if value < lower else upper if value > upper else value
+
+
+def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
+    # Ensure object has a mesh
+    if not isinstance(obj.data, bpy.types.Mesh):
+        raise ValueError("Object must have a mesh")
+
+    # Create a bmesh from the object's mesh
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    bm.transform(obj.matrix_world)
+    bm.faces.ensure_lookup_table()
+
+    # Build a BVH tree from the bmesh
+    bvhTree = BVHTree.FromBMesh(bm)
+    return bvhTree, bm
