@@ -26,16 +26,39 @@ def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
     return result
 
 
-def dictToPropertyGroup(dataDict: Dict[str, Any], propGroup: bpy.types.PropertyGroup) -> None:
-    for propName, propValue in dataDict.items():
-        if propName in propGroup:
-            propGroup[propName] = propValue
+def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.types.PropertyGroup) -> None:
+    for key, value in dataDict.items():
+        if key not in propGroup.bl_rna.properties:
+            continue
+
+        if isinstance(value, dict) and isinstance(propGroup, bpy.types.PropertyGroup):
+            sub_propGroup = getattr(propGroup, key)
+            setPropertyGroupValuesFromDict(value, sub_propGroup)
+        elif isinstance(value, list) and isinstance(propGroup, bpy.types.bpy_prop_collection):
+            propCollection = getattr(propGroup, key)
+            propCollection.clear()
+            for item_data in value:
+                item = propCollection.add()
+                setPropertyGroupValuesFromDict(item_data, item)
+        else:
+            setattr(propGroup, key, value)
+
 
 def exportPresets(filepath: str, addonPrefs: SwarmPreferences, context) -> None:
     propGroupDicts = [propertyGroupToDict(preset) for preset in addonPrefs.presets]
 
-    current = propertyGroupToDict(context.scene.swarm_settings)
-    propGroupDicts.append(current)
+    currentGroup = context.scene.swarm_settings
+    currentDict = propertyGroupToDict(currentGroup)
+
+    found = False
+    for i, preset in enumerate(propGroupDicts):
+        if preset["name"] == currentDict["name"]:
+            propGroupDicts[i] = currentDict
+            found = True
+            break
+
+    if not found and currentGroup.name != "":
+        propGroupDicts.append(currentDict)
 
     with open(filepath, "w") as f:
         json.dump(propGroupDicts, f, indent=4)
@@ -50,9 +73,6 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
     for presetData in presetDataList:
         newPreset = addonPrefs.presets.add()
         newPreset.name = presetData.get("name", "Unnamed")
-        dictToPropertyGroup(presetData, newPreset)
-
-
-
-
+        setPropertyGroupValuesFromDict(presetData, newPreset)
+        continue
 

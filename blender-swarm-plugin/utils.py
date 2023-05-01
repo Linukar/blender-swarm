@@ -56,3 +56,10 @@ def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
     # Build a BVH tree from the bmesh
     bvhTree = BVHTree.FromBMesh(bm)
     return bvhTree, bm
+
+
+def findInCollection(prop, when):
+    for elem in prop:
+        if when(elem):
+            return elem
+    return None

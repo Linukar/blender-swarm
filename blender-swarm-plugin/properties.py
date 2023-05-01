@@ -4,9 +4,16 @@ import sys
 
 from .sculptTools import tools
 from .constants import maxPropSize
+from .utils import findInCollection
 
 def registerProperties():
-    bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
+
+    addonPrefs = bpy.context.preferences.addons[__package__].preferences
+
+    if(addonPrefs.presets):
+         bpy.types.Scene.swarm_settings = addonPrefs.presets[0]
+    else:
+        bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
 
 def unregisterProperies():
     del bpy.types.Scene.swarm_settings
@@ -14,13 +21,12 @@ def unregisterProperies():
 
 def updatePreset(propGroup: bpy.types.PropertyGroup, context: bpy.types.Context):
     addonPrefs = context.preferences.addons[__package__].preferences
-    selected_preset = addonPrefs.presets[int(propGroup.presetEnum)]
+    selectedPreset = findInCollection(addonPrefs.presets, lambda a: a.name == propGroup.name)
 
     for prop in propGroup.bl_rna.properties:
         if prop.identifier == "rna_type" or prop.identifier == "presetEnum":
             continue
-        setattr(propGroup, prop.identifier, getattr(selected_preset, prop.identifier))
-
+        setattr(propGroup, prop.identifier, getattr(selectedPreset, prop.identifier))
     
 
 class SwarmSettings(bpy.types.PropertyGroup):
