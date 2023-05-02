@@ -8,8 +8,6 @@ from .utils import findInCollection
 
 def registerProperties():
 
-    addonPrefs = bpy.context.preferences.addons[__package__].preferences
-
     bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
 
     bpy.types.Scene.selected_preset = bpy.props.EnumProperty(
@@ -32,19 +30,23 @@ def findPresets(context):
 def updatePreset(self, context: bpy.types.Context):
     selectedPreset = self.selected_preset
     addonPrefs = context.preferences.addons[__package__].preferences
-    selectedPreset = findInCollection(addonPrefs.presets, lambda a: a.name == selectedPreset)
+    i, selectedPreset = findInCollection(addonPrefs.presets, lambda p: p.name == selectedPreset)
 
     if selectedPreset is None:
         return
 
-    copyPresetToCurrent(selectedPreset, context)
+    setPresetAsCurrent(selectedPreset, context)
     
 
-def copyPresetToCurrent(preset: "SwarmSettings", context : bpy.types.Context):
+def setPresetAsCurrent(preset: "SwarmSettings", context : bpy.types.Context):
     for prop in context.scene.swarm_settings.bl_rna.properties:
         if prop.identifier == "rna_type":
             continue
         setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
+
+def resetCurrentSettingsToDefault(context: bpy.types.Context):
+    context.scene.swarm_settings = SwarmSettings()
+
 
 class SwarmSettings(bpy.types.PropertyGroup):
 

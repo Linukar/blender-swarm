@@ -44,8 +44,8 @@
         "agent_general_tool": "BLOB"
     },
     {
-        "name": "C",
-        "swarm_seed": 117889491,
+        "name": "D",
+        "swarm_seed": 474945250,
         "swarm_agentCount": 30,
         "swarm_swarmCount": 3,
         "swarm_spawnAreaSize": 3.0,
@@ -63,6 +63,6 @@
         "agent_general_centerUrgeWeight": 0.20000000298023224,
         "agent_general_centerMaxDistance": 12.0,
         "agent_general_surfaceWeight": 0.20000000298023224,
-        "agent_general_tool": "CLAY"
+        "agent_general_tool": "THUMB"
     }
 ]

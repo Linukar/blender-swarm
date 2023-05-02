@@ -7,7 +7,7 @@ import bpy_extras
 from bpy.types import Operator
 from .swarmManager import SwarmManager
 from .constants import maxPropSize
-from .presets import importPresets, exportPresets, addPreset
+from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
 
 class Swarm_OT_Start_Simulation(Operator):
     bl_idname = "swarm.start_simulation"
@@ -150,9 +150,9 @@ class Swarm_OT_NewSeed(bpy.types.Operator):
         return {'FINISHED'}
     
 
-class SWARM_OT_SavePresets(bpy.types.Operator, bpy_extras.io_utils.ExportHelper):
-    bl_idname = "swarm.save_presets"
-    bl_label = "Save Presets"
+class SWARM_OT_ExportPresets(bpy.types.Operator, bpy_extras.io_utils.ExportHelper):
+    bl_idname = "swarm.export_presets"
+    bl_label = "Export Presets"
     bl_options = {'REGISTER'}
 
     filename_ext = ".json"
@@ -170,9 +170,9 @@ class SWARM_OT_SavePresets(bpy.types.Operator, bpy_extras.io_utils.ExportHelper)
 
 
 
-class SWARM_OT_LoadPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
-    bl_idname = "swarm.load_presets"
-    bl_label = "Load Presets"
+class SWARM_OT_ImportPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
+    bl_idname = "swarm.import_presets"
+    bl_label = "Import Presets"
     bl_options = {'REGISTER'}
 
     filename_ext = ".json"
@@ -187,20 +187,33 @@ class SWARM_OT_LoadPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelper)
         addonPrefs = context.preferences.addons[__package__].preferences
         importPresets(self.filepath, addonPrefs)
         return {'FINISHED'}
-    
-class SWARM_OT_AddPreset(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
+
+
+class SWARM_OT_AddPreset(bpy.types.Operator):
     bl_idname = "swarm.add_preset"
-    bl_label = "Add Presets"
+    bl_label = "Add Preset"
     bl_options = {'REGISTER'}
-
-    filename_ext = ".json"
-
-    filter_glob: bpy.props.StringProperty(
-        default="*.json",
-        options={'HIDDEN'},
-        maxlen=255,
-    )
 
     def execute(self, context):
         addPreset(context)
+        return {'FINISHED'}
+    
+
+class SWARM_OT_RemovePreset(bpy.types.Operator):
+    bl_idname = "swarm.remove_preset"
+    bl_label = "Remove Preset"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        removePreset(context)
+        return {'FINISHED'}
+    
+
+class SWARM_OT_SavePreset(bpy.types.Operator):
+    bl_idname = "swarm.save_preset"
+    bl_label = "Save Preset"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        savePresetChanges(context)
         return {'FINISHED'}

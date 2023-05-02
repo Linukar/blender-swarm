@@ -37,9 +37,12 @@ classes = (Swarm_OT_Start_Simulation,
            Swarm_OT_Stop_Simulation, 
            Swarm_OT_Start_Modal_Simulation, 
            Swarm_OT_NewSeed, 
-           SWARM_OT_SavePresets,
-           SWARM_OT_LoadPresets,
-           
+           SWARM_OT_ExportPresets,
+           SWARM_OT_ImportPresets,
+           SWARM_OT_AddPreset,
+           SWARM_OT_RemovePreset,
+           SWARM_OT_SavePreset,
+
            SWARM_PT_Panel, SwarmSettings, SwarmPreferences)
 
 def register():

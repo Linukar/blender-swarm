@@ -5,11 +5,15 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings
+from .properties import SwarmSettings, setPresetAsCurrent, resetCurrentSettingsToDefault
+from .utils import findInCollection
+
 
 class SwarmPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
     presets: bpy.props.CollectionProperty(type=SwarmSettings)
+
+
 
 def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
     result = {}
@@ -24,7 +28,6 @@ def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
         else:
             result[prop.identifier] = value
     return result
-
 
 
 def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.types.PropertyGroup) -> None:
@@ -45,21 +48,8 @@ def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.type
             setattr(propGroup, key, value)
 
 
-def exportPresets(filepath: str, addonPrefs: SwarmPreferences, context) -> None:
+def exportPresets(filepath: str, addonPrefs: SwarmPreferences, context: bpy.types.Context) -> None:
     propGroupDicts = [propertyGroupToDict(preset) for preset in addonPrefs.presets]
-
-    currentGroup = context.scene.swarm_settings
-    currentDict = propertyGroupToDict(currentGroup)
-
-    found = False
-    for i, preset in enumerate(propGroupDicts):
-        if preset["name"] == currentDict["name"]:
-            propGroupDicts[i] = currentDict
-            found = True
-            break
-
-    if not found and currentGroup.name != "":
-        propGroupDicts.append(currentDict)
 
     with open(filepath, "w") as f:
         json.dump(propGroupDicts, f, indent=4)
@@ -73,11 +63,36 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
 
     for presetData in presetDataList:
         newPreset = addonPrefs.presets.add()
-        newPreset.name = presetData.get("name", "Unnamed")
         setPropertyGroupValuesFromDict(presetData, newPreset)
         continue
 
 
-def addPreset(context):
+def addPreset(context: bpy.types.Context) -> None:
     addonPrefs = context.preferences.addons[__package__].preferences
+    newPreset = addonPrefs.presets.add()
+    newPreset.name = "Unnamed"
+    setPresetAsCurrent(newPreset, context)
 
+
+def removePreset(context: bpy.types.Context) -> None:
+    addonPrefs = context.preferences.addons[__package__].preferences
+    i, _ = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
+
+    if i is not None:
+        addonPrefs.presets.remove(i)
+        if(addonPrefs.presets[i-1] is not None):
+            setPresetAsCurrent(addonPrefs.presets[i-1], context)
+        else:
+            resetCurrentSettingsToDefault(context)
+
+    
+def savePresetChanges(context: bpy.types.Context) -> None:
+    addonPrefs = context.preferences.addons[__package__].preferences
+    i, preset = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
+
+    if preset is not None:
+        for prop in preset.bl_rna.properties:
+            if prop.identifier == "rna_type":
+                continue
+            setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
+            

@@ -1,6 +1,7 @@
 import bpy
 import bmesh
 
+
 from mathutils.bvhtree import BVHTree
 
 def context_override(context: bpy.types.Context):
@@ -59,7 +60,7 @@ def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
 
 
 def findInCollection(prop, when):
-    for elem in prop:
+    for i, elem in enumerate(prop):
         if when(elem):
-            return elem
+            return (i, elem)
     return None
