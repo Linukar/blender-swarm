@@ -32,7 +32,6 @@ class Swarm_OT_Spawn_Plane(Operator):
     bl_description = "Spawns plane with subdivisions"
 
     def execute(self, context):    
-
         bpy.ops.mesh.primitive_plane_add(size = 100)
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.subdivide(number_cuts=10000)
@@ -40,9 +39,6 @@ class Swarm_OT_Spawn_Plane(Operator):
 
         return {'FINISHED'}
 
-    @classmethod
-    def poll(cls, context):
-        return True
 
 class Swarm_OT_Remove_Selected(Operator):
     bl_idname = "swarm.remove_selected"
@@ -54,9 +50,6 @@ class Swarm_OT_Remove_Selected(Operator):
 
         return {'FINISHED'}
 
-    @classmethod
-    def poll(cls, context):
-        return True
     
 class Swarm_OT_Stop_Simulation(Operator):
     bl_idname = "swarm.stop_simulation"
@@ -67,11 +60,6 @@ class Swarm_OT_Stop_Simulation(Operator):
         SwarmManager.stopSwarm()
 
         return {'FINISHED'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
 
 
 class Swarm_OT_Start_Modal_Simulation(Operator):
