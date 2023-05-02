@@ -23,7 +23,7 @@ class SWARM_PT_Panel(Panel):
 
         col.operator("swarm.load_presets", text="Load")
         col.operator("swarm.save_presets", text="Save")
-        col.prop(context.scene.swarm_settings, "presetEnum")
+        col.prop(context.scene, "selected_preset")
 
         col.label(text="General Swarm Settings")
         swarmSettings = col.box()

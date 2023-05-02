@@ -7,7 +7,7 @@ import bpy_extras
 from bpy.types import Operator
 from .swarmManager import SwarmManager
 from .constants import maxPropSize
-from .presets import importPresets, exportPresets
+from .presets import importPresets, exportPresets, addPreset
 
 class Swarm_OT_Start_Simulation(Operator):
     bl_idname = "swarm.start_simulation"
@@ -184,7 +184,23 @@ class SWARM_OT_LoadPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelper)
     )
 
     def execute(self, context):
-        propertyGroupTemplate = context.scene.swarm_settings
         addonPrefs = context.preferences.addons[__package__].preferences
         importPresets(self.filepath, addonPrefs)
+        return {'FINISHED'}
+    
+class SWARM_OT_AddPreset(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
+    bl_idname = "swarm.add_preset"
+    bl_label = "Add Presets"
+    bl_options = {'REGISTER'}
+
+    filename_ext = ".json"
+
+    filter_glob: bpy.props.StringProperty(
+        default="*.json",
+        options={'HIDDEN'},
+        maxlen=255,
+    )
+
+    def execute(self, context):
+        addPreset(context)
         return {'FINISHED'}

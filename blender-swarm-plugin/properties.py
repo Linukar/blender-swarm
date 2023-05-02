@@ -10,32 +10,43 @@ def registerProperties():
 
     addonPrefs = bpy.context.preferences.addons[__package__].preferences
 
-    if(addonPrefs.presets):
-         bpy.types.Scene.swarm_settings = addonPrefs.presets[0]
-    else:
-        bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
+    bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
+
+    bpy.types.Scene.selected_preset = bpy.props.EnumProperty(
+        name="Presets",
+        items=lambda self, context: findPresets(context),
+        update=lambda self, context: updatePreset(self, context),
+    )
+
 
 def unregisterProperies():
     del bpy.types.Scene.swarm_settings
 
 
-def updatePreset(propGroup: bpy.types.PropertyGroup, context: bpy.types.Context):
+def findPresets(context):
     addonPrefs = context.preferences.addons[__package__].preferences
-    selectedPreset = findInCollection(addonPrefs.presets, lambda a: a.name == propGroup.name)
+    items = [(preset.name, preset.name, "") for i, preset in enumerate(addonPrefs.presets)]
+    return items
 
-    for prop in propGroup.bl_rna.properties:
-        if prop.identifier == "rna_type" or prop.identifier == "presetEnum":
-            continue
-        setattr(propGroup, prop.identifier, getattr(selectedPreset, prop.identifier))
+
+def updatePreset(self, context: bpy.types.Context):
+    selectedPreset = self.selected_preset
+    addonPrefs = context.preferences.addons[__package__].preferences
+    selectedPreset = findInCollection(addonPrefs.presets, lambda a: a.name == selectedPreset)
+
+    if selectedPreset is None:
+        return
+
+    copyPresetToCurrent(selectedPreset, context)
     
 
-class SwarmSettings(bpy.types.PropertyGroup):
+def copyPresetToCurrent(preset: "SwarmSettings", context : bpy.types.Context):
+    for prop in context.scene.swarm_settings.bl_rna.properties:
+        if prop.identifier == "rna_type":
+            continue
+        setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
 
-    presetEnum: bpy.props.EnumProperty(
-        name="Presets",
-        items=lambda self, context: [(str(i), preset.name, "") for i, preset in enumerate(context.preferences.addons[__package__].preferences.presets)],
-        update=lambda self, context: updatePreset(self, context),
-    )
+class SwarmSettings(bpy.types.PropertyGroup):
 
     name: bpy.props.StringProperty(name="Preset Name", default="")
 

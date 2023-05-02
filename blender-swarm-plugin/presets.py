@@ -26,6 +26,7 @@ def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
     return result
 
 
+
 def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.types.PropertyGroup) -> None:
     for key, value in dataDict.items():
         if key not in propGroup.bl_rna.properties:
@@ -75,4 +76,8 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
         newPreset.name = presetData.get("name", "Unnamed")
         setPropertyGroupValuesFromDict(presetData, newPreset)
         continue
+
+
+def addPreset(context):
+    addonPrefs = context.preferences.addons[__package__].preferences
 
