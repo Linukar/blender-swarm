@@ -6,7 +6,7 @@ from .sculptTools import tools
 from .constants import maxPropSize
 from .utils import findInCollection
 
-def registerProperties():
+def initProperties():
 
     bpy.types.Scene.swarm_settings = bpy.props.PointerProperty(type=SwarmSettings)
 
@@ -17,35 +17,27 @@ def registerProperties():
     )
 
 
-def unregisterProperies():
+def deinitProperies():
     del bpy.types.Scene.swarm_settings
 
 
-def findPresets(context):
-    addonPrefs = context.preferences.addons[__package__].preferences
-    items = [(preset.name, preset.name, "") for i, preset in enumerate(addonPrefs.presets)]
-    return items
 
+class AgentSettings(bpy.types.PropertyGroup):
+    noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
+    localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
+    speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
+    steeringSpeed: bpy.props.FloatProperty(default=1, min=0, precision=3)
 
-def updatePreset(self, context: bpy.types.Context):
-    selectedPreset = self.selected_preset
-    addonPrefs = context.preferences.addons[__package__].preferences
-    i, selectedPreset = findInCollection(addonPrefs.presets, lambda p: p.name == selectedPreset)
+    separationWeight: bpy.props.FloatProperty(default=0.5, min=0, max = 1, precision=2)
+    alignementWeight: bpy.props.FloatProperty(default=0.35, min=0, max = 1, precision=2)
+    cohesionWeight: bpy.props.FloatProperty(default=0.16, min=0, max = 1, precision=2)
+    leaderWeight: bpy.props.FloatProperty(default=0.5, min=0, max=1, precision=2)    
+    centerUrgeWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
+    centerMaxDistance: bpy.props.FloatProperty(default=12, min=0, precision=1)
+    surfaceWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
-    if selectedPreset is None:
-        return
+    tool: bpy.props.EnumProperty(items=tools)
 
-    setPresetAsCurrent(selectedPreset, context)
-    
-
-def setPresetAsCurrent(preset: "SwarmSettings", context : bpy.types.Context):
-    for prop in context.scene.swarm_settings.bl_rna.properties:
-        if prop.identifier == "rna_type":
-            continue
-        setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
-
-def resetCurrentSettingsToDefault(context: bpy.types.Context):
-    context.scene.swarm_settings = SwarmSettings()
 
 
 class SwarmSettings(bpy.types.PropertyGroup):
@@ -80,3 +72,29 @@ class SwarmSettings(bpy.types.PropertyGroup):
     agent_general_tool: bpy.props.EnumProperty(items=tools)
 
 
+
+def findPresets(context):
+    addonPrefs = context.preferences.addons[__package__].preferences
+    items = [(preset.name, preset.name, "") for i, preset in enumerate(addonPrefs.presets)]
+    return items
+
+
+def updatePreset(self, context: bpy.types.Context):
+    selectedPreset = self.selected_preset
+    addonPrefs = context.preferences.addons[__package__].preferences
+    i, selectedPreset = findInCollection(addonPrefs.presets, lambda p: p.name == selectedPreset)
+
+    if selectedPreset is None:
+        return
+
+    setPresetAsCurrent(selectedPreset, context)
+    
+
+def setPresetAsCurrent(preset: "SwarmSettings", context : bpy.types.Context):
+    for prop in context.scene.swarm_settings.bl_rna.properties:
+        if prop.identifier == "rna_type":
+            continue
+        setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
+
+def resetCurrentSettingsToDefault(context: bpy.types.Context):
+    context.scene.swarm_settings = SwarmSettings()
