@@ -5,7 +5,7 @@ import sys
 import bpy_extras
 
 from bpy.types import Operator
-from .swarmManager import SwarmManager
+from .swarmManager import startSwarm, stopSwarm, isRunning
 from .constants import maxPropSize
 from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
 
@@ -18,12 +18,12 @@ class Swarm_OT_Start_Simulation(Operator):
         print("op update")
 
     def execute(self, context):
-        SwarmManager.startSwarm(context)
+        startSwarm(context)
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
-        return not SwarmManager.isRunning()
+        return not isRunning(context)
 
 
 class Swarm_OT_Spawn_Plane(Operator):
@@ -57,7 +57,7 @@ class Swarm_OT_Stop_Simulation(Operator):
     bl_description = "Stop Simulation"
 
     def execute(self, context):    
-        SwarmManager.stopSwarm()
+        stopSwarm(context)
 
         return {'FINISHED'}
 

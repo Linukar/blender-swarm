@@ -21,12 +21,6 @@ class SWARM_PT_Panel(Panel):
         utils.operator("object.delete_all")
         utils.operator("swarm.spawn_plane", text = "Spawn Plane")
 
-        col.label(text="General")
-        general = col.box()
-        general.operator("swarm.start_simulation", text = "Begin Simulation")
-        # col.operator("swarm.modal_simulation", text = "Modal Simulation")
-        general.operator("swarm.stop_simulation", text = "Stop Simulation")
-
         col.label(text="Presets")
         presetBox = col.box()
         importRow = presetBox.row()
@@ -38,6 +32,14 @@ class SWARM_PT_Panel(Panel):
         presetRow.operator("swarm.add_preset", text="+")
         presetRow.operator("swarm.remove_preset", text="-")
         presetBox.operator("swarm.save_preset", text="Save")
+
+
+
+        col.label(text="General")
+        general = col.box()
+        general.operator("swarm.start_simulation", text = "Begin Simulation")
+        # col.operator("swarm.modal_simulation", text = "Modal Simulation")
+        general.operator("swarm.stop_simulation", text = "Stop Simulation")
 
         col.label(text="General Swarm Settings")
         swarmSettings = col.box()

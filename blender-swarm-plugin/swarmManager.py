@@ -3,19 +3,23 @@ import bpy
 from .swarm import Swarm
 
 
-class SwarmManager:
-    _swarm: Swarm = None
+_swarm: Swarm = None
 
-    @staticmethod
-    def startSwarm(context: bpy.types.Context):
-        bpy.ops.object.mode_set(mode="SCULPT")
-        bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
-        SwarmManager._swarm = Swarm(context)
+def startSwarm(context: bpy.types.Context):
+    bpy.ops.object.mode_set(mode="SCULPT")
+    bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
+    # bpy.context.tool_settings.sculpt.use_dynamic_topology_sculpting = True
 
-    @staticmethod
-    def stopSwarm():
-        SwarmManager._swarm.stop()
+    global _swarm 
+    _swarm = Swarm(context)
 
-    @staticmethod
-    def isRunning():
-        return SwarmManager._swarm is not None and SwarmManager._swarm.isRunning()
+
+def stopSwarm(context: bpy.types.Context):
+    global _swarm
+    _swarm.stop()
+
+
+def isRunning(context: bpy.types.Context):
+    global _swarm
+    return _swarm is not None and _swarm.isRunning()
+

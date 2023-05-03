@@ -6,6 +6,8 @@ from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
 
+from .agentTypes import *
+
 class Swarm:
 
     fixedTimeStep = 0.033 # 30 fps
@@ -20,7 +22,14 @@ class Swarm:
         for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
             i += 1
             for _ in range (0, agentCount):
-                self.agents.append(Agent(context, swarmIndex=i))
+                if i % 3 == 0:
+                    self.agents.append(Agent(context, swarmIndex=i))
+                elif i % 3 == 1:
+                    self.agents.append(Fast(context, swarmIndex=i))
+                elif i % 3 == 2:
+                    self.agents.append(Slow(context, swarmIndex=i))
+
+        
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;
