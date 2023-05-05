@@ -5,7 +5,8 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings, setPresetAsCurrent, resetCurrentSettingsToDefault
+from .properties import SwarmSettings, setPresetAsCurrent
+
 from .utils import findInCollection
 
 
@@ -78,12 +79,10 @@ def removePreset(context: bpy.types.Context) -> None:
     addonPrefs = context.preferences.addons[__package__].preferences
     i, _ = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
 
-    if i is not None:
+    if i is not None and len(addonPrefs.presets) > 1:
         addonPrefs.presets.remove(i)
-        if(addonPrefs.presets[i-1] is not None):
-            setPresetAsCurrent(addonPrefs.presets[i-1], context)
-        else:
-            resetCurrentSettingsToDefault(context)
+        setPresetAsCurrent(addonPrefs.presets[i-1], context)
+
 
     
 def savePresetChanges(context: bpy.types.Context) -> None:
@@ -95,4 +94,7 @@ def savePresetChanges(context: bpy.types.Context) -> None:
             if prop.identifier == "rna_type":
                 continue
             setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
+
+        context.scene.selected_preset = preset.name
+
             

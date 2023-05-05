@@ -16,6 +16,8 @@ from mathutils import Vector
 from bpy.types import Camera, Object, Context
 from typing import Tuple
 
+from .rewritingRules import *
+
 
 class Agent:
 
@@ -41,6 +43,8 @@ class Agent:
 
     def __init__(self, context: bpy.types.Context, swarmIndex: int):
 
+        self.typeName = "Basic"
+
         self.context = context
         
         self.swarmIndex = swarmIndex
@@ -48,22 +52,28 @@ class Agent:
 
         self.maxSpeed = context.scene.swarm_settings.agent_general_speed
         self.steeringSpeed = context.scene.swarm_settings.agent_general_steeringSpeed
+        self.energy = 200
 
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
-        self.position = mathutils.Vector((
-            random.uniform(-spawnCubeSize, spawnCubeSize), 
-            random.uniform(-spawnCubeSize, spawnCubeSize), 
-            random.uniform(-spawnCubeSize, spawnCubeSize)
-            ))
+
+        if context.scene.swarm_settings.swarm_randomStartLocation:
+            self.position = mathutils.Vector((
+                random.uniform(-spawnCubeSize, spawnCubeSize), 
+                random.uniform(-spawnCubeSize, spawnCubeSize), 
+                random.uniform(-spawnCubeSize, spawnCubeSize)
+                ))
+        else:
+            self.position = context.active_object.location.copy()
         
+
         eul = mathutils.Euler((
-            math.radians(random.uniform(0, 360)), 
-            math.radians(random.uniform(0, 360)), 
-            math.radians(random.uniform(0, 360))
+            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
+            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
+            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartZRotation else 0,
             ))
-        
         self.rotation = eul.to_quaternion()
+
 
         self.forward = mathutils.Vector((1, 0, 0))
         self.forward.rotate(self.rotation)
@@ -71,6 +81,7 @@ class Agent:
         self.steering = self.forward
 
         self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context), Surface(context)]
+        self.rewritingRules = []
 
         self.sculpt_tool = context.scene.swarm_settings.agent_general_tool
 
@@ -139,7 +150,8 @@ class Agent:
 
             vec = other.position - self.position
             distance = vec.magnitude
-            angle = vec.angle(self.forward)
+
+            angle = vec.angle(self.forward) if distance > 0 else 0 
 
             for rule in self.boidRules:
                 rule.compareWithOther(distance=distance, angle=angle, agent=self, other=other)

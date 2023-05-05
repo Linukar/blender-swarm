@@ -7,6 +7,7 @@ class Fast(Agent):
         super().__init__(context, swarmIndex)
         self.maxSpeed = self.maxSpeed * 10
         self.steeringSpeed = self.steeringSpeed * 10
+        self.typeName = "Fast"
 
 
 class Slow(Agent):
@@ -14,3 +15,4 @@ class Slow(Agent):
         super().__init__(context, swarmIndex)
         self.maxSpeed = self.maxSpeed / 5
         self.steeringSpeed = self.steeringSpeed / 5
+        self.typeName = "Slow"

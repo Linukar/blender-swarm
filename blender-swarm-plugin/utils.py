@@ -1,8 +1,9 @@
 import bpy
 import bmesh
-
+import mathutils
 
 from mathutils.bvhtree import BVHTree
+
 
 def context_override(context: bpy.types.Context):
     for window in bpy.context.window_manager.windows:

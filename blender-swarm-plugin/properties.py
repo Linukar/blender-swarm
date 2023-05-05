@@ -53,6 +53,10 @@ class SwarmSettings(bpy.types.PropertyGroup):
     swarm_maxSimulationSteps: bpy.props.IntProperty(default=10000, min=1)
     swarm_visualizeAgents: bpy.props.BoolProperty(default=True)
     swarm_useSculpting: bpy.props.BoolProperty(default=True)
+    swarm_randomStartLocation: bpy.props.BoolProperty(default=True)
+    swarm_randomStartXYRotation: bpy.props.BoolProperty(default=True)
+    swarm_randomStartZRotation: bpy.props.BoolProperty(default=True)
+
 
 
     # agent properties
@@ -95,6 +99,3 @@ def setPresetAsCurrent(preset: "SwarmSettings", context : bpy.types.Context):
         if prop.identifier == "rna_type":
             continue
         setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
-
-def resetCurrentSettingsToDefault(context: bpy.types.Context):
-    context.scene.swarm_settings = SwarmSettings()
