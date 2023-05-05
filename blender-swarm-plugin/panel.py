@@ -60,21 +60,26 @@ class SWARM_PT_Panel(Panel):
         swarmSettings.prop(context.scene.swarm_settings, "swarm_randomStartZRotation", text="Random Start Z Rotation")
 
 
-        
+
+
         col.label(text="Agent Behaviour Settings")
         agentSettings = col.box()
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_tool", text="Tool to use")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_noClumpRadius", text="Separation Radius")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_localAreaRadius", text="Neighbour Radius")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_speed", text="Agent Speed")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_steeringSpeed", text="Agent Steering Speed")
-
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_separationWeight", text="Separation Weight")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_alignementWeight", text="Alignement Weight")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_cohesionWeight", text="Cohesion Weight")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_leaderWeight", text="Leader Weight")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_centerUrgeWeight", text="Center Weight")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_centerMaxDistance", text="Max Distance to Center")
-        agentSettings.prop(context.scene.swarm_settings, "agent_general_surfaceWeight", text="Surface Urge")
+        agentSettings.prop(context.scene, "selected_agent")
+        agentRow = agentSettings.row()
+        agentRow.operator("swarm.add_agent_type", text="+")
+        agentRow.operator("swarm.remove_agent_type", text="-")
+        agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
+        agentSettings.prop(context.scene.current_agent_settings, "tool", text="Tool to use")
+        agentSettings.prop(context.scene.current_agent_settings, "noClumpRadius", text="Separation Radius")
+        agentSettings.prop(context.scene.current_agent_settings, "localAreaRadius", text="Neighbour Radius")
+        agentSettings.prop(context.scene.current_agent_settings, "speed", text="Agent Speed")
+        agentSettings.prop(context.scene.current_agent_settings, "steeringSpeed", text="Agent Steering Speed")
+        agentSettings.prop(context.scene.current_agent_settings, "separationWeight", text="Separation Weight")
+        agentSettings.prop(context.scene.current_agent_settings, "alignementWeight", text="Alignement Weight")
+        agentSettings.prop(context.scene.current_agent_settings, "cohesionWeight", text="Cohesion Weight")
+        agentSettings.prop(context.scene.current_agent_settings, "leaderWeight", text="Leader Weight")
+        agentSettings.prop(context.scene.current_agent_settings, "centerUrgeWeight", text="Center Weight")
+        agentSettings.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
+        agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
 
 

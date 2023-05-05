@@ -5,7 +5,7 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings, setPresetAsCurrent
+from .properties import SwarmSettings, setPresetAsCurrent, setAgentAsCurrent
 
 from .utils import findInCollection
 
@@ -33,7 +33,7 @@ def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
 
 def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.types.PropertyGroup) -> None:
     for key, value in dataDict.items():
-        if key not in propGroup.bl_rna.properties:
+        if key not in propGroup.bl_rna.properties or key == "agent_definitions":
             continue
 
         if isinstance(value, dict) and isinstance(propGroup, bpy.types.PropertyGroup):
@@ -52,6 +52,9 @@ def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.type
 def exportPresets(filepath: str, addonPrefs: SwarmPreferences, context: bpy.types.Context) -> None:
     propGroupDicts = [propertyGroupToDict(preset) for preset in addonPrefs.presets]
 
+    for preset, presetDict in zip(addonPrefs.presets, propGroupDicts):
+        presetDict['agent_definitions'] = [propertyGroupToDict(agent) for agent in preset.agent_definitions]
+
     with open(filepath, "w") as f:
         json.dump(propGroupDicts, f, indent=4)
 
@@ -64,8 +67,14 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
 
     for presetData in presetDataList:
         newPreset = addonPrefs.presets.add()
+
         setPropertyGroupValuesFromDict(presetData, newPreset)
-        continue
+
+        newPreset.agent_definitions.clear()
+        for agentData in presetData['agent_definitions']:
+            newAgent = newPreset.agent_definitions.add()
+            setPropertyGroupValuesFromDict(agentData, newAgent)
+
 
 
 def addPreset(context: bpy.types.Context) -> None:
@@ -85,16 +94,56 @@ def removePreset(context: bpy.types.Context) -> None:
 
 
     
-def savePresetChanges(context: bpy.types.Context) -> None:
+def savePresetChanges(context: bpy.types.Context):
     addonPrefs = context.preferences.addons[__package__].preferences
-    i, preset = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
 
-    if preset is not None:
-        for prop in preset.bl_rna.properties:
+    _, preset = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
+
+    if preset is None:
+        return
+
+    for prop in context.scene.swarm_settings.bl_rna.properties:
+        if prop.identifier in ["rna_type", "agent_definitions"]:
+            continue
+        setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
+
+
+    _, agent = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == context.scene.selected_agent)
+
+    for prop in context.scene.current_agent_settings.bl_rna.properties:
+        if prop.identifier == "rna_type":
+            continue
+        setattr(agent, prop.identifier, getattr(context.scene.current_agent_settings, prop.identifier))
+
+    # Update agent_definitions in the preset
+    preset.agent_definitions.clear()
+    for agent_def in context.scene.swarm_settings.agent_definitions:
+        new_agent_def = preset.agent_definitions.add()
+        for prop in agent_def.bl_rna.properties:
             if prop.identifier == "rna_type":
                 continue
-            setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
+            setattr(new_agent_def, prop.identifier, getattr(agent_def, prop.identifier))
 
-        context.scene.selected_preset = preset.name
+    # Update the preset list
+    context.scene.swarm_settings.selected_preset = preset.name
+
 
             
+def addAgent(context: bpy.types.Context) -> None:
+    swarm_settings = context.scene.swarm_settings
+    newAgent = swarm_settings.agent_definitions.add()
+    newAgent.name = "Unnamed Agent"
+
+    # Set the new agent as the selected agent
+    context.scene.selected_agent = newAgent.name
+    
+
+def removeAgent(context: bpy.types.Context) -> None:
+    agents = context.scene.swarm_settings.agent_definitions
+
+    i, _ = findInCollection(agents, lambda p: p.name == context.scene.selected_agent)
+
+    if i is not None and len(agents) > 1:
+        agents.remove(i)
+        setAgentAsCurrent(agents[i-1], context)
+
