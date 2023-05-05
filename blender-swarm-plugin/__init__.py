@@ -42,6 +42,7 @@ classes = (Swarm_OT_Start_Simulation,
            SWARM_OT_AddPreset,
            SWARM_OT_RemovePreset,
            SWARM_OT_SavePreset,
+           SWARM_OT_AddControlObject,
 
            SWARM_PT_Panel, AgentSettings, SwarmSettings, SwarmPreferences)
 

@@ -8,6 +8,7 @@ from bpy.types import Operator
 from .swarmManager import startSwarm, stopSwarm, isRunning
 from .constants import maxPropSize
 from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
+from .controlObjects import addControlObject
 
 class Swarm_OT_Start_Simulation(Operator):
     bl_idname = "swarm.start_simulation"
@@ -204,4 +205,14 @@ class SWARM_OT_SavePreset(bpy.types.Operator):
 
     def execute(self, context):
         savePresetChanges(context)
+        return {'FINISHED'}
+    
+
+class SWARM_OT_AddControlObject(bpy.types.Operator):
+    bl_idname = "swarm.add_control_object"
+    bl_label = "Add Control Object"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        addControlObject(context)
         return {'FINISHED'}

@@ -37,6 +37,7 @@ class SWARM_PT_Panel(Panel):
 
         col.label(text="General")
         general = col.box()
+        general.operator("swarm.add_control_object", text="Add Control Object")
         general.operator("swarm.start_simulation", text = "Begin Simulation")
         # col.operator("swarm.modal_simulation", text = "Modal Simulation")
         general.operator("swarm.stop_simulation", text = "Stop Simulation")

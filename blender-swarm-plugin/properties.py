@@ -16,6 +16,8 @@ def initProperties():
         update=lambda self, context: updatePreset(self, context),
     )
 
+    bpy.types.Scene.control_objects = bpy.types.CollectionProperty(type=bpy.types.Object)
+
 
 def deinitProperies():
     del bpy.types.Scene.swarm_settings
