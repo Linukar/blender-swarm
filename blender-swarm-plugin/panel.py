@@ -1,6 +1,7 @@
 import bpy
 
 from bpy.types import Panel
+from .controlObjects import pollControlObject
 
 class SWARM_PT_Panel(Panel):
     bl_idname = "SWARM_PT_Panel"
@@ -24,7 +25,6 @@ class SWARM_PT_Panel(Panel):
 
         col.label(text="General")
         general = col.box()
-        general.operator("swarm.add_control_object", text="Add Control Object")
         general.operator("swarm.start_simulation", text = "Begin Simulation")
         # col.operator("swarm.modal_simulation", text = "Modal Simulation")
         general.operator("swarm.stop_simulation", text = "Stop Simulation")
@@ -86,5 +86,16 @@ class SWARM_PT_Panel(Panel):
         agentSettings.prop(context.scene.current_agent_settings, "centerUrgeWeight", text="Center Weight")
         agentSettings.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
         agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
+
+        col.separator()
+
+        controlObjectBox = col.box()
+
+        controlObjectBox.label(text="Control Object Settings")
+        controlObjectBox.operator("swarm.add_control_object", text="Add Control Object")
+
+        if pollControlObject(context):
+            controlObjectBox.prop(context.scene.current_control_settings, "type", text="Type")
+            controlObjectBox.prop(context.scene.current_control_settings, "agentId", text="Agent")
 
 

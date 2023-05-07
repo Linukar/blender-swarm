@@ -27,7 +27,7 @@ __package__ = "blender-swarm-plugin"
 import bpy
 from .operators import *
 from .panel import SWARM_PT_Panel
-from .properties import SwarmSettings, AgentSettings, initProperties, deinitProperies
+from .properties import SwarmSettings, AgentSettings, ControlObjectSettings, ControlObjectItem, initProperties, deinitProperies
 from .presets import SwarmPreferences
 
 classes = (Swarm_OT_Start_Simulation, 
@@ -47,7 +47,9 @@ classes = (Swarm_OT_Start_Simulation,
            SWARM_OT_RemoveAgentType,
            SWARM_OT_SaveAgent,
 
-           SWARM_PT_Panel, AgentSettings, SwarmSettings, SwarmPreferences)
+           SWARM_PT_Panel, 
+           AgentSettings, SwarmSettings, ControlObjectSettings, ControlObjectItem,
+           SwarmPreferences)
 
 def register():
     for c in classes:

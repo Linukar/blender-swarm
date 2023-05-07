@@ -5,6 +5,8 @@ import sys
 from .sculptTools import tools
 from .constants import maxPropSize
 from .utils import findInCollection
+from .controlObjects import coTypes, propertyUpdate
+
 
 def initProperties():
 
@@ -16,8 +18,6 @@ def initProperties():
         update=lambda self, context: updatePreset(self, context),
     )
 
-    # bpy.types.Scene.control_objects = bpy.types.CollectionProperty(type=bpy.types.Object)
-
     bpy.types.Scene.selected_agent = bpy.props.EnumProperty(
         name="Agents",
         items=lambda self, context: findAgents(self, context),
@@ -25,6 +25,10 @@ def initProperties():
     )
 
     bpy.types.Scene.current_agent_settings = bpy.props.PointerProperty(type=AgentSettings)
+
+    bpy.types.Scene.current_control_settings = bpy.props.PointerProperty(type=ControlObjectSettings)
+
+    bpy.types.Scene.control_objects = bpy.props.CollectionProperty(type=ControlObjectItem)
 
 
 def deinitProperies():
@@ -70,6 +74,22 @@ class SwarmSettings(bpy.types.PropertyGroup):
 
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
+
+
+class ControlObjectSettings(bpy.types.PropertyGroup):
+    type: bpy.props.EnumProperty(
+        items=lambda s, c: map(lambda t: (t, t, ""), coTypes),
+        update=lambda s, c: propertyUpdate(c, "controlType", s.type)
+    )
+
+    agentId: bpy.props.EnumProperty(name="Agent", 
+        items=lambda self, context: map(lambda d: (d.name, d.name, ""), context.scene.swarm_settings.agent_definitions),
+        update=lambda s, c: propertyUpdate(c, "agentId", s.agentId)
+    )
+
+
+class ControlObjectItem(bpy.types.PropertyGroup):
+    object: bpy.props.PointerProperty(name="Object", type=bpy.types.Object)
 
 
 def findPresets(context):
