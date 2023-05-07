@@ -21,9 +21,19 @@ class SWARM_PT_Panel(Panel):
         utils.operator("object.delete_all")
         utils.operator("swarm.spawn_plane", text = "Spawn Plane")
 
+
+        col.label(text="General")
+        general = col.box()
+        general.operator("swarm.add_control_object", text="Add Control Object")
+        general.operator("swarm.start_simulation", text = "Begin Simulation")
+        # col.operator("swarm.modal_simulation", text = "Modal Simulation")
+        general.operator("swarm.stop_simulation", text = "Stop Simulation")
+
+
         col.label(text="Presets")
         presetBox = col.box()
-        importRow = presetBox.row()
+        presetIOBox = presetBox.box()
+        importRow = presetIOBox.row()
         importRow.operator("swarm.import_presets", text="Import")
         importRow.operator("swarm.export_presets", text="Export")
 
@@ -33,17 +43,10 @@ class SWARM_PT_Panel(Panel):
         presetRow.operator("swarm.remove_preset", text="-")
         presetBox.operator("swarm.save_preset", text="Save")
 
+        presetBox.separator()
 
-
-        col.label(text="General")
-        general = col.box()
-        general.operator("swarm.add_control_object", text="Add Control Object")
-        general.operator("swarm.start_simulation", text = "Begin Simulation")
-        # col.operator("swarm.modal_simulation", text = "Modal Simulation")
-        general.operator("swarm.stop_simulation", text = "Stop Simulation")
-
-        col.label(text="General Swarm Settings")
-        swarmSettings = col.box()
+        presetBox.label(text="General Swarm Settings")
+        swarmSettings = presetBox.box()
         swarmSettings.prop(context.scene.swarm_settings, "name")
         seedRow = swarmSettings.row()
         seedRow.prop(context.scene.swarm_settings, "swarm_seed", text="Seed")
@@ -59,11 +62,10 @@ class SWARM_PT_Panel(Panel):
         swarmSettings.prop(context.scene.swarm_settings, "swarm_randomStartXYRotation", text="Random Start XY Rotation")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_randomStartZRotation", text="Random Start Z Rotation")
 
+        presetBox.separator()
 
-
-
-        col.label(text="Agent Behaviour Settings")
-        agentSettings = col.box()
+        presetBox.label(text="Agent Behaviour Settings")
+        agentSettings = presetBox.box()
         agentSettings.prop(context.scene, "selected_agent")
         agentRow = agentSettings.row()
         agentRow.operator("swarm.add_agent_type", text="+")
