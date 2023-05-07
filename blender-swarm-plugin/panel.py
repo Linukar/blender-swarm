@@ -68,6 +68,8 @@ class SWARM_PT_Panel(Panel):
         agentRow = agentSettings.row()
         agentRow.operator("swarm.add_agent_type", text="+")
         agentRow.operator("swarm.remove_agent_type", text="-")
+        agentSettings.operator("swarm.save_agent", text="Save")
+
         agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
         agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
         agentSettings.prop(context.scene.current_agent_settings, "tool", text="Tool to use")

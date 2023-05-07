@@ -108,12 +108,7 @@ def savePresetChanges(context: bpy.types.Context):
         setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
 
 
-    _, agent = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == context.scene.selected_agent)
-
-    for prop in context.scene.current_agent_settings.bl_rna.properties:
-        if prop.identifier == "rna_type":
-            continue
-        setattr(agent, prop.identifier, getattr(context.scene.current_agent_settings, prop.identifier))
+    saveAgentChanges(context)
 
     # Update agent_definitions in the preset
     preset.agent_definitions.clear()
@@ -127,6 +122,14 @@ def savePresetChanges(context: bpy.types.Context):
     # Update the preset list
     context.scene.swarm_settings.selected_preset = preset.name
 
+
+def saveAgentChanges(context: bpy.types.Context):
+    _, agent = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == context.scene.selected_agent)
+
+    for prop in context.scene.current_agent_settings.bl_rna.properties:
+        if prop.identifier == "rna_type":
+            continue
+        setattr(agent, prop.identifier, getattr(context.scene.current_agent_settings, prop.identifier))
 
             
 def addAgent(context: bpy.types.Context) -> None:

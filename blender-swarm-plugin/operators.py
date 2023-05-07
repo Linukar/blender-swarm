@@ -7,7 +7,7 @@ import bpy_extras
 from bpy.types import Operator
 from .swarmManager import startSwarm, stopSwarm, isRunning
 from .constants import maxPropSize
-from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges, addAgent, removeAgent
+from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges, saveAgentChanges, addAgent, removeAgent
 from .controlObjects import addControlObject
 
 class Swarm_OT_Start_Simulation(Operator):
@@ -225,6 +225,16 @@ class SWARM_OT_SavePreset(bpy.types.Operator):
 
     def execute(self, context):
         savePresetChanges(context)
+        return {'FINISHED'}
+    
+    
+class SWARM_OT_SaveAgent(bpy.types.Operator):
+    bl_idname = "swarm.save_agent"
+    bl_label = "Save Agent"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        saveAgentChanges(context)
         return {'FINISHED'}
     
 
