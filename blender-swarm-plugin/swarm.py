@@ -6,8 +6,6 @@ from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
 
-from .agentTypes import *
-
 class Swarm:
 
     fixedTimeStep = 0.033 # 30 fps
