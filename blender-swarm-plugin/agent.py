@@ -18,6 +18,8 @@ from typing import Tuple
 
 from .rewritingRules import *
 
+from .properties import AgentSettings
+
 
 class Agent:
 
@@ -41,17 +43,17 @@ class Agent:
         (0.89, 0.52, 0.07)]
 
 
-    def __init__(self, context: bpy.types.Context, swarmIndex: int):
+    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings):
 
         self.typeName = "Basic"
 
         self.context = context
         
         self.swarmIndex = swarmIndex
-        self.color = Agent.colors[swarmIndex % len(Agent.colors)]
+        self.color = agentSettings.color
 
-        self.maxSpeed = context.scene.swarm_settings.agent_general_speed
-        self.steeringSpeed = context.scene.swarm_settings.agent_general_steeringSpeed
+        self.maxSpeed = agentSettings.speed
+        self.steeringSpeed = agentSettings.steeringSpeed
         self.energy = 200
 
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
@@ -80,10 +82,12 @@ class Agent:
 
         self.steering = self.forward
 
-        self.boidRules = [Separation(context), Alignement(context), Cohesion(context), CenterUrge(context), Surface(context)]
+        self.boidRules = [Separation(context, agentSettings), Alignement(context, agentSettings), 
+                          Cohesion(context, agentSettings), CenterUrge(context, agentSettings), 
+                          Surface(context, agentSettings)]
         self.rewritingRules = []
 
-        self.sculpt_tool = context.scene.swarm_settings.agent_general_tool
+        self.sculpt_tool = agentSettings.tool
 
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')

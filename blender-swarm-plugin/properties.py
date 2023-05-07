@@ -27,15 +27,14 @@ def initProperties():
     bpy.types.Scene.current_agent_settings = bpy.props.PointerProperty(type=AgentSettings)
 
 
-
 def deinitProperies():
     del bpy.types.Scene.swarm_settings
-
 
 
 class AgentSettings(bpy.types.PropertyGroup):
 
     name: bpy.props.StringProperty(name="Preset Name", default="")
+    color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR', default=(1, 1, 1), min=0, max=1)
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
     localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
     speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
