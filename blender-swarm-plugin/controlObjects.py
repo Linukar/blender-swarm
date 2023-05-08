@@ -32,7 +32,7 @@ def propertyUpdate(context: bpy.types.Context, propName: str, propValue):
     color = agentDef.color
 
     # Create a new material and set its base color
-    material = bpy.data.materials.new(name="ControlObjectMaterial")
+    material = bpy.data.materials.new(name=agentDef.name)
     material.use_nodes = True
     bsdf_node = material.node_tree.nodes.get("Principled BSDF")
     if bsdf_node:

@@ -65,3 +65,10 @@ def findInCollection(prop, when):
         if when(elem):
             return (i, elem)
     return None
+
+
+def copyPropertyGroup(src, target, ignore=[]):
+    for prop in src.bl_rna.properties:
+        if prop.identifier == "rna_type" or prop.identifier in ignore:
+            continue
+        setattr(target, prop.identifier, getattr(src, prop.identifier))

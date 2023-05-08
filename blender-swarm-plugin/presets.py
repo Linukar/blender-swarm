@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 
 from .properties import SwarmSettings, setPresetAsCurrent, setAgentAsCurrent
 
-from .utils import findInCollection
+from .utils import findInCollection, copyPropertyGroup
 
 
 class SwarmPreferences(bpy.types.AddonPreferences):
@@ -102,11 +102,7 @@ def savePresetChanges(context: bpy.types.Context):
     if preset is None:
         return
 
-    for prop in context.scene.swarm_settings.bl_rna.properties:
-        if prop.identifier in ["rna_type", "agent_definitions"]:
-            continue
-        setattr(preset, prop.identifier, getattr(context.scene.swarm_settings, prop.identifier))
-
+    copyPropertyGroup(context.scene.swarm_settings, preset, ["agent_definitions"])
 
     saveAgentChanges(context)
 
@@ -114,10 +110,7 @@ def savePresetChanges(context: bpy.types.Context):
     preset.agent_definitions.clear()
     for agent_def in context.scene.swarm_settings.agent_definitions:
         new_agent_def = preset.agent_definitions.add()
-        for prop in agent_def.bl_rna.properties:
-            if prop.identifier == "rna_type":
-                continue
-            setattr(new_agent_def, prop.identifier, getattr(agent_def, prop.identifier))
+        copyPropertyGroup(agent_def, new_agent_def)
 
     # Update the preset list
     context.scene.swarm_settings.selected_preset = preset.name
@@ -125,11 +118,7 @@ def savePresetChanges(context: bpy.types.Context):
 
 def saveAgentChanges(context: bpy.types.Context):
     _, agent = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == context.scene.selected_agent)
-
-    for prop in context.scene.current_agent_settings.bl_rna.properties:
-        if prop.identifier == "rna_type":
-            continue
-        setattr(agent, prop.identifier, getattr(context.scene.current_agent_settings, prop.identifier))
+    copyPropertyGroup(context.scene.current_agent_settings, agent)
 
             
 def addAgent(context: bpy.types.Context) -> None:

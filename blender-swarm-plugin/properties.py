@@ -4,7 +4,7 @@ import sys
 
 from .sculptTools import tools
 from .constants import maxPropSize
-from .utils import findInCollection
+from .utils import findInCollection, copyPropertyGroup
 from .controlObjects import coTypes, propertyUpdate
 
 
@@ -61,8 +61,8 @@ class SwarmSettings(bpy.types.PropertyGroup):
 
     # general swarm properties
     swarm_seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
-    swarm_agentCount: bpy.props.IntProperty(default=30, min=1, max=10000)
-    swarm_swarmCount: bpy.props.IntProperty(default=3, min=1, max=1000)
+    swarm_agentCount: bpy.props.IntProperty(default=42, min=1, max=10000)
+    swarm_swarmCount: bpy.props.IntProperty(default=1, min=1, max=1000)
 
     swarm_spawnAreaSize: bpy.props.FloatProperty(default=3, min=0, precision=2)
     swarm_maxSimulationSteps: bpy.props.IntProperty(default=10000, min=1)
@@ -110,20 +110,13 @@ def updatePreset(self, context: bpy.types.Context):
     
 
 def setPresetAsCurrent(preset: "SwarmSettings", context: bpy.types.Context):
-    for prop in context.scene.swarm_settings.bl_rna.properties:
-        if prop.identifier == "rna_type" or prop.identifier == "agent_definitions":
-            continue
-        setattr(context.scene.swarm_settings, prop.identifier, getattr(preset, prop.identifier))
+    copyPropertyGroup(preset, context.scene.swarm_settings, ["agent_definitions"])
 
     # Update agent_definitions
     context.scene.swarm_settings.agent_definitions.clear()
     for agent_def in preset.agent_definitions:
         new_agent_def = context.scene.swarm_settings.agent_definitions.add()
-        for prop in agent_def.bl_rna.properties:
-            if prop.identifier == "rna_type":
-                continue
-            setattr(new_agent_def, prop.identifier, getattr(agent_def, prop.identifier))
-
+        copyPropertyGroup(agent_def, new_agent_def)
 
     if len(preset.agent_definitions) <= 0:
         return
@@ -148,7 +141,4 @@ def updateAgent(self, context: bpy.types.Context):
 
     
 def setAgentAsCurrent(agent: "AgentSettings", context: bpy.types.Context):
-    for prop in agent.bl_rna.properties:
-        if prop.identifier == "rna_type":
-            continue
-        setattr(context.scene.current_agent_settings, prop.identifier, getattr(agent, prop.identifier))
+    copyPropertyGroup(agent, context.scene.current_agent_settings)
