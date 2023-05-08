@@ -49,7 +49,7 @@ classes = (Swarm_OT_Start_Simulation,
            SWARM_OT_SaveAgent,
 
            SWARM_PT_Panel, 
-           AgentSettings, SwarmSettings, ControlObjectSettings, ControlObjectItem,
+           AgentSettings, SwarmSettings, ControlObjectSettings,
            SwarmPreferences)
 
 def register():

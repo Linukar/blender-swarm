@@ -28,7 +28,12 @@ class Swarm:
             for _ in range (0, agentCount):
                 currentAgent = agentDefinitions[i % (len(agentDefinitions))]
 
-                self.agents.append(Agent(context, swarmIndex=i, agentSettings=currentAgent, controlObjects=self.controlObjects))
+                self.agents.append(
+                    Agent(context,
+                        swarmIndex=i, 
+                        agentSettings=currentAgent, 
+                        controlObjects=self.controlObjects.get(currentAgent.name, [])
+                    ))
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;

@@ -5,24 +5,30 @@ import bmesh
 from mathutils.bvhtree import BVHTree
 from .properties import AgentSettings
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .agent import Agent
+
 class BoidRule:
 
-    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings):
+    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings, agent: "Agent"):
         self.count = 0
         self.direction = mathutils.Vector()
         self.context = context
         self.agentSettings = agentSettings
+        self.agent = agent
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         pass
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         return mathutils.Vector()
 
 
 class Separation(BoidRule):
-    def __init__(self, context, agentSettings: AgentSettings):
-        super().__init__(context, agentSettings)
+    def __init__(self, context, agentSettings: AgentSettings, agent: "Agent"):
+        super().__init__(context, agentSettings, agent)
         self.noClumpRadius = agentSettings.noClumpRadius
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
@@ -43,8 +49,8 @@ class Separation(BoidRule):
 
 
 class Alignement(BoidRule):
-    def __init__(self, context, agentSettings: AgentSettings):
-        super().__init__(context, agentSettings)
+    def __init__(self, context, agentSettings: AgentSettings, agent: "Agent"):
+        super().__init__(context, agentSettings, agent)
         self.localAreaRadius = self.agentSettings.localAreaRadius
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
@@ -52,7 +58,7 @@ class Alignement(BoidRule):
             self.direction += other.forward
             self.count += 1
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         if(self.count <= 0):
             return mathutils.Vector()
         
@@ -64,8 +70,8 @@ class Alignement(BoidRule):
 
 
 class Cohesion(BoidRule):
-    def __init__(self, context, agentSettings: AgentSettings):
-        super().__init__(context, agentSettings)
+    def __init__(self, context, agentSettings: AgentSettings, agent: "Agent"):
+        super().__init__(context, agentSettings, agent)
         self.localAreaRadius = self.agentSettings.localAreaRadius
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
@@ -73,7 +79,7 @@ class Cohesion(BoidRule):
             self.direction += other.position - agent.position
             self.count += 1
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         if(self.count <= 0):
             return mathutils.Vector()
         
@@ -85,11 +91,11 @@ class Cohesion(BoidRule):
 
 
 class CenterUrge(BoidRule):
-    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings):
+    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings, agent: "Agent"):
         self.center = context.active_object.location
-        super().__init__(context, agentSettings)
+        super().__init__(context, agentSettings, agent)
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         directionToCenter = self.center - agent.position
         if(directionToCenter.magnitude > self.agentSettings.centerMaxDistance):
             directionToCenter.normalize()
@@ -98,9 +104,9 @@ class CenterUrge(BoidRule):
     
 
 class Leadership(BoidRule):
-    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings):
+    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings, agent: "Agent"):
         self.leaderAgent = None
-        super().__init__(context, agentSettings)
+        super().__init__(context, agentSettings, agent)
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         if(distance < self.localAreaRadius):
@@ -108,7 +114,7 @@ class Leadership(BoidRule):
                 self.leaderAgent = other;
                 self.leaderAngle = angle;
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         if (self.leaderAgent is None):
             return mathutils.Vector()
 
@@ -118,14 +124,14 @@ class Leadership(BoidRule):
 
 
 class Surface(BoidRule):
-    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings):
+    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings, agent: "Agent"):
         self.object = context.active_object
-        super().__init__(context, agentSettings)
+        super().__init__(context, agentSettings, agent)
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         pass
 
-    def calcDirection(self, swarm, agent):
+    def calcDirection(self, swarm, agent: "Agent"):
         closestPoint = self.findClosestPoint(swarm.bvhTree, swarm.bmesh, agent.position)
 
         if closestPoint is None:
@@ -147,5 +153,20 @@ class Surface(BoidRule):
         return closestPoint
 
 
-    
-            
+class ControlObjectAttraction(BoidRule):
+    def __init__(self, context: bpy.types.Context, agentSettings: AgentSettings, agent: "Agent"):
+        super().__init__(context, agentSettings, agent)
+        self.relevantObjects = [obj for obj in agent.controlObjects if obj.control_settings.type in ("Attractor", "Transformer")]
+
+
+    def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
+        pass
+
+    def calcDirection(self, swarm, agent: "Agent"):
+        dir = mathutils.Vector()
+        for obj in self.relevantObjects:
+            dir += obj.location - agent.position
+
+        dir /= max(len(self.relevantObjects), 1)
+
+        return dir

@@ -43,13 +43,14 @@ class Agent:
         (0.89, 0.52, 0.07)]
 
 
-    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings, controlObjects):
+    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings, controlObjects: dict[str, list[bpy.types.Object]]):
 
         self.typeName = "Basic"
 
         self.context = context
         
         self.swarmIndex = swarmIndex
+        self.controlObjects = controlObjects
         self.color = agentSettings.color
 
         self.maxSpeed = agentSettings.speed
@@ -82,9 +83,9 @@ class Agent:
 
         self.steering = self.forward
 
-        self.boidRules = [Separation(context, agentSettings), Alignement(context, agentSettings), 
-                          Cohesion(context, agentSettings), CenterUrge(context, agentSettings), 
-                          Surface(context, agentSettings)]
+        self.boidRules = [Separation(context, agentSettings, self), Alignement(context, agentSettings, self), 
+                          Cohesion(context, agentSettings, self), CenterUrge(context, agentSettings, self), 
+                          Surface(context, agentSettings, self), ControlObjectAttraction(context, agentSettings, self)]
         self.rewritingRules = []
 
         self.sculpt_tool = agentSettings.tool

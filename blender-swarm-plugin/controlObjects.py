@@ -7,9 +7,6 @@ from .utils import findInCollection
 
 coTypes = ["Spawner", "Attractor", "Repulsor", "Transformer", "Splitter"]
 collectionName = "SwarmControlObjects"
-controlTypePropertyName = "controlType"
-agentIdPropertyName = "agentId"
-
 
 class ControlObjectSettings(bpy.types.PropertyGroup):
     useAsControl: bpy.props.BoolProperty(name="Use as Control", default=False)
@@ -28,9 +25,6 @@ def addControlObject(context: bpy.types.Context):
     bpy.ops.mesh.primitive_cube_add(size=0.2, enter_editmode=False, align='WORLD', location=(0, 0, 0))
     cube = context.active_object
     cube.control_settings.useAsControl = True
-
-    item = context.scene.control_objects.add()
-    item.object = cube
 
     collection = bpy.data.collections.get(collectionName)
     if collection is None:
@@ -65,13 +59,15 @@ def isControlObject(object):
     return object is not None and object.control_settings.useAsControl
 
 
-def collectControlObjects(context: bpy.types.Context):
+def collectControlObjects(context: bpy.types.Context) -> dict[str, list[bpy.types.Object]]:
     collection = bpy.data.collections.get(collectionName)
     if collection is not None:
         allObjects = collection.objects
     else:
         allObjects = context.scene.objects
     
-    controlObjects = filter(lambda o: isControlObject(o), allObjects)
+    controlObjects = list(filter(lambda o: isControlObject(o), allObjects))
+    sortedObjects = sorted(controlObjects, key=lambda o: o.control_settings.agentId)
+    grouped = groupby(sortedObjects, lambda o: o.control_settings.agentId)
 
-    return groupby(controlObjects, lambda o: o[agentIdPropertyName])
+    return {key: list(group) for key, group in grouped}
