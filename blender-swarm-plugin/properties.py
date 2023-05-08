@@ -5,7 +5,7 @@ import sys
 from .sculptTools import tools
 from .constants import maxPropSize
 from .utils import findInCollection, copyPropertyGroup
-from .controlObjects import coTypes, propertyUpdate
+from .controlObjects import ControlObjectSettings
 
 
 def initProperties():
@@ -26,9 +26,7 @@ def initProperties():
 
     bpy.types.Scene.current_agent_settings = bpy.props.PointerProperty(type=AgentSettings)
 
-    bpy.types.Scene.current_control_settings = bpy.props.PointerProperty(type=ControlObjectSettings)
-
-    bpy.types.Scene.control_objects = bpy.props.CollectionProperty(type=ControlObjectItem)
+    bpy.types.Object.control_settings = bpy.props.PointerProperty(type=ControlObjectSettings)
 
 
 def deinitProperies():
@@ -39,6 +37,7 @@ class AgentSettings(bpy.types.PropertyGroup):
 
     name: bpy.props.StringProperty(name="Preset Name", default="")
     color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR', default=(1, 1, 1), min=0, max=1)
+
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
     localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
     speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
@@ -74,22 +73,6 @@ class SwarmSettings(bpy.types.PropertyGroup):
 
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
-
-
-class ControlObjectSettings(bpy.types.PropertyGroup):
-    type: bpy.props.EnumProperty(
-        items=lambda s, c: map(lambda t: (t, t, ""), coTypes),
-        update=lambda s, c: propertyUpdate(c, "controlType", s.type)
-    )
-
-    agentId: bpy.props.EnumProperty(name="Agent", 
-        items=lambda self, context: map(lambda d: (d.name, d.name, ""), context.scene.swarm_settings.agent_definitions),
-        update=lambda s, c: propertyUpdate(c, "agentId", s.agentId)
-    )
-
-
-class ControlObjectItem(bpy.types.PropertyGroup):
-    object: bpy.props.PointerProperty(name="Object", type=bpy.types.Object)
 
 
 def findPresets(context):

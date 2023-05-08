@@ -27,7 +27,8 @@ __package__ = "blender-swarm-plugin"
 import bpy
 from .operators import *
 from .panel import SWARM_PT_Panel
-from .properties import SwarmSettings, AgentSettings, ControlObjectSettings, ControlObjectItem, initProperties, deinitProperies
+from .properties import SwarmSettings, AgentSettings, initProperties, deinitProperies
+from .controlObjects import ControlObjectSettings
 from .presets import SwarmPreferences
 
 classes = (Swarm_OT_Start_Simulation, 

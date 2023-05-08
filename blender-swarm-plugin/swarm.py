@@ -5,6 +5,7 @@ import random
 from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
+from .controlObjects import collectControlObjects
 
 class Swarm:
 
@@ -16,14 +17,18 @@ class Swarm:
 
         self.agents: List[Agent] = []
 
+        self.controlObjects = collectControlObjects(context)
+
+        agentDefinitions = context.scene.swarm_settings.agent_definitions
+        if len(agentDefinitions) < 1: return
+
         i = 0
         for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
             i += 1
             for _ in range (0, agentCount):
-                agentDefinitions = context.scene.swarm_settings.agent_definitions
                 currentAgent = agentDefinitions[i % (len(agentDefinitions))]
 
-                self.agents.append(Agent(context, swarmIndex=i, agentSettings=currentAgent))
+                self.agents.append(Agent(context, swarmIndex=i, agentSettings=currentAgent, controlObjects=self.controlObjects))
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;

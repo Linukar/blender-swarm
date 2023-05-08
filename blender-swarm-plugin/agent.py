@@ -43,7 +43,7 @@ class Agent:
         (0.89, 0.52, 0.07)]
 
 
-    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings):
+    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings, controlObjects):
 
         self.typeName = "Basic"
 

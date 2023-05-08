@@ -1,7 +1,7 @@
 import bpy
 
 from bpy.types import Panel
-from .controlObjects import pollControlObject
+from .controlObjects import isControlObject
 
 class SWARM_PT_Panel(Panel):
     bl_idname = "SWARM_PT_Panel"
@@ -94,8 +94,8 @@ class SWARM_PT_Panel(Panel):
         controlObjectBox.label(text="Control Object Settings")
         controlObjectBox.operator("swarm.add_control_object", text="Add Control Object")
 
-        if pollControlObject(context):
-            controlObjectBox.prop(context.scene.current_control_settings, "type", text="Type")
-            controlObjectBox.prop(context.scene.current_control_settings, "agentId", text="Agent")
+        if isControlObject(context.active_object):
+            controlObjectBox.prop(context.active_object.control_settings, "type", text="Type")
+            controlObjectBox.prop(context.active_object.control_settings, "agentId", text="Agent")
 
 
