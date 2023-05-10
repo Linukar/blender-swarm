@@ -5,7 +5,7 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings, setPresetAsCurrent, setAgentAsCurrent
+from .properties import SwarmSettings, setPresetAsCurrent, setAgentAsCurrent, findAgentDefinition
 
 from .utils import findInCollection, copyPropertyGroup
 
@@ -117,7 +117,7 @@ def savePresetChanges(context: bpy.types.Context):
 
 
 def saveAgentChanges(context: bpy.types.Context):
-    _, agent = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == context.scene.selected_agent)
+    _, agent = findAgentDefinition(context, context.scene.selected_agent)
     copyPropertyGroup(context.scene.current_agent_settings, agent)
 
             

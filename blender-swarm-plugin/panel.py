@@ -97,5 +97,11 @@ class SWARM_PT_Panel(Panel):
         if isControlObject(context.active_object):
             controlObjectBox.prop(context.active_object.control_settings, "type", text="Type")
             controlObjectBox.prop(context.active_object.control_settings, "agentId", text="Agent")
+            controlObjectBox.prop(context.active_object.control_settings, "radius", text="Radius")
+
+            if context.active_object.control_settings.type == "Transformer":
+                controlObjectBox.prop(context.active_object.control_settings, "transformerResult", text="Result")
+                
+
 
 

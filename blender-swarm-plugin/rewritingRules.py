@@ -1,6 +1,6 @@
 import bpy
 
-
+#currently unused
 class RewritingRule:
     def __init__(self, context: bpy.types.Context):
         self.predecessor = ""

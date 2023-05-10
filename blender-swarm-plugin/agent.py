@@ -18,13 +18,10 @@ from typing import Tuple
 
 from .rewritingRules import *
 
-from .properties import AgentSettings
+from .properties import AgentSettings, findAgentDefinition
 
 
 class Agent:
-
-    possibleTools = ["DRAW"]
-
 
     colors = [
         (0.41, 0.22, 0.36), #violet
@@ -43,22 +40,22 @@ class Agent:
         (0.89, 0.52, 0.07)]
 
 
-    def __init__(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings, controlObjects: dict[str, list[bpy.types.Object]]):
+    def __init__(self, context: bpy.types.Context, swarm, swarmIndex: int, agentSettings: AgentSettings, controlObjects: dict[str, list[bpy.types.Object]]):
 
         self.typeName = "Basic"
 
         self.context = context
+        self.swarm = swarm
         
+        self.agentSettings = agentSettings
+
         self.swarmIndex = swarmIndex
         self.controlObjects = controlObjects
-        self.color = agentSettings.color
+        self.setControlObjects()
 
-        self.maxSpeed = agentSettings.speed
-        self.steeringSpeed = agentSettings.steeringSpeed
         self.energy = 200
 
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
-
 
         if context.scene.swarm_settings.swarm_randomStartLocation:
             self.position = mathutils.Vector((
@@ -83,12 +80,10 @@ class Agent:
 
         self.steering = self.forward
 
-        self.boidRules = [Separation(context, agentSettings, self), Alignement(context, agentSettings, self), 
-                          Cohesion(context, agentSettings, self), CenterUrge(context, agentSettings, self), 
-                          Surface(context, agentSettings, self), ControlObjectAttraction(context, agentSettings, self)]
+        self.boidRules = [Separation(context, self), Alignement(context, self), 
+                          Cohesion(context, self), CenterUrge(context, self), 
+                          Surface(context, self), ControlObjectAttraction(context, self)]
         self.rewritingRules = []
-
-        self.sculpt_tool = agentSettings.tool
 
         if context.scene.swarm_settings.swarm_visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
@@ -96,7 +91,7 @@ class Agent:
 
     def onDraw(self):
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
-        drawTriangle(self.position, self.rotation, self.color)
+        drawTriangle(self.position, self.rotation, self.agentSettings.color)
 
         # draw steering vector for debugging
         # drawLine(self.position, self.position + self.steering)
@@ -121,14 +116,17 @@ class Agent:
             }]
 
 
-        bpy.ops.paint.brush_select(sculpt_tool = self.sculpt_tool, toggle = False)
+        bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
 
         bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)
 
 
-    def update(self, swarm, fixedTimeStep: float, step: int, agents: List["Agent"]):
+    def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
         self.recalcForward()
-        self.boidMovement(swarm, fixedTimeStep, agents)
+
+        self.replacement()
+
+        self.boidMovement(fixedTimeStep, agents)
 
         #debug flying in circles
         # self.steering = self.rotation @ mathutils.Vector((1, 0, 0))
@@ -137,7 +135,7 @@ class Agent:
         # rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
         # self.rotation = rot @ self.rotation
 
-        self.position += self.forward * self.maxSpeed * fixedTimeStep
+        self.position += self.forward * self.agentSettings.speed * fixedTimeStep
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 
@@ -146,7 +144,7 @@ class Agent:
         self.forward = self.rotation @ mathutils.Vector((1, 0, 0))
 
     
-    def boidMovement(self, swarm, fixedTimeStep: float, agents: List["Agent"]):
+    def boidMovement(self, fixedTimeStep: float, agents: List["Agent"]):
         
         self.steering = mathutils.Vector()
 
@@ -163,10 +161,41 @@ class Agent:
 
 
         for rule in self.boidRules:
-            self.steering += rule.calcDirection(swarm, self)
+            self.steering += rule.calcDirection(self)
 
         if(self.steering.length != 0):
             self.steering.normalize()
             quatDiff = self.forward.rotation_difference(self.steering)
-            rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.steeringSpeed, 0, 1))
+            rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.agentSettings.steeringSpeed, 0, 1))
             self.rotation = rot @ self.rotation
+
+
+    def replacement(self):
+        chance = 0.0
+        closestTransformer = None
+        closestDistance = float("inf")
+
+        for t in self.transformer:
+            vec = t.location - self.position
+            mag = vec.magnitude
+            rad = t.control_settings.radius
+            chance += 1 - (clamp(mag, 0, rad) / rad)
+
+            if closestDistance > mag:
+                closestDistance = mag
+                closestTransformer = t
+
+        if closestTransformer is None or random.random() > chance:
+            return
+                
+        i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.transformerResult)
+
+        self.agentSettings = agentDef
+        self.setControlObjects()
+        
+
+    def setControlObjects(self):
+        self.controlObjectsOfAgentType = self.controlObjects.get(self.agentSettings.name, [])
+        self.attractors = [obj for obj in self.controlObjectsOfAgentType if obj.control_settings.type in ("Attractor", "Transformer")]
+        self.transformer = [obj for obj in self.controlObjectsOfAgentType if obj.control_settings.type == "Transformer"]
+        

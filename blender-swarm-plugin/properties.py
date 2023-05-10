@@ -114,14 +114,17 @@ def findAgents(self, context):
 
 
 def updateAgent(self, context: bpy.types.Context):
-    agents = context.scene.swarm_settings.agent_definitions
-    i, selected_agent = findInCollection(agents, lambda a: a.name == context.scene.selected_agent)
+    i, selected = findAgentDefinition(context, context.scene.selected_agent)
 
-    if selected_agent is None:
+    if selected is None:
         return
 
-    setAgentAsCurrent(selected_agent, context)
+    setAgentAsCurrent(selected, context)
 
     
 def setAgentAsCurrent(agent: "AgentSettings", context: bpy.types.Context):
     copyPropertyGroup(agent, context.scene.current_agent_settings)
+
+
+def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, AgentSettings]:
+    return findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == name)

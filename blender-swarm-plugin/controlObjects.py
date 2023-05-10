@@ -16,9 +16,20 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
     )
 
     agentId: bpy.props.EnumProperty(name="Agent", 
-        items=lambda self, context: map(lambda d: (d.name, d.name, ""), context.scene.swarm_settings.agent_definitions),
+        items=lambda self, context: collectAgentIds(context),
         update=lambda s, c: agentIdUpdate(s, c)
     )
+
+    radius: bpy.props.FloatProperty(name="Radius", default=15, min=0)
+
+    transformerResult: bpy.props.EnumProperty(name="TransformerResult", 
+        items=lambda self, context: collectAgentIds(context)
+    )
+
+
+def collectAgentIds(context: bpy.types.Context):
+    return map(lambda d: (d.name, d.name, ""), context.scene.swarm_settings.agent_definitions)
+
 
 def addControlObject(context: bpy.types.Context):
     # Add a cube to the scene at the origin

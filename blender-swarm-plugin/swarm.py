@@ -6,6 +6,7 @@ from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
 from .controlObjects import collectControlObjects
+from .properties import AgentSettings
 
 class Swarm:
 
@@ -19,6 +20,12 @@ class Swarm:
 
         self.controlObjects = collectControlObjects(context)
 
+        self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
+        self.step = 0;
+        self.shouldStop = False
+        self.context = context
+        self.startTime = time.time()
+
         agentDefinitions = context.scene.swarm_settings.agent_definitions
         if len(agentDefinitions) < 1: return
 
@@ -26,20 +33,8 @@ class Swarm:
         for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
             i += 1
             for _ in range (0, agentCount):
-                currentAgent = agentDefinitions[i % (len(agentDefinitions))]
-
-                self.agents.append(
-                    Agent(context,
-                        swarmIndex=i, 
-                        agentSettings=currentAgent, 
-                        controlObjects=self.controlObjects.get(currentAgent.name, [])
-                    ))
-
-        self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
-        self.step = 0;
-        self.shouldStop = False
-        self.context = context
-        self.startTime = time.time()
+                currentAgent = agentDefinitions[0]
+                self.createNewAgent(context, i, currentAgent)
 
         bpy.app.timers.register(self.update)
 
@@ -60,13 +55,13 @@ class Swarm:
 
 
     def update(self):
-        printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
+        # printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
 
         self.bvhTree, self.bmesh = createBVH(self.context.active_object)
 
         for agent in self.agents:
-            agent.update(self, Swarm.fixedTimeStep, self.step, self.agents)
+            agent.update(Swarm.fixedTimeStep, self.step, self.agents)
 
         self.step += 1
 
@@ -82,3 +77,13 @@ class Swarm:
             return max(Swarm.fixedTimeStep - timeDiff, 0)
         else:
             return 0
+
+
+    def createNewAgent(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings):
+        self.agents.append(
+            Agent(context,
+                self,
+                swarmIndex=swarmIndex, 
+                agentSettings=agentSettings, 
+                controlObjects=self.controlObjects
+            ))
