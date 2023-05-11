@@ -160,9 +160,20 @@ class ControlObjectAttraction(BoidRule):
 
     def calcDirection(self, agent: "Agent"):
         dir = mathutils.Vector()
+        strengthSum = 0
+        attractorsInRangeCounter = 0
+
         for obj in agent.attractors:
             dir += obj.location - agent.position
 
-        dir /= max(len(agent.attractors), 1)
+            if dir.magnitude < obj.control_settings.radius:
+                strengthSum += obj.control_settings.strength
+                attractorsInRangeCounter += 1
+
+        count = max(attractorsInRangeCounter, 1)
+        dir /= count
+
+        strengthSum /= count #average strength
+        dir *= strengthSum
 
         return dir

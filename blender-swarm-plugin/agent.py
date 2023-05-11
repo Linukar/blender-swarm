@@ -185,6 +185,8 @@ class Agent:
                 closestDistance = mag
                 closestTransformer = t
 
+        chance /= 10
+
         if closestTransformer is None or random.random() > chance:
             return
                 

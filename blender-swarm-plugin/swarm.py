@@ -6,7 +6,7 @@ from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
 from .controlObjects import collectControlObjects
-from .properties import AgentSettings
+from .properties import AgentSettings, findAgentDefinition
 
 class Swarm:
 
@@ -33,8 +33,8 @@ class Swarm:
         for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
             i += 1
             for _ in range (0, agentCount):
-                currentAgent = agentDefinitions[0]
-                self.createNewAgent(context, i, currentAgent)
+                i, selectedAgent = findAgentDefinition(context, context.scene.current_agent_settings.name)
+                self.createNewAgent(context, i, selectedAgent)
 
         bpy.app.timers.register(self.update)
 

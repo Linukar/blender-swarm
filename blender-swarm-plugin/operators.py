@@ -19,6 +19,9 @@ class Swarm_OT_Start_Simulation(Operator):
         print("op update")
 
     def execute(self, context):
+        if context.active_object is None or context.active_object.type != "MESH" or context.active_object.control_settings.useAsControl:
+            self.report({'WARNING'}, "The active object cannot be sculpted. Please select an object with a mesh, that is not an control object.")
+            return {'CANCELLED'}
         startSwarm(context)
         return {'FINISHED'}
 

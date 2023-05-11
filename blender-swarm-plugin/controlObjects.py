@@ -20,6 +20,8 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
         update=lambda s, c: agentIdUpdate(s, c)
     )
 
+    strength: bpy.props.FloatProperty(name="Strength", default=0.5, min=0)
+    
     radius: bpy.props.FloatProperty(name="Radius", default=15, min=0)
 
     transformerResult: bpy.props.EnumProperty(name="TransformerResult", 
