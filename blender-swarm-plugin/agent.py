@@ -6,7 +6,7 @@ import random
 import gpu
 
 from .utils import context_override, clamp
-from .visualization import drawTriangle, drawLine
+from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
 
@@ -91,7 +91,7 @@ class Agent:
 
     def onDraw(self):
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
-        drawTriangle(self.position, self.rotation, self.agentSettings.color)
+        drawPyramid(self.position, self.rotation, self.agentSettings.color)
 
         # draw steering vector for debugging
         # drawLine(self.position, self.position + self.steering)
