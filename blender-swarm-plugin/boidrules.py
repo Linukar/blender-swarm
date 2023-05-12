@@ -155,25 +155,33 @@ class ControlObjectAttraction(BoidRule):
     def __init__(self, context: bpy.types.Context, agent: "Agent"):
         super().__init__(context, agent)
 
+
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         pass
 
+
     def calcDirection(self, agent: "Agent"):
-        dir = mathutils.Vector()
+        dirSum = mathutils.Vector()
         strengthSum = 0
         attractorsInRangeCounter = 0
 
         for obj in agent.attractors:
-            dir += obj.location - agent.position
+            vec = obj.location - agent.position
+            dist = vec.magnitude
 
-            if dir.magnitude < obj.control_settings.radius:
-                strengthSum += obj.control_settings.strength
-                attractorsInRangeCounter += 1
+            if dist < obj.control_settings.attractionRange:
+                norm = vec.normalized()
+
+                # only attract if target is in front of agent
+                if agent.forward.dot(norm) > 0:
+                    dirSum += vec
+                    strengthSum += obj.control_settings.strength
+                    attractorsInRangeCounter += 1
 
         count = max(attractorsInRangeCounter, 1)
-        dir /= count
+        dirSum /= count
 
         strengthSum /= count #average strength
-        dir *= strengthSum
+        dirSum *= strengthSum
 
-        return dir
+        return dirSum

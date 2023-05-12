@@ -178,19 +178,22 @@ class Agent:
         for t in self.transformer:
             vec = t.location - self.position
             mag = vec.magnitude
-            rad = t.control_settings.radius
-            chance += 1 - (clamp(mag, 0, rad) / rad)
+            range = t.control_settings.replacementRange
+            chance += 1 - (clamp(mag, 0, range) / range)
 
             if closestDistance > mag:
                 closestDistance = mag
                 closestTransformer = t
 
         chance /= 10
+        rnd = random.random() > chance
+        if not rnd: 
+            print("Passed chance" + str(t))
 
-        if closestTransformer is None or random.random() > chance:
+        if closestTransformer is None or rnd:
             return
                 
-        i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.transformerResult)
+        i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.replacementResult)
 
         self.agentSettings = agentDef
         self.setControlObjects()
