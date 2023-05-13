@@ -8,11 +8,15 @@ from .utils import findInCollection
 coTypes = ["Spawner", "Attractor", "Repulsor", "Transformer", "Splitter"]
 collectionName = "SwarmControlObjects"
 
+materialNameIdentifier = "swarm_m_"
+controlObjectNameIdentifier = "swarm_co_"
+
 class ControlObjectSettings(bpy.types.PropertyGroup):
     useAsControl: bpy.props.BoolProperty(name="Use as Control", default=False)
 
     type: bpy.props.EnumProperty(
-        items=lambda s, c: map(lambda t: (t, t, ""), coTypes)
+        items=lambda s, c: map(lambda t: (t, t, ""), coTypes),
+        update=lambda s, c: setObjectName(s, c)
     )
 
     agentId: bpy.props.EnumProperty(name="Agent", 
@@ -50,6 +54,12 @@ def addControlObject(context: bpy.types.Context):
     collection.objects.link(cube)
     context.view_layer.active_layer_collection.collection.objects.unlink(cube)
 
+    cube.name = controlObjectNameIdentifier + cube.control_settings.type + "_" + cube.control_settings.agentId
+
+
+def setObjectName(self, context: bpy.types.Context):
+    context.active_object.name = controlObjectNameIdentifier + self.type + "_" + self.agentId
+
 
 def agentIdUpdate(self, context: bpy.types.Context):
 
@@ -59,16 +69,20 @@ def agentIdUpdate(self, context: bpy.types.Context):
 
     color = agentDef.color
 
-    # Create a new material and set its base color
-    material = bpy.data.materials.new(name=agentDef.name)
-    material.use_nodes = True
-    bsdf_node = material.node_tree.nodes.get("Principled BSDF")
-    if bsdf_node:
-        bsdf_node.inputs["Base Color"].default_value = [color[0], color[1], color[2], 1]
+    existingMat = bpy.data.materials.get(materialNameIdentifier + agentDef.name)
 
-    # Assign the material to the cube
-    context.active_object.data.materials.append(material)
-    
+    if existingMat is None:
+        existingMat = bpy.data.materials.new(name=materialNameIdentifier + agentDef.name)
+        existingMat.use_nodes = True
+        bsdf_node = existingMat.node_tree.nodes.get("Principled BSDF")
+        if bsdf_node:
+            bsdf_node.inputs["Base Color"].default_value = [color[0], color[1], color[2], 1]
+
+
+    context.active_object.data.materials.clear()
+    context.active_object.data.materials.append(existingMat)
+
+    setObjectName(self, context)
     
 
 def isControlObject(object):

@@ -186,11 +186,9 @@ class Agent:
                 closestTransformer = t
 
         chance /= 10
-        rnd = random.random() > chance
-        if not rnd: 
-            print("Passed chance" + str(t))
+        doNotReplace = random.random() > chance
 
-        if closestTransformer is None or rnd:
+        if closestTransformer is None or doNotReplace:
             return
                 
         i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.replacementResult)

@@ -64,7 +64,7 @@ faces = [(0, 1, 2), (1, 3, 2), (3, 0, 2), (0, 1, 3)]
 
 shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
-scaleMultiplier = 0.09
+scaleMultiplier = 0.11
 
 def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()
