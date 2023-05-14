@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import random
 import bpy
@@ -20,6 +22,9 @@ from .rewritingRules import *
 
 from .agentSettings import AgentSettings
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .swarm import Swarm
 
 class Agent:
 
@@ -40,7 +45,14 @@ class Agent:
         (0.89, 0.52, 0.07)]
 
 
-    def __init__(self, context: bpy.types.Context, swarm, swarmIndex: int, agentSettings: AgentSettings, controlObjects: dict[str, list[bpy.types.Object]]):
+    def __init__(
+            self,
+            context: bpy.types.Context, 
+            swarm: Swarm, 
+            swarmIndex: int, 
+            agentSettings: AgentSettings, 
+            controlObjects: dict[str, list[bpy.types.Object]],
+            inheritTransformFrom: Agent = None):
 
         self.typeName = "Basic"
 
@@ -57,26 +69,29 @@ class Agent:
 
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
-        if context.scene.swarm_settings.swarm_randomStartLocation:
-            self.position = mathutils.Vector((
-                random.uniform(-spawnCubeSize, spawnCubeSize), 
-                random.uniform(-spawnCubeSize, spawnCubeSize), 
-                random.uniform(-spawnCubeSize, spawnCubeSize)
-                ))
+        if inheritTransformFrom is not None:
+            self.position = inheritTransformFrom.position
+            self.rotation = inheritTransformFrom.rotation
         else:
-            self.position = context.active_object.location.copy()
-        
 
-        eul = mathutils.Euler((
-            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
-            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
-            math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartZRotation else 0,
-            ))
-        self.rotation = eul.to_quaternion()
+            if context.scene.swarm_settings.swarm_randomStartLocation:
+                self.position = mathutils.Vector((
+                    random.uniform(-spawnCubeSize, spawnCubeSize), 
+                    random.uniform(-spawnCubeSize, spawnCubeSize), 
+                    random.uniform(-spawnCubeSize, spawnCubeSize)
+                    ))
+            else:
+                self.position = context.active_object.location.copy()
+            
 
+            eul = mathutils.Euler((
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartZRotation else 0,
+                ))
+            self.rotation = eul.to_quaternion()
 
-        self.forward = mathutils.Vector((1, 0, 0))
-        self.forward.rotate(self.rotation)
+        self.recalcForward()
 
         self.steering = self.forward
 
@@ -195,6 +210,12 @@ class Agent:
 
         self.agentSettings = agentDef
         self.setControlObjects()
+
+        if closestTransformer.control_settings.replacementCount > 1:
+            for _ in range(1, closestTransformer.control_settings.replacementCount):
+                self.swarm.addAgent(
+                    Agent(self.context, self.swarm, self.swarmIndex, self.agentSettings, self.controlObjects, inheritTransformFrom=self)
+                )
         
 
     def setControlObjects(self):

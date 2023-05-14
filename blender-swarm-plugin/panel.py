@@ -104,7 +104,9 @@ class SWARM_PT_Panel(Panel):
 
 
             if context.active_object.control_settings.type == "Transformer":
-                controlObjectBox.prop(context.active_object.control_settings, "replacementResult", text="Result")
+                resultRow = controlObjectBox.row()
+                resultRow.prop(context.active_object.control_settings, "replacementCount", text="Num")
+                resultRow.prop(context.active_object.control_settings, "replacementResult", text="Result")
                 controlObjectBox.prop(context.active_object.control_settings, "replacementRange", text="Replacement Range")
 
                 

@@ -34,6 +34,8 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
 
     replacementRange: bpy.props.FloatProperty(name="Replacement Range", default=5, min=0)
 
+    replacementCount: bpy.props.IntProperty(name="Replacement Count", default=1, min=1)
+
 
 
 def collectAgentIds(context: bpy.types.Context):

@@ -8,6 +8,7 @@ from .utils import printProgressBar, createBVH, findAgentDefinition
 from .controlObjects import collectControlObjects
 from .agentSettings import AgentSettings
 
+
 class Swarm:
 
     fixedTimeStep = 0.033 # 30 fps
@@ -87,3 +88,7 @@ class Swarm:
                 agentSettings=agentSettings, 
                 controlObjects=self.controlObjects
             ))
+        
+    
+    def addAgent(self, agent: Agent):
+        self.agents.append(agent)
