@@ -7,7 +7,8 @@ import bpy_extras
 from bpy.types import Operator
 from .swarmManager import startSwarm, stopSwarm, isRunning
 from .constants import maxPropSize
-from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges, saveAgentChanges, addAgent, removeAgent
+from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
+from .agentSettings import saveAgentChanges, addAgent, removeAgent
 from .controlObjects import addControlObject
 
 class Swarm_OT_Start_Simulation(Operator):

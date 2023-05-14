@@ -5,7 +5,7 @@ import mathutils
 import random
 import gpu
 
-from .utils import context_override, clamp
+from .utils import context_override, clamp, findAgentDefinition
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -18,7 +18,7 @@ from typing import Tuple
 
 from .rewritingRules import *
 
-from .agentSettings import AgentSettings, findAgentDefinition
+from .agentSettings import AgentSettings
 
 
 class Agent:

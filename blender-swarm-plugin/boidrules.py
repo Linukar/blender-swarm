@@ -5,7 +5,6 @@ import bmesh
 from mathutils.bvhtree import BVHTree
 
 from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from .agent import Agent
 

@@ -1,13 +1,15 @@
 import bpy
 
-from .utils import findInCollection, copyPropertyGroup
+from .utils import copyPropertyGroup, findInCollection, findAgentDefinition
 from .sculptTools import tools
+from .materials import updateControlObjectMaterial
+from .controlObjects import collectControlObjects
 
 
 class AgentSettings(bpy.types.PropertyGroup):
 
     name: bpy.props.StringProperty(name="Preset Name", default="")
-    color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR', default=(1, 1, 1), min=0, max=1)
+    color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR_GAMMA', size=4, default=(1, 1, 1, 1), min=0, max=1)
 
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
     localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
@@ -40,9 +42,36 @@ def updateAgent(self, context: bpy.types.Context):
     setAgentAsCurrent(selected, context)
 
     
-def setAgentAsCurrent(agent: "AgentSettings", context: bpy.types.Context):
+def setAgentAsCurrent(agent: AgentSettings, context: bpy.types.Context):
     copyPropertyGroup(agent, context.scene.current_agent_settings)
 
 
-def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, AgentSettings]:
-    return findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == name)
+def updateControlObjectColor(context):
+    for key, list in collectControlObjects(context).items():
+        for obj in list:
+            updateControlObjectMaterial(obj.control_settings, context)
+
+
+def saveAgentChanges(context: bpy.types.Context):
+    _, agent = findAgentDefinition(context, context.scene.selected_agent)
+    copyPropertyGroup(context.scene.current_agent_settings, agent)
+    updateControlObjectColor(context)
+
+            
+def addAgent(context: bpy.types.Context) -> None:
+    swarm_settings = context.scene.swarm_settings
+    newAgent = swarm_settings.agent_definitions.add()
+    newAgent.name = "Unnamed Agent"
+
+    # Set the new agent as the selected agent
+    context.scene.selected_agent = newAgent.name
+    
+
+def removeAgent(context: bpy.types.Context) -> None:
+    agents = context.scene.swarm_settings.agent_definitions
+
+    i, _ = findInCollection(agents, lambda p: p.name == context.scene.selected_agent)
+
+    if i is not None and len(agents) > 1:
+        agents.remove(i)
+        setAgentAsCurrent(agents[i-1], context)

@@ -4,9 +4,9 @@ import random
 
 from typing import List
 from .agent import Agent
-from .utils import printProgressBar, createBVH
+from .utils import printProgressBar, createBVH, findAgentDefinition
 from .controlObjects import collectControlObjects
-from .agentSettings import AgentSettings, findAgentDefinition
+from .agentSettings import AgentSettings
 
 class Swarm:
 

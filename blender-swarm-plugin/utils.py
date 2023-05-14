@@ -1,8 +1,14 @@
+from __future__ import annotations
+
 import bpy
 import bmesh
 import mathutils
 
 from mathutils.bvhtree import BVHTree
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .agentSettings import AgentSettings
 
 
 def context_override(context: bpy.types.Context):
@@ -72,3 +78,7 @@ def copyPropertyGroup(src, target, ignore=[]):
         if prop.identifier == "rna_type" or prop.identifier in ignore:
             continue
         setattr(target, prop.identifier, getattr(src, prop.identifier))
+
+
+def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, AgentSettings]:
+    return findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == name)

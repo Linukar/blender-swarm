@@ -6,9 +6,9 @@ import bpy_extras
 from typing import Dict, Any, List
 
 from .properties import SwarmSettings, setPresetAsCurrent
-from .agentSettings import setAgentAsCurrent, findAgentDefinition
+from .agentSettings import saveAgentChanges
 
-from .utils import findInCollection, copyPropertyGroup
+from .utils import findInCollection, copyPropertyGroup, findAgentDefinition
 
 
 class SwarmPreferences(bpy.types.AddonPreferences):
@@ -115,28 +115,3 @@ def savePresetChanges(context: bpy.types.Context):
 
     # Update the preset list
     context.scene.swarm_settings.selected_preset = preset.name
-
-
-def saveAgentChanges(context: bpy.types.Context):
-    _, agent = findAgentDefinition(context, context.scene.selected_agent)
-    copyPropertyGroup(context.scene.current_agent_settings, agent)
-
-            
-def addAgent(context: bpy.types.Context) -> None:
-    swarm_settings = context.scene.swarm_settings
-    newAgent = swarm_settings.agent_definitions.add()
-    newAgent.name = "Unnamed Agent"
-
-    # Set the new agent as the selected agent
-    context.scene.selected_agent = newAgent.name
-    
-
-def removeAgent(context: bpy.types.Context) -> None:
-    agents = context.scene.swarm_settings.agent_definitions
-
-    i, _ = findInCollection(agents, lambda p: p.name == context.scene.selected_agent)
-
-    if i is not None and len(agents) > 1:
-        agents.remove(i)
-        setAgentAsCurrent(agents[i-1], context)
-
