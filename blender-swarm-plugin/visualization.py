@@ -61,9 +61,6 @@ def drawTriangle(position: mathutils.Vector, rotation: mathutils.Quaternion, col
 
 vertices = [(0, -0.03, -0.03), (0, -0.03, 0.03), (0.13, 0, 0), (-0.03, 0, -0.03)]
 faces = [(0, 1, 2), (1, 3, 2), (3, 0, 2), (0, 1, 3)]  
-
-shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
-batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
 scaleMultiplier = 0.11
 
 def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
@@ -82,5 +79,5 @@ def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, colo
     # Iterate over the faces of the pyramid
     for face in faces:
         # Create a batch for each face
-        batch = batch_for_shader(shader, 'TRIS', {"offset": [vertices[i] for i in face]})
-        batch.draw(shader)
+        faceBatch = batch_for_shader(shader, 'TRIS', {"offset": [vertices[i] for i in face]})
+        faceBatch.draw(shader)

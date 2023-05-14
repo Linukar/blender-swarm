@@ -3,7 +3,6 @@ import bpy
 import bmesh
 
 from mathutils.bvhtree import BVHTree
-from .properties import AgentSettings
 
 from typing import TYPE_CHECKING
 

@@ -6,7 +6,7 @@ from typing import List
 from .agent import Agent
 from .utils import printProgressBar, createBVH
 from .controlObjects import collectControlObjects
-from .properties import AgentSettings, findAgentDefinition
+from .agentSettings import AgentSettings, findAgentDefinition
 
 class Swarm:
 

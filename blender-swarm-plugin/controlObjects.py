@@ -3,12 +3,14 @@ import bpy
 from itertools import groupby
 
 from .utils import findInCollection
+from .agentSettings import findAgentDefinition
 
 
 coTypes = ["Spawner", "Attractor", "Repulsor", "Transformer", "Splitter"]
 collectionName = "SwarmControlObjects"
 
 materialNameIdentifier = "swarm_m_"
+replaceMaterialName = "swarm_rm_"
 controlObjectNameIdentifier = "swarm_co_"
 
 class ControlObjectSettings(bpy.types.PropertyGroup):
@@ -61,9 +63,16 @@ def setObjectName(self, context: bpy.types.Context):
     context.active_object.name = controlObjectNameIdentifier + self.type + "_" + self.agentId
 
 
+def typeUpdate(self, context: bpy.types.Context):
+
+    # if self.type == "Transformer":
+    #     existingMat = bpy.data.materials.get(materialNameIdentifier + agentDef.name)
+
+    setObjectName(self, context)
+
 def agentIdUpdate(self, context: bpy.types.Context):
 
-    i, agentDef = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == self.agentId)
+    i, agentDef = findAgentDefinition(context, self.agentId)
 
     if agentDef is None: return
 
@@ -85,6 +94,39 @@ def agentIdUpdate(self, context: bpy.types.Context):
     setObjectName(self, context)
     
 
+def setMaterial(self, context):
+    i, agentDef = findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == self.agentId)
+
+    if agentDef is None: return
+
+    color = agentDef.color
+
+    if self.type != "Transformer":
+
+        existingMat = bpy.data.materials.get(materialNameIdentifier + agentDef.name)
+
+        if existingMat is None:
+            existingMat = bpy.data.materials.new(name=materialNameIdentifier + agentDef.name)
+            existingMat.use_nodes = True
+            bsdf_node = existingMat.node_tree.nodes.get("Principled BSDF")
+            if bsdf_node:
+                bsdf_node.inputs["Base Color"].default_value = [color[0], color[1], color[2], 1]
+
+    # else:
+        # replacementResult = 
+        # existingMat = bpy.data.materials.get(replaceMaterialName + agentDef.name + self.)
+
+        # if existingMat is None:
+        #     existingMat = twoColorMat(replaceMaterialName + agentDef.name)
+        #     existingMat.use_nodes = True
+        #     bsdf_node = existingMat.node_tree.nodes.get("Principled BSDF")
+        #     if bsdf_node:
+        #         bsdf_node.inputs["Base Color"].default_value = [color[0], color[1], color[2], 1]
+
+
+    context.active_object.data.materials.clear()
+    context.active_object.data.materials.append(existingMat)
+
 def isControlObject(object):
     return object is not None and object.control_settings.useAsControl
 
@@ -101,3 +143,51 @@ def collectControlObjects(context: bpy.types.Context) -> dict[str, list[bpy.type
     grouped = groupby(sortedObjects, lambda o: o.control_settings.agentId)
 
     return {key: list(group) for key, group in grouped}
+
+
+def twoColorMat(name, color1, color2):
+    # Create a new material
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+
+    # Clear all nodes to start clean
+    while(nodes): nodes.remove(nodes[0])
+
+    # Create necessary nodes
+    output = nodes.new(type='ShaderNodeOutputMaterial')
+    mix_shader = nodes.new(type='ShaderNodeMixShader')
+    diffuse1 = nodes.new(type='ShaderNodeBsdfPrincipled')
+    diffuse2 = nodes.new(type='ShaderNodeBsdfPrincipled')
+    geometry = nodes.new(type='ShaderNodeNewGeometry')
+    separate_xyz = nodes.new(type='ShaderNodeSeparateXYZ')
+    math_node = nodes.new(type='ShaderNodeMath')
+
+    # Set node positions to make it more organized
+    output.location = (400,0)
+    mix_shader.location = (200,0)
+    diffuse1.location = (0,100)
+    diffuse2.location = (0,-100)
+    geometry.location = (-400,0)
+    separate_xyz.location = (-200,0)
+    math_node.location = (-100, 0)
+
+    # Set the colors for the diffuse shaders
+    diffuse1.inputs['Base Color'].default_value = color1
+    diffuse2.inputs['Base Color'].default_value = color2
+
+    # Set the operation of the Math node to "Greater Than"
+    math_node.operation = 'GREATER_THAN'
+    math_node.inputs[1].default_value = 0.0
+
+    # Link the nodes together
+    links.new(geometry.outputs['Position'], separate_xyz.inputs['Vector'])
+    links.new(separate_xyz.outputs['X'], math_node.inputs[0])
+    links.new(math_node.outputs['Value'], mix_shader.inputs[0])
+    links.new(diffuse1.outputs['BSDF'], mix_shader.inputs[1])
+    links.new(diffuse2.outputs['BSDF'], mix_shader.inputs[2])
+    links.new(mix_shader.outputs['Shader'], output.inputs['Surface'])
+
+    return mat

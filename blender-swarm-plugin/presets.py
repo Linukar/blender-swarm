@@ -5,7 +5,8 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings, setPresetAsCurrent, setAgentAsCurrent, findAgentDefinition
+from .properties import SwarmSettings, setPresetAsCurrent
+from .agentSettings import setAgentAsCurrent, findAgentDefinition
 
 from .utils import findInCollection, copyPropertyGroup
 

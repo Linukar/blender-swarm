@@ -18,7 +18,7 @@ from typing import Tuple
 
 from .rewritingRules import *
 
-from .properties import AgentSettings, findAgentDefinition
+from .agentSettings import AgentSettings, findAgentDefinition
 
 
 class Agent:
