@@ -18,6 +18,10 @@ def stopSwarm(context: bpy.types.Context):
     global _swarm
     _swarm.stop()
 
+def pauseSwarm(context: bpy.types.Context):
+    global _swarm
+    _swarm.pause()
+
 
 def isRunning(context: bpy.types.Context):
     global _swarm

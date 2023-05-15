@@ -5,7 +5,7 @@ import sys
 import bpy_extras
 
 from bpy.types import Operator
-from .swarmManager import startSwarm, stopSwarm, isRunning
+from .swarmManager import startSwarm, stopSwarm, isRunning, pauseSwarm
 from .constants import maxPropSize
 from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
 from .agentSettings import saveAgentChanges, addAgent, removeAgent
@@ -63,6 +63,17 @@ class Swarm_OT_Stop_Simulation(Operator):
 
     def execute(self, context):    
         stopSwarm(context)
+
+        return {'FINISHED'}
+    
+
+class Swarm_OT_Pause_Simulation(Operator):
+    bl_idname = "swarm.pause_simulation"
+    bl_label = "Pause Simulation"
+    bl_description = "Pause Simulation"
+
+    def execute(self, context):    
+        pauseSwarm(context)
 
         return {'FINISHED'}
 

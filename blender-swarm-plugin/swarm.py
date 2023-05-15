@@ -18,6 +18,7 @@ class Swarm:
         random.seed(context.scene.swarm_settings.swarm_seed)
 
         self.agents: List[Agent] = []
+        self.isPaused = False
 
         self.controlObjects = collectControlObjects(context)
 
@@ -55,7 +56,14 @@ class Swarm:
         print("Finished in: " + str(time.time() - self.startTime))
 
 
+    def pause(self):
+        self.isPaused = not self.isPaused
+
+
     def update(self):
+        if self.isPaused:
+            return 0
+
         # printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
 

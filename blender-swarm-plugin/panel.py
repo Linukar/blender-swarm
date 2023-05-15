@@ -27,6 +27,7 @@ class SWARM_PT_Panel(Panel):
         general = col.box()
         general.operator("swarm.start_simulation", text = "Begin Simulation")
         # col.operator("swarm.modal_simulation", text = "Modal Simulation")
+        general.operator("swarm.pause_simulation", text = "Pause/Resume Simulation")
         general.operator("swarm.stop_simulation", text = "Stop Simulation")
 
 
