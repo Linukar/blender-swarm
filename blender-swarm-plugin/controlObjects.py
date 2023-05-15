@@ -65,17 +65,17 @@ def updateControlObjectName(self, context: bpy.types.Context):
 
 def onTypeUpdate(self, context: bpy.types.Context):
     updateControlObjectName(self, context)
-    updateControlObjectMaterial(self, context)
+    updateControlObjectMaterial(context.active_object, context)
 
 
 def onAgentUpdate(self, context: bpy.types.Context):
     updateControlObjectName(self, context)
-    updateControlObjectMaterial(self, context)
+    updateControlObjectMaterial(context.active_object, context)
     
 
 def onReplacementUpdate(self, context: bpy.types.Context):
     updateControlObjectName(self, context)
-    updateControlObjectMaterial(self, context)
+    updateControlObjectMaterial(context.active_object, context)
 
 
 def isControlObject(object):

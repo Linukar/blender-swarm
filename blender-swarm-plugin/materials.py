@@ -5,14 +5,15 @@ from .utils import findAgentDefinition
 materialNameIdentifier = "swarm_m_"
 replaceMaterialName = "swarm_rm_"
 
-def updateControlObjectMaterial(self, context):
-    i, agentDef = findAgentDefinition(context, self.agentId)
+def updateControlObjectMaterial(obj: bpy.types.Object, context: bpy.types.Context):
+    coSettings = obj.control_settings
+    i, agentDef = findAgentDefinition(context, coSettings.agentId)
 
     if agentDef is None: return
 
     color = agentDef.color
 
-    if self.type != "Transformer":
+    if coSettings.type != "Transformer":
 
         existingMat = bpy.data.materials.get(materialNameIdentifier + agentDef.name)
 
@@ -24,7 +25,7 @@ def updateControlObjectMaterial(self, context):
                 bsdf_node.inputs["Base Color"].default_value = [color[0], color[1], color[2], 1]
 
     else:
-        i, agentReplacement = findAgentDefinition(context, self.replacementResult)
+        i, agentReplacement = findAgentDefinition(context, coSettings.replacementResult)
         matName = replaceMaterialName + agentDef.name + "_" + agentReplacement.name
         existingMat = bpy.data.materials.get(matName)
 
@@ -34,8 +35,8 @@ def updateControlObjectMaterial(self, context):
         setColorsOfTwoColorMat(existingMat, agentDef.color, agentReplacement.color)
 
 
-    context.active_object.data.materials.clear()
-    context.active_object.data.materials.append(existingMat)
+    obj.data.materials.clear()
+    obj.data.materials.append(existingMat)
 
 
 color1BSDFName = "Diffuse1"

@@ -49,7 +49,7 @@ def setAgentAsCurrent(agent: AgentSettings, context: bpy.types.Context):
 def updateControlObjectColor(context):
     for key, list in collectControlObjects(context).items():
         for obj in list:
-            updateControlObjectMaterial(obj.control_settings, context)
+            updateControlObjectMaterial(obj, context)
 
 
 def saveAgentChanges(context: bpy.types.Context):
