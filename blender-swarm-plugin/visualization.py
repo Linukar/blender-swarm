@@ -61,7 +61,7 @@ def drawTriangle(position: mathutils.Vector, rotation: mathutils.Quaternion, col
 
 vertices = [(0, -0.03, -0.03), (0, -0.03, 0.03), (0.13, 0, 0), (-0.03, 0, -0.03)]
 faces = [(0, 1, 2), (1, 3, 2), (3, 0, 2), (0, 1, 3)]  
-scaleMultiplier = 0.11
+scaleMultiplier = 0.2
 
 def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()

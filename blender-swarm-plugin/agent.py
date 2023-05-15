@@ -7,6 +7,8 @@ import mathutils
 import random
 import gpu
 
+import sys
+
 from .utils import context_override, clamp, findAgentDefinition
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
@@ -70,7 +72,10 @@ class Agent:
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
         if inheritTransformFrom is not None:
-            self.position = inheritTransformFrom.position
+            # they cannt be on the exact same location; boid functions require a direction vector between agents
+            # if they are on the same location there is no direction, no distance and the boid cannot calculate its desired direction
+            eps = sys.float_info.epsilon
+            self.position = inheritTransformFrom.position + mathutils.Vector((eps, eps, eps)) 
             self.rotation = inheritTransformFrom.rotation
         else:
 
