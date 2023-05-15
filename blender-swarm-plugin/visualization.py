@@ -28,7 +28,7 @@ vertex_shader = '''
 '''
 
 fragment_shader = '''
-    uniform vec3 color;
+    uniform vec4 color;
 
     out vec4 FragColor;
 
@@ -44,7 +44,7 @@ shader = gpu.types.GPUShader(vertex_shader, fragment_shader)
 batch = batch_for_shader(shader, 'TRIS', {"offset": coords})
 scaleMultiplier = 0.09
 
-def drawTriangle(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
+def drawTriangle(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()
     cameraDistance = viewMat.translation.magnitude
     scale = cameraDistance * scaleMultiplier
@@ -63,7 +63,7 @@ vertices = [(0, -0.03, -0.03), (0, -0.03, 0.03), (0.13, 0, 0), (-0.03, 0, -0.03)
 faces = [(0, 1, 2), (1, 3, 2), (3, 0, 2), (0, 1, 3)]  
 scaleMultiplier = 0.11
 
-def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float]):
+def drawPyramid(position: mathutils.Vector, rotation: mathutils.Quaternion, color: tuple[float, float, float, float]):
     viewMat = gpu.matrix.get_model_view_matrix()
     cameraDistance = viewMat.translation.magnitude
     scale = cameraDistance * scaleMultiplier

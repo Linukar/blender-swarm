@@ -193,8 +193,8 @@ class Agent:
         for t in self.transformer:
             vec = t.location - self.position
             mag = vec.magnitude
-            range = t.control_settings.replacementRange
-            chance += 1 - (clamp(mag, 0, range) / range)
+            replacementRange = t.control_settings.replacementRange
+            chance += 1 - (clamp(mag, 0, replacementRange) / replacementRange)
 
             if closestDistance > mag:
                 closestDistance = mag
@@ -211,8 +211,10 @@ class Agent:
         self.agentSettings = agentDef
         self.setControlObjects()
 
-        if closestTransformer.control_settings.replacementCount > 1:
-            for _ in range(1, closestTransformer.control_settings.replacementCount):
+        replacementCount = closestTransformer.control_settings.replacementCount
+
+        if replacementCount > 1:
+            for i in range(replacementCount - 1):
                 self.swarm.addAgent(
                     Agent(self.context, self.swarm, self.swarmIndex, self.agentSettings, self.controlObjects, inheritTransformFrom=self)
                 )
