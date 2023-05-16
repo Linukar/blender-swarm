@@ -9,7 +9,7 @@ import gpu
 
 import sys
 
-from .utils import context_override, clamp, findAgentDefinition
+from .utils import context_override, clamp, findAgentDefinition, findClosestPointInBVH
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -165,6 +165,9 @@ class Agent:
         # self.rotation = rot @ self.rotation
 
         self.position += self.forward * self.agentSettings.speed * fixedTimeStep
+
+        if self.agentSettings.snapToSurface:
+            self.position = findClosestPointInBVH(self.swarm.bvhTree, self.swarm.bmesh, self.position)
 
         if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
 

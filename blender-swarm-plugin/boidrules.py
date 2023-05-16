@@ -3,6 +3,7 @@ import bpy
 import bmesh
 
 from mathutils.bvhtree import BVHTree
+from .utils import findClosestPointInBVH
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -128,25 +129,13 @@ class Surface(BoidRule):
         pass
 
     def calcDirection(self, agent: "Agent"):
-        closestPoint = self.findClosestPoint(agent.swarm.bvhTree, agent.swarm.bmesh, agent.position)
+        closestPoint = findClosestPointInBVH(agent.swarm.bvhTree, agent.swarm.bmesh, agent.position)
 
         if closestPoint is None:
             return mathutils.Vector()
 
         dirToClosest = closestPoint - agent.position
         return dirToClosest * agent.agentSettings.surfaceWeight
-    
-    def findClosestPoint(self, bvhTree: BVHTree, bmesh: bmesh.types.BMesh , point: mathutils.Vector):
-        closestPoint, _, __, ___ = bvhTree.find_nearest(point)
-
-        # If no nearest point is found, return None
-        if closestPoint is None:
-            bmesh.free()
-            return None
-
-        # Return the closest point
-        bmesh.free()
-        return closestPoint
 
 
 class ControlObjectAttraction(BoidRule):

@@ -53,9 +53,9 @@ class SWARM_PT_Panel(Panel):
         seedRow.prop(context.scene.swarm_settings, "swarm_seed", text="Seed")
         seedRow.operator("swarm.new_seed", text="New Seed")
 
-        swarmSettings.prop(context.scene.swarm_settings, "swarm_agentCount", text="Agent Count")
-        swarmSettings.prop(context.scene.swarm_settings, "swarm_swarmCount", text="Swarm Count")
-        swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")
+        # swarmSettings.prop(context.scene.swarm_settings, "swarm_agentCount", text="Agent Count")
+        # swarmSettings.prop(context.scene.swarm_settings, "swarm_swarmCount", text="Swarm Count")
+        # swarmSettings.prop(context.scene.swarm_settings, "swarm_spawnAreaSize", text="Spawn Area")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_maxSimulationSteps", text="Simulation Steps")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_visualizeAgents", text="Visualize Agents")
         swarmSettings.prop(context.scene.swarm_settings, "swarm_useSculpting", text="use Sculpting")
@@ -89,6 +89,7 @@ class SWARM_PT_Panel(Panel):
         agentSettings.prop(context.scene.current_agent_settings, "centerUrgeWeight", text="Center Weight")
         agentSettings.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
         agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
+        agentSettings.prop(context.scene.current_agent_settings, "snapToSurface", text="Snap to Surface")
 
         col.separator()
 

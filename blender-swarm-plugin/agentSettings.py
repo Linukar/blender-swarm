@@ -28,6 +28,8 @@ class AgentSettings(bpy.types.PropertyGroup):
     toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
 
+    snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
+
 
 def findAgents(self, context):
     agents = context.scene.swarm_settings.agent_definitions

@@ -82,3 +82,16 @@ def copyPropertyGroup(src, target, ignore=[]):
 
 def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, AgentSettings]:
     return findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == name)
+
+
+def findClosestPointInBVH(bvhTree: BVHTree, bmesh: bmesh.types.BMesh , point: mathutils.Vector):
+    closestPoint, _, __, ___ = bvhTree.find_nearest(point)
+
+    # If no nearest point is found, return None
+    if closestPoint is None:
+        bmesh.free()
+        return None
+
+    # Return the closest point
+    bmesh.free()
+    return closestPoint
