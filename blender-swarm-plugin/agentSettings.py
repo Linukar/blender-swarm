@@ -47,13 +47,14 @@ def setAgentAsCurrent(agent: AgentSettings, context: bpy.types.Context):
 
 
 def updateControlObjectColor(context):
-    for key, list in collectControlObjects(context).items():
-        for obj in list:
-            updateControlObjectMaterial(obj, context)
+    for obj in collectControlObjects(context):
+        updateControlObjectMaterial(obj, context)
 
 
 def saveAgentChanges(context: bpy.types.Context):
     _, agent = findAgentDefinition(context, context.scene.selected_agent)
+    if agent is None:
+        agent = context.scene.swarm_settings.agent_definitions.add()
     copyPropertyGroup(context.scene.current_agent_settings, agent)
     updateControlObjectColor(context)
 

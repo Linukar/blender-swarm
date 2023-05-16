@@ -70,7 +70,7 @@ def findInCollection(prop, when):
     for i, elem in enumerate(prop):
         if when(elem):
             return (i, elem)
-    return None
+    return (None, None)
 
 
 def copyPropertyGroup(src, target, ignore=[]):

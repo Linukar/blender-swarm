@@ -20,8 +20,6 @@ from mathutils import Vector
 from bpy.types import Camera, Object, Context
 from typing import Tuple
 
-from .rewritingRules import *
-
 from .agentSettings import AgentSettings
 
 from typing import TYPE_CHECKING
@@ -134,7 +132,7 @@ class Agent:
                 "mouse_event": (0.0, 0.0),
                 "pen_flip": True,
                 "pressure": 1,
-                "size": 0.5,
+                "size": 1,
                 "time": 1,
                 "x_tilt": 0,
                 "y_tilt": 0
@@ -142,6 +140,11 @@ class Agent:
 
 
         bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
+
+        # Modify the size of the brush
+        brush = bpy.context.tool_settings.unified_paint_settings
+        brush.unprojected_radius = 5
+        brush.use_locked_size = "SCENE"
 
         bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)
 

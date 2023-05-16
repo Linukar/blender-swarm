@@ -101,7 +101,7 @@ def savePresetChanges(context: bpy.types.Context):
     _, preset = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
 
     if preset is None:
-        return
+        preset = addonPrefs.presets.add()
 
     copyPropertyGroup(context.scene.swarm_settings, preset, ["agent_definitions"])
 
