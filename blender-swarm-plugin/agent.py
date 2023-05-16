@@ -141,9 +141,9 @@ class Agent:
 
         bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
 
-        # Modify the size of the brush
         brush = bpy.context.tool_settings.unified_paint_settings
-        brush.unprojected_radius = 5
+        brush.unprojected_radius = self.agentSettings.toolRadius
+        brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
 
         bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)

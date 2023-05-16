@@ -25,6 +25,8 @@ class AgentSettings(bpy.types.PropertyGroup):
     surfaceWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
     tool: bpy.props.EnumProperty(items=tools)
+    toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
+    toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
 
 
 def findAgents(self, context):

@@ -76,6 +76,8 @@ class SWARM_PT_Panel(Panel):
         agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
         agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
         agentSettings.prop(context.scene.current_agent_settings, "tool", text="Tool to use")
+        agentSettings.prop(context.scene.current_agent_settings, "toolRadius", text="Radius")
+        agentSettings.prop(context.scene.current_agent_settings, "toolStrength", text="Strength")
         agentSettings.prop(context.scene.current_agent_settings, "noClumpRadius", text="Separation Radius")
         agentSettings.prop(context.scene.current_agent_settings, "localAreaRadius", text="Neighbour Radius")
         agentSettings.prop(context.scene.current_agent_settings, "speed", text="Agent Speed")
@@ -115,6 +117,3 @@ class SWARM_PT_Panel(Panel):
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerOffset", text="Offset")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerFrequency", text="Frequency")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerAmount", text="Amount")
-
-
-                
