@@ -42,10 +42,8 @@ class Swarm:
         #         self.createNewAgent(context, i, selectedAgent)
 
         for spawner in self.spawner:
-            i, agentDef = findAgentDefinition(self.context, spawner.control_settings.agentId)
-            if agentDef is not None:
-                self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
-                spawner.control_settings.spawnerTimer = 0
+            if spawner.control_settings.spawnOnStart:
+                self.spawnFromSpawner(spawner)
 
         bpy.app.timers.register(self.update)
 
@@ -75,14 +73,13 @@ class Swarm:
 
         # printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
+        timeSinceStart = time.time() - self.startTime
 
         for spawner in self.spawner:
             spawner.control_settings.spawnerTimer += Swarm.fixedTimeStep
-            if spawner.control_settings.spawnerTimer > spawner.control_settings.spawnerFrequency:
-                i, agentDef = findAgentDefinition(self.context, spawner.control_settings.agentId)
-                if agentDef is not None:
-                    self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
-                    spawner.control_settings.spawnerTimer = 0
+            if (spawner.control_settings.spawnerTimer > spawner.control_settings.spawnerFrequency 
+                and timeSinceStart > spawner.control_settings.spawnerOffset):
+                    self.spawnFromSpawner(spawner)
 
         self.bvhTree, self.bmesh = createBVH(self.context.active_object)
 
@@ -120,3 +117,10 @@ class Swarm:
     
     def addAgent(self, agent: Agent):
         self.agents.append(agent)
+
+    def spawnFromSpawner(self, spawner):
+        i, agentDef = findAgentDefinition(self.context, spawner.control_settings.agentId)
+        if agentDef is not None:
+            for i in range(spawner.control_settings.spawnerAmount):
+                self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
+            spawner.control_settings.spawnerTimer = 0
