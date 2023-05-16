@@ -53,10 +53,9 @@ class Agent:
             swarm: Swarm, 
             swarmIndex: int, 
             agentSettings: AgentSettings, 
-            controlObjects: dict[str, list[bpy.types.Object]],
+            controlObjects: list[bpy.types.Object],
+            spawnPosition: mathutils.Vector = None,
             inheritTransformFrom: Agent = None):
-
-        self.typeName = "Basic"
 
         self.context = context
         self.swarm = swarm
@@ -65,9 +64,10 @@ class Agent:
 
         self.swarmIndex = swarmIndex
         self.controlObjects = controlObjects
-        self.setControlObjects()
+        self.setFilteredControlObjects()
 
         self.energy = 200
+        self.lifetime = 0
 
         spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
 
@@ -79,15 +79,18 @@ class Agent:
             self.rotation = inheritTransformFrom.rotation
         else:
 
-            if context.scene.swarm_settings.swarm_randomStartLocation:
-                self.position = mathutils.Vector((
-                    random.uniform(-spawnCubeSize, spawnCubeSize), 
-                    random.uniform(-spawnCubeSize, spawnCubeSize), 
-                    random.uniform(-spawnCubeSize, spawnCubeSize)
-                    ))
+            if spawnPosition is not None:
+                self.position = spawnPosition.copy()
+
             else:
-                self.position = context.active_object.location.copy()
-            
+                if context.scene.swarm_settings.swarm_randomStartLocation:
+                    self.position = mathutils.Vector((
+                        random.uniform(-spawnCubeSize, spawnCubeSize), 
+                        random.uniform(-spawnCubeSize, spawnCubeSize), 
+                        random.uniform(-spawnCubeSize, spawnCubeSize)
+                        ))
+                else:
+                    self.position = context.active_object.location.copy()
 
             eul = mathutils.Euler((
                 math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
@@ -116,9 +119,11 @@ class Agent:
         # draw steering vector for debugging
         # drawLine(self.position, self.position + self.steering)
 
+
     def onStop(self, context: bpy.types.Context):
         if context.scene.swarm_settings.swarm_visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
+
 
     def applyBrush(self):
         stroke = [{
@@ -142,9 +147,10 @@ class Agent:
 
 
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
+        self.lifetime += fixedTimeStep
         self.recalcForward()
 
-        self.replacement()
+        self.replacement(fixedTimeStep)
 
         self.boidMovement(fixedTimeStep, agents)
 
@@ -190,7 +196,7 @@ class Agent:
             self.rotation = rot @ self.rotation
 
 
-    def replacement(self):
+    def replacement(self, timeStep):
         chance = 0.0
         closestTransformer = None
         closestDistance = float("inf")
@@ -207,14 +213,16 @@ class Agent:
 
         chance /= 10
         doNotReplace = random.random() > chance
+        # try to slow down exponential explosion if agents are replaced by multiples of themself
+        tooYoungToDie = self.lifetime < timeStep * 10 
 
-        if closestTransformer is None or doNotReplace:
+        if closestTransformer is None or doNotReplace or tooYoungToDie:
             return
                 
         i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.replacementResult)
 
         self.agentSettings = agentDef
-        self.setControlObjects()
+        self.setFilteredControlObjects()
 
         replacementCount = closestTransformer.control_settings.replacementCount
 
@@ -225,8 +233,8 @@ class Agent:
                 )
         
 
-    def setControlObjects(self):
-        self.controlObjectsOfAgentType = self.controlObjects.get(self.agentSettings.name, [])
-        self.attractors = [obj for obj in self.controlObjectsOfAgentType if obj.control_settings.type in ("Attractor", "Transformer")]
-        self.transformer = [obj for obj in self.controlObjectsOfAgentType if obj.control_settings.type == "Transformer"]
+    def setFilteredControlObjects(self):
+        self.controlObjectsOfAgentType = list(filter(lambda o: o.control_settings.agentId == self.agentSettings.name, self.controlObjects))
+        self.attractors = list(filter(lambda o: o.control_settings.type in ["Attractor", "Transformer"], self.controlObjectsOfAgentType))
+        self.transformer = list(filter(lambda o: o.control_settings.type == "Transformer", self.controlObjectsOfAgentType))
         

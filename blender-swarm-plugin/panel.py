@@ -110,7 +110,7 @@ class SWARM_PT_Panel(Panel):
                 resultRow.prop(context.active_object.control_settings, "replacementResult", text="Result")
                 controlObjectBox.prop(context.active_object.control_settings, "replacementRange", text="Replacement Range")
 
+            if context.active_object.control_settings.type == "Spawner":
+                controlObjectBox.prop(context.active_object.control_settings, "spawnerFrequency", text="Frequency")
+
                 
-
-
-

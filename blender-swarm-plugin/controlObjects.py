@@ -36,6 +36,9 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
 
     replacementCount: bpy.props.IntProperty(name="Replacement Count", default=1, min=1)
 
+    spawnerFrequency: bpy.props.FloatProperty(name="Spawner Frequency", default=1, min=0)
+    spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0, min=0)
+
 
 
 def collectAgentIds(context: bpy.types.Context):
@@ -82,7 +85,7 @@ def isControlObject(object):
     return object is not None and object.control_settings.useAsControl
 
 
-def collectControlObjects(context: bpy.types.Context) -> dict[str, list[bpy.types.Object]]:
+def collectControlObjects(context: bpy.types.Context) -> list[bpy.types.Object]:
     collection = bpy.data.collections.get(collectionName)
     if collection is not None:
         allObjects = collection.objects
@@ -90,7 +93,5 @@ def collectControlObjects(context: bpy.types.Context) -> dict[str, list[bpy.type
         allObjects = context.scene.objects
     
     controlObjects = list(filter(lambda o: isControlObject(o), allObjects))
-    sortedObjects = sorted(controlObjects, key=lambda o: o.control_settings.agentId)
-    grouped = groupby(sortedObjects, lambda o: o.control_settings.agentId)
 
-    return {key: list(group) for key, group in grouped}
+    return controlObjects

@@ -3,6 +3,8 @@ import time
 import random
 
 from typing import List
+
+import mathutils
 from .agent import Agent
 from .utils import printProgressBar, createBVH, findAgentDefinition
 from .controlObjects import collectControlObjects
@@ -21,6 +23,7 @@ class Swarm:
         self.isPaused = False
 
         self.controlObjects = collectControlObjects(context)
+        self.spawner = list(filter(lambda o: o.control_settings.type == "Spawner", self.controlObjects))
 
         self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
         self.step = 0;
@@ -31,12 +34,18 @@ class Swarm:
         agentDefinitions = context.scene.swarm_settings.agent_definitions
         if len(agentDefinitions) < 1: return
 
-        i = 0
-        for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
-            i += 1
-            for _ in range (0, agentCount):
-                i, selectedAgent = findAgentDefinition(context, context.scene.current_agent_settings.name)
-                self.createNewAgent(context, i, selectedAgent)
+        # i = 0
+        # for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
+        #     i += 1
+        #     for _ in range (0, agentCount):
+        #         i, selectedAgent = findAgentDefinition(context, context.scene.current_agent_settings.name)
+        #         self.createNewAgent(context, i, selectedAgent)
+
+        for spawner in self.spawner:
+            i, agentDef = findAgentDefinition(self.context, spawner.control_settings.agentId)
+            if agentDef is not None:
+                self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
+                spawner.control_settings.spawnerTimer = 0
 
         bpy.app.timers.register(self.update)
 
@@ -67,6 +76,14 @@ class Swarm:
         # printProgressBar(self.step, self.totalSteps, "Simulating...", printEnd="\r")
         self.updateStartTime = time.time()
 
+        for spawner in self.spawner:
+            spawner.control_settings.spawnerTimer += Swarm.fixedTimeStep
+            if spawner.control_settings.spawnerTimer > spawner.control_settings.spawnerFrequency:
+                i, agentDef = findAgentDefinition(self.context, spawner.control_settings.agentId)
+                if agentDef is not None:
+                    self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
+                    spawner.control_settings.spawnerTimer = 0
+
         self.bvhTree, self.bmesh = createBVH(self.context.active_object)
 
         for agent in self.agents:
@@ -81,6 +98,8 @@ class Swarm:
            self.onStop()
            return None
 
+        # update with 30 fps or slower
+        # never faster, to allow the user to be able to understand whats happening
         if self.context.scene.swarm_settings.swarm_visualizeAgents:
             timeDiff = (time.time() - self.updateStartTime)
             return max(Swarm.fixedTimeStep - timeDiff, 0)
@@ -88,13 +107,14 @@ class Swarm:
             return 0
 
 
-    def createNewAgent(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings):
+    def createNewAgent(self, context: bpy.types.Context, swarmIndex: int, agentSettings: AgentSettings, spawnPosition: mathutils.Vector = None):
         self.agents.append(
             Agent(context,
                 self,
                 swarmIndex=swarmIndex, 
                 agentSettings=agentSettings, 
-                controlObjects=self.controlObjects
+                controlObjects=self.controlObjects,
+                spawnPosition=spawnPosition
             ))
         
     
