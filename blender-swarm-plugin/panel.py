@@ -115,7 +115,7 @@ class SWARM_PT_Panel(Panel):
             controlObjectBox.prop(context.active_object.control_settings, "type", text="Type")
             controlObjectBox.prop(context.active_object.control_settings, "agentId", text="Agent")
 
-            if context.active_object.control_settings.type in ["Replicator", "Attractor", "Repulsor", "Splitter"]:
+            if context.active_object.control_settings.type in ["Replicator", "Attractor", "Deflector", "Splitter"]:
                 controlObjectBox.prop(context.active_object.control_settings, "strength", text="Strength")
                 controlObjectBox.prop(context.active_object.control_settings, "attractionRange", text="Attraction Range")
 

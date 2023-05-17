@@ -161,7 +161,7 @@ class ControlObjectAttraction(BoidRule):
 
                 # only attract if target is in front of agent
                 if agent.forward.dot(norm) > 0:
-                    dirSum += vec
+                    dirSum += vec if obj.control_settings.type != "Deflector" else -vec
                     strengthSum += obj.control_settings.strength
                     attractorsInRangeCounter += 1
 

@@ -5,7 +5,7 @@ from itertools import groupby
 from .materials import updateControlObjectMaterial
 
 
-coTypes = ["Spawner", "Attractor", "Repulsor", "Replicator", "Splitter"]
+coTypes = ["Spawner", "Attractor", "Deflector", "Replicator", "Splitter"]
 collectionName = "SwarmControlObjects"
 
 controlObjectNameIdentifier = "swarm_co_"

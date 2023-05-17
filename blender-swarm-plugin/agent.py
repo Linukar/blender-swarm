@@ -243,9 +243,10 @@ class Agent:
         
 
     def setFilteredControlObjects(self):
-        self.controlObjectsOfAgentType = list(filter(lambda o: o.control_settings.agentId == self.agentSettings.name, self.controlObjects))
-        self.attractors = list(filter(lambda o: o.control_settings.type in ["Attractor", "Replicator"], self.controlObjectsOfAgentType))
-        self.replicator = list(filter(lambda o: o.control_settings.type == "Replicator", self.controlObjectsOfAgentType))
+        self.controlObjectsOfAgentType = [o for o in self.controlObjects if o.control_settings.agentId == self.agentSettings.name]
+        self.attractors = [o for o in self.controlObjectsOfAgentType if o.control_settings.type in ["Attractor", "Replicator", "Deflector"]]
+        self.replicator = [o for o in self.controlObjectsOfAgentType if o.control_settings.type == "Replicator"]
+        
 
 
     def setAgentSettings(self, agentSettings: AgentSettings):
