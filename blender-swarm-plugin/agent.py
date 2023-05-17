@@ -207,10 +207,10 @@ class Agent:
 
     def replacement(self, timeStep):
         chance = 0.0
-        closestTransformer = None
+        closestReplicator = None
         closestDistance = float("inf")
 
-        for t in self.transformer:
+        for t in self.replicator:
             vec = t.location - self.position
             mag = vec.magnitude
             replacementRange = t.control_settings.replacementRange
@@ -218,22 +218,22 @@ class Agent:
 
             if closestDistance > mag:
                 closestDistance = mag
-                closestTransformer = t
+                closestReplicator = t
 
         chance /= 10
         doNotReplace = random.random() > chance
         # try to slow down exponential explosion if agents are replaced by multiples of themself
         tooYoungToDie = self.lifetime < timeStep * 10 
 
-        if closestTransformer is None or doNotReplace or tooYoungToDie:
+        if closestReplicator is None or doNotReplace or tooYoungToDie:
             return
                 
-        i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.replacementResult)
+        i, agentDef = findAgentDefinition(self.context, closestReplicator.control_settings.replacementResult)
 
         self.setAgentSettings(agentDef)
         self.setFilteredControlObjects()
 
-        replacementCount = closestTransformer.control_settings.replacementCount
+        replacementCount = closestReplicator.control_settings.replacementCount
 
         if replacementCount > 1:
             for i in range(replacementCount - 1):
@@ -244,8 +244,8 @@ class Agent:
 
     def setFilteredControlObjects(self):
         self.controlObjectsOfAgentType = list(filter(lambda o: o.control_settings.agentId == self.agentSettings.name, self.controlObjects))
-        self.attractors = list(filter(lambda o: o.control_settings.type in ["Attractor", "Transformer"], self.controlObjectsOfAgentType))
-        self.transformer = list(filter(lambda o: o.control_settings.type == "Transformer", self.controlObjectsOfAgentType))
+        self.attractors = list(filter(lambda o: o.control_settings.type in ["Attractor", "Replicator"], self.controlObjectsOfAgentType))
+        self.replicator = list(filter(lambda o: o.control_settings.type == "Replicator", self.controlObjectsOfAgentType))
 
 
     def setAgentSettings(self, agentSettings: AgentSettings):

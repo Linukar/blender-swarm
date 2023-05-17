@@ -13,7 +13,7 @@ def updateControlObjectMaterial(obj: bpy.types.Object, context: bpy.types.Contex
 
     color = agentDef.color
 
-    if coSettings.type != "Transformer":
+    if coSettings.type != "Replicator":
 
         existingMat = bpy.data.materials.get(materialNameIdentifier + agentDef.name)
 
