@@ -16,8 +16,8 @@ class Swarm:
     fixedTimeStep = 0.033 # 30 fps
 
     def __init__(self, context: bpy.types.Context):
-        agentCount = context.scene.swarm_settings.swarm_agentCount
-        random.seed(context.scene.swarm_settings.swarm_seed)
+        agentCount = context.scene.swarm_settings.agentCount
+        random.seed(context.scene.swarm_settings.seed)
 
         self.agents: List[Agent] = []
         self.isPaused = False
@@ -25,7 +25,7 @@ class Swarm:
         self.controlObjects = collectControlObjects(context)
         self.spawner = list(filter(lambda o: o.control_settings.type == "Spawner", self.controlObjects))
 
-        self.totalSteps = context.scene.swarm_settings.swarm_maxSimulationSteps
+        self.totalSteps = context.scene.swarm_settings.maxSimulationSteps
         self.step = 0;
         self.shouldStop = False
         self.context = context
@@ -35,7 +35,7 @@ class Swarm:
         if len(agentDefinitions) < 1: return
 
         # i = 0
-        # for _ in range (0, context.scene.swarm_settings.swarm_swarmCount):
+        # for _ in range (0, context.scene.swarm_settings.swarmCount):
         #     i += 1
         #     for _ in range (0, agentCount):
         #         i, selectedAgent = findAgentDefinition(context, context.scene.current_agent_settings.name)
@@ -97,7 +97,7 @@ class Swarm:
 
         # update with 30 fps or slower
         # never faster, to allow the user to be able to understand whats happening
-        if self.context.scene.swarm_settings.swarm_visualizeAgents:
+        if self.context.scene.swarm_settings.visualizeAgents:
             timeDiff = (time.time() - self.updateStartTime)
             return max(Swarm.fixedTimeStep - timeDiff, 0)
         else:

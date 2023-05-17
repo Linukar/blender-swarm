@@ -38,17 +38,19 @@ class SwarmSettings(bpy.types.PropertyGroup):
     name: bpy.props.StringProperty(name="Name", default="")
 
     # general swarm properties
-    swarm_seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
-    swarm_agentCount: bpy.props.IntProperty(default=42, min=1, max=10000)
-    swarm_swarmCount: bpy.props.IntProperty(default=1, min=1, max=1000)
+    seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
+    agentCount: bpy.props.IntProperty(default=42, min=1, max=10000)
+    swarmCount: bpy.props.IntProperty(default=1, min=1, max=1000)
 
-    swarm_spawnAreaSize: bpy.props.FloatProperty(default=3, min=0, precision=2)
-    swarm_maxSimulationSteps: bpy.props.IntProperty(default=10000, min=1)
-    swarm_visualizeAgents: bpy.props.BoolProperty(default=True)
-    swarm_useSculpting: bpy.props.BoolProperty(default=True)
-    swarm_randomStartLocation: bpy.props.BoolProperty(default=True)
-    swarm_randomStartXYRotation: bpy.props.BoolProperty(default=True)
-    swarm_randomStartZRotation: bpy.props.BoolProperty(default=True)
+    spawnAreaSize: bpy.props.FloatProperty(default=3, min=0, precision=2)
+    maxSimulationSteps: bpy.props.IntProperty(default=10000, min=1)
+    visualizeAgents: bpy.props.BoolProperty(default=True)
+    useSculpting: bpy.props.BoolProperty(default=True)
+    randomStartLocation: bpy.props.BoolProperty(default=True)
+    randomStartXYRotation: bpy.props.BoolProperty(default=True)
+    randomStartZRotation: bpy.props.BoolProperty(default=True)
+    useDyntypo: bpy.props.BoolProperty(default=True)
+    dyntypoResolution: bpy.props.FloatProperty(default=2, min=0.001)
 
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)

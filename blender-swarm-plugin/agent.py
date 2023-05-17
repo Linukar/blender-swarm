@@ -67,7 +67,7 @@ class Agent:
         self.energy = 200
         self.lifetime = 0
 
-        spawnCubeSize = context.scene.swarm_settings.swarm_spawnAreaSize
+        spawnCubeSize = context.scene.swarm_settings.spawnAreaSize
 
         if inheritTransformFrom is not None:
             # they cannt be on the exact same location; boid functions require a direction vector between agents
@@ -81,7 +81,7 @@ class Agent:
                 self.position = spawnPosition.copy()
 
             else:
-                if context.scene.swarm_settings.swarm_randomStartLocation:
+                if context.scene.swarm_settings.randomStartLocation:
                     self.position = mathutils.Vector((
                         random.uniform(-spawnCubeSize, spawnCubeSize), 
                         random.uniform(-spawnCubeSize, spawnCubeSize), 
@@ -91,9 +91,9 @@ class Agent:
                     self.position = context.active_object.location.copy()
 
             eul = mathutils.Euler((
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartXYRotation else 0, 
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.swarm_randomStartZRotation else 0,
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartXYRotation else 0, 
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartXYRotation else 0, 
+                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartZRotation else 0,
                 ))
             self.rotation = eul.to_quaternion()
 
@@ -106,7 +106,7 @@ class Agent:
                           Surface(context, self), ControlObjectAttraction(context, self)]
         self.rewritingRules = []
 
-        if context.scene.swarm_settings.swarm_visualizeAgents:
+        if context.scene.swarm_settings.visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
 
 
@@ -119,7 +119,7 @@ class Agent:
 
 
     def onStop(self, context: bpy.types.Context):
-        if context.scene.swarm_settings.swarm_visualizeAgents:
+        if context.scene.swarm_settings.visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
 
@@ -169,7 +169,7 @@ class Agent:
         if self.agentSettings.snapToSurface:
             self.position = findClosestPointInBVH(self.swarm.bvhTree, self.swarm.bmesh, self.position)
 
-        if self.context.scene.swarm_settings.swarm_useSculpting: self.applyBrush()
+        if self.context.scene.swarm_settings.useSculpting: self.applyBrush()
 
 
     def recalcForward(self):

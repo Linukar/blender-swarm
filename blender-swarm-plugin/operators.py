@@ -150,7 +150,7 @@ class Swarm_OT_NewSeed(bpy.types.Operator):
 
     def execute(self, context):
         random.seed(None)
-        context.scene.swarm_settings.swarm_seed = random.randint(0, maxPropSize)
+        context.scene.swarm_settings.seed = random.randint(0, maxPropSize)
         return {'FINISHED'}
     
 
