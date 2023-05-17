@@ -58,13 +58,12 @@ class Agent:
         self.context = context
         self.swarm = swarm
         
-        self.agentSettings = agentSettings
+        self.setAgentSettings(agentSettings)
 
         self.swarmIndex = swarmIndex
         self.controlObjects = controlObjects
         self.setFilteredControlObjects()
 
-        self.energy = 200
         self.lifetime = 0
 
         spawnCubeSize = context.scene.swarm_settings.spawnAreaSize
@@ -118,8 +117,8 @@ class Agent:
         # drawLine(self.position, self.position + self.steering)
 
 
-    def onStop(self, context: bpy.types.Context):
-        if context.scene.swarm_settings.visualizeAgents:
+    def onStop(self):
+        if self.context.scene.swarm_settings.visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
 
@@ -151,6 +150,7 @@ class Agent:
 
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
         self.lifetime += fixedTimeStep
+        self.energy -= fixedTimeStep
         self.recalcForward()
 
         self.replacement(fixedTimeStep)
@@ -170,6 +170,9 @@ class Agent:
             self.position = findClosestPointInBVH(self.swarm.bvhTree, self.swarm.bmesh, self.position)
 
         if self.context.scene.swarm_settings.useSculpting: self.applyBrush()
+
+        if self.energy < 0:
+            self.swarm.removeAgent(self)
 
 
     def recalcForward(self):
@@ -227,7 +230,7 @@ class Agent:
                 
         i, agentDef = findAgentDefinition(self.context, closestTransformer.control_settings.replacementResult)
 
-        self.agentSettings = agentDef
+        self.setAgentSettings(agentDef)
         self.setFilteredControlObjects()
 
         replacementCount = closestTransformer.control_settings.replacementCount
@@ -243,4 +246,8 @@ class Agent:
         self.controlObjectsOfAgentType = list(filter(lambda o: o.control_settings.agentId == self.agentSettings.name, self.controlObjects))
         self.attractors = list(filter(lambda o: o.control_settings.type in ["Attractor", "Transformer"], self.controlObjectsOfAgentType))
         self.transformer = list(filter(lambda o: o.control_settings.type == "Transformer", self.controlObjectsOfAgentType))
-        
+
+
+    def setAgentSettings(self, agentSettings: AgentSettings):
+        self.agentSettings = agentSettings
+        self.energy = agentSettings.energy

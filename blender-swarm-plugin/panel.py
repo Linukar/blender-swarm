@@ -87,6 +87,7 @@ class SWARM_PT_Panel(Panel):
                 agentSettings.operator("swarm.save_agent", text="Save")
                 agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
                 agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
+                agentSettings.prop(context.scene.current_agent_settings, "energy", text="Energy")
                 agentSettings.prop(context.scene.current_agent_settings, "tool", text="Tool to use")
                 agentSettings.prop(context.scene.current_agent_settings, "toolRadius", text="Radius")
                 agentSettings.prop(context.scene.current_agent_settings, "toolStrength", text="Strength")

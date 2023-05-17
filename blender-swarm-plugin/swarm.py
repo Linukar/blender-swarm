@@ -58,7 +58,7 @@ class Swarm:
 
     def onStop(self):
         for agent in self.agents:
-            agent.onStop(self.context)
+            agent.onStop()
 
         print("Finished in: " + str(time.time() - self.startTime))
 
@@ -125,3 +125,8 @@ class Swarm:
             for i in range(spawner.control_settings.spawnerAmount):
                 self.createNewAgent(self.context, 0, agentDef, spawnPosition=spawner.location)
             spawner.control_settings.spawnerTimer = 0
+
+    
+    def removeAgent(self, agent):
+        agent.onStop()
+        self.agents.remove(agent)
