@@ -38,6 +38,7 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
 
     spawnerFrequency: bpy.props.FloatProperty(name="Spawner Frequency", default=1, min=0, precision=1)
     spawnerAmount: bpy.props.IntProperty(name="Spawner Amount", default=5, min=1)
+    spawnerLimit: bpy.props.IntProperty(name="Spawner Limit", default=1000, min=1)
     spawnOnStart: bpy.props.BoolProperty(name="Spawner Start", default=True)
     spawnerOffset: bpy.props.FloatProperty(name="Spawner Offset", default=0, min = 0, precision=1)
     spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0, min=0)

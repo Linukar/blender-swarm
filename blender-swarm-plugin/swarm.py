@@ -78,7 +78,8 @@ class Swarm:
         for spawner in self.spawner:
             spawner.control_settings.spawnerTimer += Swarm.fixedTimeStep
             if (spawner.control_settings.spawnerTimer > spawner.control_settings.spawnerFrequency 
-                and timeSinceStart > spawner.control_settings.spawnerOffset):
+                and timeSinceStart > spawner.control_settings.spawnerOffset
+                and spawner.control_settings.spawnerLimit > len([a for a in self.agents if a.agentSettings.name == spawner.control_settings.agentId])):
                     self.spawnFromSpawner(spawner)
 
         self.bvhTree, self.bmesh = createBVH(self.context.active_object)

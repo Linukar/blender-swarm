@@ -16,11 +16,11 @@ class SWARM_PT_Panel(Panel):
         row = layout.row()
         col = row.column()
 
-        # col.label(text="Utils")
-        # utils = col.box()
+        col.label(text="Utils")
+        utils = col.box()
         # utils.operator("swarm.remove_selected", text = "Remove selected Object")
         # utils.operator("object.delete_all")
-        # utils.operator("swarm.spawn_plane", text = "Spawn Plane")
+        utils.operator("swarm.spawn_plane", text = "Spawn Plane")
 
 
         col.label(text="General")
@@ -130,3 +130,4 @@ class SWARM_PT_Panel(Panel):
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerOffset", text="Offset")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerFrequency", text="Frequency")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerAmount", text="Amount")
+                controlObjectBox.prop(context.active_object.control_settings, "spawnerLimit", text="Limit")
