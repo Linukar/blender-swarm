@@ -21,6 +21,7 @@ def startSwarm(context: bpy.types.Context):
 def stopSwarm(context: bpy.types.Context):
     global _swarm
     _swarm.stop()
+    _swarm = None
 
 def pauseSwarm(context: bpy.types.Context):
     global _swarm

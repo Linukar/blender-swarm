@@ -31,6 +31,10 @@ def initProperties():
 
 def deinitProperies():
     del bpy.types.Scene.swarm_settings
+    del bpy.types.Scene.selected_preset
+    del bpy.types.Scene.selected_agent
+    del bpy.types.Scene.current_agent_settings
+    del bpy.types.Object.control_settings
 
 
 class SwarmSettings(bpy.types.PropertyGroup):
