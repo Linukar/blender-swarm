@@ -168,8 +168,8 @@ class SWARM_OT_ExportPresets(bpy.types.Operator, bpy_extras.io_utils.ExportHelpe
     )
 
     def execute(self, context):
-        addonPrefs = context.preferences.addons[__package__].preferences
-        exportPresets(self.filepath, addonPrefs, context)
+        presets = context.scene.swarm_presets
+        exportPresets(self.filepath, presets, context)
         return {'FINISHED'}
 
 
@@ -188,8 +188,8 @@ class SWARM_OT_ImportPresets(bpy.types.Operator, bpy_extras.io_utils.ImportHelpe
     )
 
     def execute(self, context):
-        addonPrefs = context.preferences.addons[__package__].preferences
-        importPresets(self.filepath, addonPrefs)
+        presets = context.scene.swarm_presets
+        importPresets(self.filepath, presets)
         return {'FINISHED'}
 
 

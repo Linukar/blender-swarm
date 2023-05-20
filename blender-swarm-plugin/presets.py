@@ -5,16 +5,10 @@ import bpy_extras
 
 from typing import Dict, Any, List
 
-from .properties import SwarmSettings, setPresetAsCurrent
+from .properties import SwarmPresets, setPresetAsCurrent
 from .agentSettings import saveAgentChanges
 
 from .utils import findInCollection, copyPropertyGroup, findAgentDefinition
-
-
-class SwarmPreferences(bpy.types.AddonPreferences):
-    bl_idname = __package__
-    presets: bpy.props.CollectionProperty(type=SwarmSettings)
-
 
 
 def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
@@ -27,6 +21,8 @@ def propertyGroupToDict(propGroup: bpy.types.PropertyGroup) -> Dict[str, Any]:
             result[prop.identifier] = propertyGroupToDict(value)
         elif isinstance(value, bpy.types.bpy_prop_collection):
             result[prop.identifier] = [propertyGroupToDict(item) for item in value]
+        elif isinstance(value, bpy.types.bpy_prop_array):
+            result[prop.identifier] = list(value)  
         else:
             result[prop.identifier] = value
     return result
@@ -46,29 +42,34 @@ def setPropertyGroupValuesFromDict(dataDict: Dict[str, Any], propGroup: bpy.type
             for item_data in value:
                 item = propCollection.add()
                 setPropertyGroupValuesFromDict(item_data, item)
+        elif isinstance(value, list) and isinstance(getattr(propGroup, key), bpy.types.bpy_prop_array):
+            propArray = getattr(propGroup, key)
+            for i, v in enumerate(value):
+                if i < len(propArray):  # Ensure not to exceed the length of the bpy_prop_array
+                    propArray[i] = v
         else:
             setattr(propGroup, key, value)
 
 
-def exportPresets(filepath: str, addonPrefs: SwarmPreferences, context: bpy.types.Context) -> None:
-    propGroupDicts = [propertyGroupToDict(preset) for preset in addonPrefs.presets]
+def exportPresets(filepath: str, presets: SwarmPresets, context: bpy.types.Context) -> None:
+    propGroupDicts = [propertyGroupToDict(preset) for preset in presets.presets]
 
-    for preset, presetDict in zip(addonPrefs.presets, propGroupDicts):
+    for preset, presetDict in zip(presets.presets, propGroupDicts):
         presetDict['agent_definitions'] = [propertyGroupToDict(agent) for agent in preset.agent_definitions]
 
     with open(filepath, "w") as f:
         json.dump(propGroupDicts, f, indent=4)
 
 
-def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
+def importPresets(filepath: str, presets: SwarmPresets) -> None:
     with open(filepath, "r") as f:
         presetDataList = json.load(f)
 
-    addonPrefs.presets.clear()
+    presets.presets.clear()
 
     for presetData in presetDataList:
-        newPreset = addonPrefs.presets.add()
-        newPreset.agent_defintions.add()
+        newPreset = presets.presets.add()
+        newPreset.agent_definitions.add()
 
         setPropertyGroupValuesFromDict(presetData, newPreset)
 
@@ -80,30 +81,30 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
 
 
 def addPreset(context: bpy.types.Context) -> None:
-    addonPrefs = context.preferences.addons[__package__].preferences
-    newPreset = addonPrefs.presets.add()
+    presets = context.scene.swarm_presets.presets
+    newPreset = presets.add()
     newPreset.name = "Unnamed"
     newPreset.agent_definitions.add()
     setPresetAsCurrent(newPreset, context)
 
 
 def removePreset(context: bpy.types.Context) -> None:
-    addonPrefs = context.preferences.addons[__package__].preferences
-    i, _ = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
+    presets = context.scene.swarm_presets.presets
+    i, _ = findInCollection(presets, lambda p: p.name == context.scene.selected_preset)
 
-    if i is not None and len(addonPrefs.presets) > 1:
-        addonPrefs.presets.remove(i)
-        setPresetAsCurrent(addonPrefs.presets[i-1], context)
+    if i is not None and len(presets) > 1:
+        presets.remove(i)
+        setPresetAsCurrent(presets[i-1], context)
 
 
     
 def savePresetChanges(context: bpy.types.Context):
-    addonPrefs = context.preferences.addons[__package__].preferences
+    presets = context.scene.swarm_presets.presets
 
-    _, preset = findInCollection(addonPrefs.presets, lambda p: p.name == context.scene.selected_preset)
+    _, preset = findInCollection(presets, lambda p: p.name == context.scene.selected_preset)
 
     if preset is None:
-        preset = addonPrefs.presets.add()
+        preset = presets.add()
 
     copyPropertyGroup(context.scene.swarm_settings, preset, ["agent_definitions"])
 

@@ -28,6 +28,8 @@ def initProperties():
 
     bpy.types.Object.control_settings = bpy.props.PointerProperty(type=ControlObjectSettings)
 
+    bpy.types.Scene.swarm_presets = bpy.props.PointerProperty(type=SwarmPresets)
+
 
 def deinitProperies():
     del bpy.types.Scene.swarm_settings
@@ -35,6 +37,7 @@ def deinitProperies():
     del bpy.types.Scene.selected_agent
     del bpy.types.Scene.current_agent_settings
     del bpy.types.Object.control_settings
+    del bpy.types.Scene.swarm_presets
 
 
 class SwarmSettings(bpy.types.PropertyGroup):
@@ -60,16 +63,19 @@ class SwarmSettings(bpy.types.PropertyGroup):
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
 
 
+class SwarmPresets(bpy.types.PropertyGroup):
+    presets: bpy.props.CollectionProperty(type=SwarmSettings)
+
 def findPresets(context):
-    addonPrefs = context.preferences.addons[__package__].preferences
-    items = [(preset.name, preset.name, "") for i, preset in enumerate(addonPrefs.presets)]
+    presets = context.scene.swarm_presets.presets
+    items = [(preset.name, preset.name, "") for i, preset in enumerate(presets)]
     return items
 
 
 def updatePreset(self, context: bpy.types.Context):
     selectedPreset = self.selected_preset
-    addonPrefs = context.preferences.addons[__package__].preferences
-    i, selectedPreset = findInCollection(addonPrefs.presets, lambda p: p.name == selectedPreset)
+    presets = context.scene.swarm_presets.presets
+    i, selectedPreset = findInCollection(presets, lambda p: p.name == selectedPreset)
 
     if selectedPreset is None:
         return

@@ -30,7 +30,7 @@ from .operators import *
 from .panel import SWARM_PT_Panel
 from .properties import SwarmSettings, AgentSettings, initProperties, deinitProperies, setPresetAsCurrent
 from .controlObjects import ControlObjectSettings
-from .presets import SwarmPreferences
+from .presets import SwarmPresets
 
 classes = (Swarm_OT_Start_Simulation, 
            Swarm_OT_Spawn_Plane, 
@@ -52,7 +52,7 @@ classes = (Swarm_OT_Start_Simulation,
 
            SWARM_PT_Panel, 
            AgentSettings, SwarmSettings, ControlObjectSettings,
-           SwarmPreferences)
+           SwarmPresets)
 
 def register():
     for c in classes:
@@ -69,8 +69,8 @@ def unregister():
 
 @persistent
 def init(dummy):
-    addonPrefs = bpy.context.preferences.addons[__package__].preferences
-    if not addonPrefs.presets:
-        new = addonPrefs.presets.add()
+    presets = bpy.context.scene.swarm_presets
+    if not presets.presets:
+        new = presets.presets.add()
         new.agent_definitions.add()
         setPresetAsCurrent(new, bpy.context)
