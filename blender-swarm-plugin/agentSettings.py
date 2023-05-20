@@ -30,6 +30,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
 
     snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
+    applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
 
 
 def findAgents(self, context):

@@ -103,6 +103,7 @@ class SWARM_PT_Panel(Panel):
                 agentSettings.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
                 agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
                 agentSettings.prop(context.scene.current_agent_settings, "snapToSurface", text="Snap to Surface")
+                agentSettings.prop(context.scene.current_agent_settings, "applyAtEnd", text="Apply at End")
 
         col.separator()
 

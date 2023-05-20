@@ -57,14 +57,12 @@ class Agent:
 
         self.context = context
         self.swarm = swarm
-        
-        self.setAgentSettings(agentSettings)
 
         self.swarmIndex = swarmIndex
         self.controlObjects = controlObjects
-        self.setFilteredControlObjects()
 
         self.lifetime = 0
+        self.strokes = []
 
         spawnCubeSize = context.scene.swarm_settings.spawnAreaSize
 
@@ -100,6 +98,8 @@ class Agent:
 
         self.steering = self.forward
 
+        self.resetAgent(agentSettings)
+
         self.boidRules = [Separation(context, self), Alignement(context, self), 
                           Cohesion(context, self), CenterUrge(context, self), 
                           Surface(context, self), ControlObjectAttraction(context, self)]
@@ -118,15 +118,22 @@ class Agent:
 
 
     def onStop(self):
+        self.endStroke()
         if self.context.scene.swarm_settings.visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
+    
+    def endStroke(self):
+        if self.agentSettings.applyAtEnd:
+            self.applyBrush(self.strokes)
+            self.strokes.clear()
 
-    def applyBrush(self):
-        stroke = [{
+
+    def createStrokeAtCurrent(self, isStart: bool):
+        return {
                 "name": "stroke",
-                "is_start": True,
-                "location": self.position,
+                "is_start": isStart,
+                "location": self.position.copy(),
                 "mouse": (0, 0),
                 "mouse_event": (0.0, 0.0),
                 "pen_flip": True,
@@ -134,10 +141,20 @@ class Agent:
                 "size": 1,
                 "time": 1,
                 "x_tilt": 0,
-                "y_tilt": 0
-            }]
+                "y_tilt": 0 
+            }
 
 
+    def sculptUpdate(self):
+        if self.agentSettings.applyAtEnd:
+            self.strokes.append(self.createStrokeAtCurrent(isStart=False))
+        
+        else:
+            stroke = [self.createStrokeAtCurrent(isStart=True)]
+            self.applyBrush(stroke)
+
+
+    def applyBrush(self, stroke):
         bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
 
         brush = bpy.context.tool_settings.unified_paint_settings
@@ -169,7 +186,7 @@ class Agent:
         if self.agentSettings.snapToSurface:
             self.position = findClosestPointInBVH(self.swarm.bvhTree, self.swarm.bmesh, self.position)
 
-        if self.context.scene.swarm_settings.useSculpting: self.applyBrush()
+        if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate()
 
         if self.energy < 0:
             self.swarm.removeAgent(self)
@@ -230,8 +247,7 @@ class Agent:
                 
         i, agentDef = findAgentDefinition(self.context, closestReplicator.control_settings.replacementResult)
 
-        self.setAgentSettings(agentDef)
-        self.setFilteredControlObjects()
+        self.resetAgent(agentDef)
 
         replacementCount = closestReplicator.control_settings.replacementCount
 
@@ -248,7 +264,13 @@ class Agent:
         self.replicator = [o for o in self.controlObjectsOfAgentType if o.control_settings.type == "Replicator"]
         
 
-
     def setAgentSettings(self, agentSettings: AgentSettings):
         self.agentSettings = agentSettings
         self.energy = agentSettings.energy
+
+
+    def resetAgent(self, agentSettings: AgentSettings):
+        self.setAgentSettings(agentSettings)
+        self.setFilteredControlObjects()
+        self.strokes.clear()
+        self.strokes.append(self.createStrokeAtCurrent(isStart=True))
