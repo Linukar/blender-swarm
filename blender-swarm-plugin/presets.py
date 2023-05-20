@@ -83,6 +83,7 @@ def addPreset(context: bpy.types.Context) -> None:
     addonPrefs = context.preferences.addons[__package__].preferences
     newPreset = addonPrefs.presets.add()
     newPreset.name = "Unnamed"
+    newPreset.agent_definitions.add()
     setPresetAsCurrent(newPreset, context)
 
 
