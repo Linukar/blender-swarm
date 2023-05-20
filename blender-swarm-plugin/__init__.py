@@ -25,9 +25,10 @@ bl_info = {
 __package__ = "blender-swarm-plugin"
 
 import bpy
+from bpy.app.handlers import persistent
 from .operators import *
 from .panel import SWARM_PT_Panel
-from .properties import SwarmSettings, AgentSettings, initProperties, deinitProperies
+from .properties import SwarmSettings, AgentSettings, initProperties, deinitProperies, setPresetAsCurrent
 from .controlObjects import ControlObjectSettings
 from .presets import SwarmPreferences
 
@@ -58,9 +59,18 @@ def register():
         bpy.utils.register_class(c)
     
     initProperties()
+    bpy.app.handlers.load_post.append(init)
 
 def unregister():
     for c in classes:
         bpy.utils.unregister_class(c)
     
     deinitProperies()
+
+@persistent
+def init(dummy):
+    addonPrefs = bpy.context.preferences.addons[__package__].preferences
+    if not addonPrefs.presets:
+        new = addonPrefs.presets.add()
+        new.agent_definitions.add()
+        setPresetAsCurrent(new, bpy.context)

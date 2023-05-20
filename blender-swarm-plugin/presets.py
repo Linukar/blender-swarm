@@ -68,6 +68,7 @@ def importPresets(filepath: str, addonPrefs: SwarmPreferences) -> None:
 
     for presetData in presetDataList:
         newPreset = addonPrefs.presets.add()
+        newPreset.agent_defintions.add()
 
         setPropertyGroupValuesFromDict(presetData, newPreset)
 

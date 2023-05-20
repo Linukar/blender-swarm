@@ -8,7 +8,7 @@ from .controlObjects import collectControlObjects
 
 class AgentSettings(bpy.types.PropertyGroup):
 
-    name: bpy.props.StringProperty(name="Preset Name", default="")
+    name: bpy.props.StringProperty(name="Preset Name", default="Default")
     color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR_GAMMA', size=4, default=(1, 1, 1, 1), min=0, max=1)
 
     energy: bpy.props.FloatProperty(name="Energy", default=100, min=0, precision=1)

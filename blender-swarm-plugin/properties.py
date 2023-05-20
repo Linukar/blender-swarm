@@ -39,7 +39,7 @@ def deinitProperies():
 
 class SwarmSettings(bpy.types.PropertyGroup):
 
-    name: bpy.props.StringProperty(name="Name", default="")
+    name: bpy.props.StringProperty(name="Name", default="Default")
 
     # general swarm properties
     seed: bpy.props.IntProperty(default=random.randint(0, maxPropSize), min=0, max=maxPropSize)
