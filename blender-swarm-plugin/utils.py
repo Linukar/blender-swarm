@@ -63,7 +63,10 @@ def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
 
     # Build a BVH tree from the bmesh
     bvhTree = BVHTree.FromBMesh(bm)
-    return bvhTree, bm
+
+    # delete the bmesh, it creates c++ data, that python wont clean up
+    bm.free()
+    return bvhTree
 
 
 def findInCollection(prop, when):
@@ -84,14 +87,10 @@ def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, Age
     return findInCollection(context.scene.swarm_settings.agent_definitions, lambda a: a.name == name)
 
 
-def findClosestPointInBVH(bvhTree: BVHTree, bmesh: bmesh.types.BMesh , point: mathutils.Vector):
+def findClosestPointInBVH(bvhTree: BVHTree, point: mathutils.Vector):
     closestPoint, _, __, ___ = bvhTree.find_nearest(point)
 
-    # If no nearest point is found, return None
     if closestPoint is None:
-        bmesh.free()
         return None
 
-    # Return the closest point
-    bmesh.free()
     return closestPoint

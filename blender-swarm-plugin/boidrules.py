@@ -1,6 +1,5 @@
 import mathutils
 import bpy
-import bmesh
 
 from mathutils.bvhtree import BVHTree
 from .utils import findClosestPointInBVH
@@ -129,7 +128,7 @@ class Surface(BoidRule):
         pass
 
     def calcDirection(self, agent: "Agent"):
-        closestPoint = findClosestPointInBVH(agent.swarm.bvhTree, agent.swarm.bmesh, agent.position)
+        closestPoint = findClosestPointInBVH(agent.swarm.bvhTree, agent.position)
 
         if closestPoint is None:
             return mathutils.Vector()

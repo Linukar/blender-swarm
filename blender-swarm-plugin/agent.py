@@ -162,7 +162,7 @@ class Agent:
         brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
 
-        bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "NORMAL", ignore_background_click = False)
+        bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "INVERT", ignore_background_click = False)
 
 
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
@@ -184,7 +184,7 @@ class Agent:
         self.position += self.forward * self.agentSettings.speed * fixedTimeStep
 
         if self.agentSettings.snapToSurface:
-            self.position = findClosestPointInBVH(self.swarm.bvhTree, self.swarm.bmesh, self.position)
+            self.position = findClosestPointInBVH(self.swarm.bvhTree, self.position)
 
         if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate()
 

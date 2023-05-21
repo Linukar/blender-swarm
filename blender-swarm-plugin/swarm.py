@@ -52,7 +52,7 @@ class Swarm:
         return self.step < self.totalSteps and not self.shouldStop
     
 
-    def stop(self):
+    def setShouldStop(self):
         self.shouldStop = True
 
 
@@ -82,7 +82,7 @@ class Swarm:
                 and spawner.control_settings.spawnerLimit > len([a for a in self.agents if a.agentSettings.name == spawner.control_settings.agentId])):
                     self.spawnFromSpawner(spawner)
 
-        self.bvhTree, self.bmesh = createBVH(self.context.active_object)
+        self.bvhTree = createBVH(self.context.active_object)
 
         for agent in self.agents:
             agent.update(Swarm.fixedTimeStep, self.step, self.agents)
