@@ -72,6 +72,8 @@ class SWARM_PT_Panel(Panel):
             if context.scene.swarm_settings.useDyntypo:
                 dyntypoBox.prop(context.scene.swarm_settings, "dyntypoResolution", text="Resolution")
 
+            swarmSettings.prop(context.scene.swarm_settings, "enableSurfaceAwareness", text="Enable Surface Awareness")
+
 
             presetBox.separator()
 
@@ -101,8 +103,9 @@ class SWARM_PT_Panel(Panel):
                 # agentSettings.prop(context.scene.current_agent_settings, "leaderWeight", text="Leader Weight")
                 agentSettings.prop(context.scene.current_agent_settings, "centerUrgeWeight", text="Center Weight")
                 agentSettings.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
-                agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
-                agentSettings.prop(context.scene.current_agent_settings, "snapToSurface", text="Snap to Surface")
+                if context.scene.swarm_settings.enableSurfaceAwareness:
+                    agentSettings.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
+                    agentSettings.prop(context.scene.current_agent_settings, "snapToSurface", text="Snap to Surface")
                 agentSettings.prop(context.scene.current_agent_settings, "applyAtEnd", text="Apply at End")
 
         col.separator()

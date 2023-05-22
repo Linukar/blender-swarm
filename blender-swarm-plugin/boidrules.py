@@ -128,6 +128,9 @@ class Surface(BoidRule):
         pass
 
     def calcDirection(self, agent: "Agent"):
+        if not self.context.scene.swarm_settings.enableSurfaceAwareness:
+            return mathutils.Vector()
+        
         closestPoint = findClosestPointInBVH(agent.swarm.bvhTree, agent.position)
 
         if closestPoint is None:

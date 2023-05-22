@@ -183,7 +183,7 @@ class Agent:
 
         self.position += self.forward * self.agentSettings.speed * fixedTimeStep
 
-        if self.agentSettings.snapToSurface:
+        if self.agentSettings.snapToSurface and self.context.scene.swarm_settings.enableSurfaceAwareness:
             self.position = findClosestPointInBVH(self.swarm.bvhTree, self.position)
 
         if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate()

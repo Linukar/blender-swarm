@@ -59,6 +59,8 @@ class SwarmSettings(bpy.types.PropertyGroup):
     useDyntypo: bpy.props.BoolProperty(default=True)
     dyntypoResolution: bpy.props.FloatProperty(default=2, min=0.001)
 
+    enableSurfaceAwareness: bpy.props.BoolProperty(default=True)
+
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
 

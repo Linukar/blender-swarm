@@ -30,6 +30,7 @@ class Swarm:
         self.shouldStop = False
         self.context = context
         self.startTime = time.time()
+        self.bvhTree = None
 
         agentDefinitions = context.scene.swarm_settings.agent_definitions
         if len(agentDefinitions) < 1: return
@@ -82,7 +83,8 @@ class Swarm:
                 and spawner.control_settings.spawnerLimit > len([a for a in self.agents if a.agentSettings.name == spawner.control_settings.agentId])):
                     self.spawnFromSpawner(spawner)
 
-        self.bvhTree = createBVH(self.context.active_object)
+        if self.context.scene.swarm_settings.enableSurfaceAwareness:
+            self.bvhTree = createBVH(self.context.active_object)
 
         for agent in self.agents:
             agent.update(Swarm.fixedTimeStep, self.step, self.agents)
