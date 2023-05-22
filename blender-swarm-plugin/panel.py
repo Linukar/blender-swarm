@@ -96,6 +96,7 @@ class SWARM_PT_Panel(Panel):
                 toolBox.label(text="Tool Settings")
                 toolBox.prop(context.scene.current_agent_settings, "tool", text="Tool")
                 toolBox.prop(context.scene.current_agent_settings, "toolRadius", text="Radius")
+                toolBox.prop(context.scene.current_agent_settings, "toolCooldown", text="Cooldown")
                 toolBox.prop(context.scene.current_agent_settings, "toolStrength", text="Strength")
                 toolBox.prop(context.scene.current_agent_settings, "toolMode", text="Mode")
                 toolBox.prop(context.scene.current_agent_settings, "toolIgnoreBackground", text="Ignore Non-Surface")

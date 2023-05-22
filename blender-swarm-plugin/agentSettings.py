@@ -34,6 +34,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     #sculpt
     tool: bpy.props.EnumProperty(items=tools)
     toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
+    toolCooldown: bpy.props.FloatProperty(name="Tool Cooldown", default=0, min=0)
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
     toolMode: bpy.props.EnumProperty(items=toolModes)
     toolIgnoreBackground: bpy.props.BoolProperty(name="Ignore Background", default=False)

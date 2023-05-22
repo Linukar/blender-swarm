@@ -145,7 +145,14 @@ class Agent:
             }
 
 
-    def sculptUpdate(self):
+    def sculptUpdate(self, timeStep: float):
+        self.toolCooldown -= timeStep
+
+        if self.toolCooldown > 0:
+            return
+
+        self.toolCooldown = self.agentSettings.toolCooldown
+
         if self.agentSettings.applyAtEnd:
             self.strokes.append(self.createStrokeAtCurrent(isStart=False))
         
@@ -190,7 +197,7 @@ class Agent:
         if self.agentSettings.snapToSurface and self.context.scene.swarm_settings.enableSurfaceAwareness:
             self.position = findClosestPointInBVH(self.swarm.bvhTree, self.position)
 
-        if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate()
+        if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate(fixedTimeStep)
 
         if self.energy < 0:
             self.swarm.removeAgent(self)
@@ -278,3 +285,4 @@ class Agent:
         self.setFilteredControlObjects()
         self.strokes.clear()
         self.strokes.append(self.createStrokeAtCurrent(isStart=True))
+        self.toolCooldown = agentSettings.toolCooldown
