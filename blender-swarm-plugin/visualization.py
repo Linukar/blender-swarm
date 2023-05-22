@@ -7,11 +7,15 @@ from gpu_extras.batch import batch_for_shader
 shaderLine = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
 
 
-def drawLine(start: mathutils.Vector, end: mathutils.Vector):
-    batchLine = batch_for_shader(shaderLine, 'LINES', {"pos": [start.to_tuple(), end.to_tuple()]})
+def drawLine(points: list, color: tuple[float, float, float, float]):
     shaderLine.bind()
-    shaderLine.uniform_float("color", (1, 1, 0, 1))
-    batchLine.draw(shaderLine)
+    shaderLine.uniform_float("color", color)
+
+    for i in range(len(points) - 1):
+        start = points[i]
+        end = points[i+1]
+        batchLine = batch_for_shader(shaderLine, 'LINES', {"pos": [start.to_tuple(), end.to_tuple()]})
+        batchLine.draw(shaderLine)
 
 
 vertex_shader = '''

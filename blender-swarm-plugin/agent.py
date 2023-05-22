@@ -113,8 +113,11 @@ class Agent:
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
         drawPyramid(self.position, self.rotation, self.agentSettings.color)
 
+        if self.agentSettings.applyAtEnd:
+            drawLine([s["location"] for s in self.strokes], self.agentSettings.color)
+
         # draw steering vector for debugging
-        # drawLine(self.position, self.position + self.steering)
+        # drawLine([self.position, self.position + self.steering])
 
 
     def onStop(self):
