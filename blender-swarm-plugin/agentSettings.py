@@ -5,13 +5,20 @@ from .sculptTools import tools
 from .materials import updateControlObjectMaterial
 from .controlObjects import collectControlObjects
 
+toolModes = [("NORMAL", "Normal", ""), ("INVERT", "Inverted", "")]
 
 class AgentSettings(bpy.types.PropertyGroup):
 
+    #general
     name: bpy.props.StringProperty(name="Preset Name", default="Default")
     color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR_GAMMA', size=4, default=(1, 1, 1, 1), min=0, max=1)
 
-    energy: bpy.props.FloatProperty(name="Energy", default=100, min=0, precision=1)
+    energy: bpy.props.FloatProperty(name="Energy", default=30, min=0, precision=1)
+
+    snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
+    applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
+
+    # boid
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
     localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
     speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
@@ -20,17 +27,16 @@ class AgentSettings(bpy.types.PropertyGroup):
     separationWeight: bpy.props.FloatProperty(default=0.5, min=0, max = 1, precision=2)
     alignementWeight: bpy.props.FloatProperty(default=0.35, min=0, max = 1, precision=2)
     cohesionWeight: bpy.props.FloatProperty(default=0.16, min=0, max = 1, precision=2)
-    leaderWeight: bpy.props.FloatProperty(default=0.5, min=0, max=1, precision=2)    
     centerUrgeWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
     centerMaxDistance: bpy.props.FloatProperty(default=12, min=0, precision=1)
     surfaceWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
+    #sculpt
     tool: bpy.props.EnumProperty(items=tools)
     toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
-
-    snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
-    applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
+    toolMode: bpy.props.EnumProperty(items=toolModes)
+    toolIgnoreBackground: bpy.props.BoolProperty(name="Ignore Background", default=False)
 
 
 def findAgents(self, context):

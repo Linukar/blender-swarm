@@ -23,6 +23,8 @@ def startSwarm(context: bpy.types.Context):
 
 def stopSwarm(context: bpy.types.Context):
     global _swarm
+    if _swarm is None:
+        return
     _swarm.setShouldStop()
     _swarm = None
 

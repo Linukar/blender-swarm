@@ -162,7 +162,11 @@ class Agent:
         brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
 
-        bpy.ops.sculpt.brush_stroke(context_override(self.context), stroke = stroke, mode = "INVERT", ignore_background_click = False)
+        bpy.ops.sculpt.brush_stroke(
+            context_override(self.context), 
+            stroke = stroke, 
+            mode = self.agentSettings.toolMode, 
+            ignore_background_click = self.agentSettings.toolIgnoreBackground)
 
 
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
