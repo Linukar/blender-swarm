@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def context_override(context: bpy.types.Context):
-    for window in bpy.context.window_manager.windows:
+    for window in context.window_manager.windows:
         screen = window.screen
         for area in screen.areas:
             if area.type == 'VIEW_3D':
@@ -22,6 +22,15 @@ def context_override(context: bpy.types.Context):
 
     return context.copy()
 
+def find3dViewportContext(context: bpy.types.Context):
+    for window in context.window_manager.windows:
+        screen = window.screen
+        for area in screen.areas:
+            if area.type == 'VIEW_3D':
+                for region in area.regions:
+                    if region.type == 'WINDOW':
+                        return window, area, region
+    return None, None, None  # Could not find a 3D Viewport context
 
 # Print iterations progress
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
@@ -94,3 +103,5 @@ def findClosestPointInBVH(bvhTree: BVHTree, point: mathutils.Vector):
         return None
 
     return closestPoint
+
+

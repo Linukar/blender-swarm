@@ -5,11 +5,12 @@ import random
 import bpy
 import mathutils
 import random
-import gpu
+import bpy_extras
 
 import sys
+import time
 
-from .utils import context_override, clamp, findAgentDefinition, findClosestPointInBVH
+from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -63,6 +64,10 @@ class Agent:
 
         self.lifetime = 0
         self.strokes = []
+
+        area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
+        self.region = next(region for region in area.regions if region.type == 'WINDOW')
+        self.spaceData = next(space for space in area.spaces if space.type == 'VIEW_3D')
 
         spawnCubeSize = context.scene.swarm_settings.spawnAreaSize
 
@@ -133,16 +138,19 @@ class Agent:
 
 
     def createStrokeAtCurrent(self, isStart: bool):
+        location = self.position.copy()
+        mouse = bpy_extras.view3d_utils.location_3d_to_region_2d(self.region, self.spaceData.region_3d, location)
+
         return {
                 "name": "stroke",
                 "is_start": isStart,
-                "location": self.position.copy(),
-                "mouse": (0, 0),
-                "mouse_event": (0.0, 0.0),
-                "pen_flip": True,
+                "location": location,
+                "mouse": mouse,
+                "mouse_event": mouse,
+                "pen_flip": False,
                 "pressure": 1,
                 "size": 1,
-                "time": 1,
+                "time": time.time(),
                 "x_tilt": 0,
                 "y_tilt": 0 
             }
@@ -167,16 +175,25 @@ class Agent:
     def applyBrush(self, stroke):
         bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
 
-        brush = bpy.context.tool_settings.unified_paint_settings
+        brush = self.context.tool_settings.unified_paint_settings
         brush.unprojected_radius = self.agentSettings.toolRadius
         brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
 
-        bpy.ops.sculpt.brush_stroke(
-            context_override(self.context), 
-            stroke = stroke, 
-            mode = self.agentSettings.toolMode, 
-            ignore_background_click = self.agentSettings.toolIgnoreBackground)
+        window, area, region = find3dViewportContext(self.context)
+
+        if window and area and region:
+            with self.context.temp_override(
+                window=window,
+                area=area,
+                region=region, 
+                scene=self.context.scene, 
+                object=self.context.active_object):
+                    bpy.ops.sculpt.brush_stroke(
+                        stroke=stroke, 
+                        mode=self.agentSettings.toolMode, 
+                        ignore_background_click=self.agentSettings.toolIgnoreBackground)
+                    pass
 
 
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):

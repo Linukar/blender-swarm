@@ -16,7 +16,6 @@ class Swarm:
     fixedTimeStep = 0.033 # 30 fps
 
     def __init__(self, context: bpy.types.Context):
-        agentCount = context.scene.swarm_settings.agentCount
         random.seed(context.scene.swarm_settings.seed)
 
         self.agents: List[Agent] = []
@@ -34,13 +33,6 @@ class Swarm:
 
         agentDefinitions = context.scene.swarm_settings.agent_definitions
         if len(agentDefinitions) < 1: return
-
-        # i = 0
-        # for _ in range (0, context.scene.swarm_settings.swarmCount):
-        #     i += 1
-        #     for _ in range (0, agentCount):
-        #         i, selectedAgent = findAgentDefinition(context, context.scene.current_agent_settings.name)
-        #         self.createNewAgent(context, i, selectedAgent)
 
         for spawner in self.spawner:
             if spawner.control_settings.spawnOnStart:
