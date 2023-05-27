@@ -142,6 +142,7 @@ class Surface(BoidRule):
 
 class ControlObjectAttraction(BoidRule):
     def __init__(self, context: bpy.types.Context, agent: "Agent"):
+        self.depsgraph = context.evaluated_depsgraph_get()
         super().__init__(context, agent)
 
 
@@ -163,7 +164,17 @@ class ControlObjectAttraction(BoidRule):
 
                 # only attract if target is in front of agent
                 if agent.forward.dot(norm) > 0:
-                    dirSum += vec if obj.control_settings.type != "Deflector" else -vec
+                    hit, l, n, i, o, m  = self.context.scene.ray_cast(
+                        depsgraph= self.depsgraph, 
+                        origin= agent.position, 
+                        direction= agent.forward,
+                        distance= obj.control_settings.attractionRange)
+
+                    if hit:
+                        dirSum += agent.forward if obj.control_settings.type != "Deflector" else -agent.forward
+                    else:
+                        dirSum += vec if obj.control_settings.type != "Deflector" else -vec
+
                     strengthSum += obj.control_settings.strength
                     attractorsInRangeCounter += 1
 
