@@ -2,7 +2,7 @@ import mathutils
 import bpy
 
 from mathutils.bvhtree import BVHTree
-from .utils import findClosestPointInBVH
+from .utils import findClosestPointInBVH, randomVector
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -174,3 +174,16 @@ class ControlObjectAttraction(BoidRule):
         dirSum *= strengthSum
 
         return dirSum
+    
+
+class Random(BoidRule):
+    def __init__(self, context: bpy.types.Context, agent: "Agent"):
+        super().__init__(context, agent)
+
+    def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
+        pass
+
+    def calcDirection(self, agent: "Agent"):
+        rndDir = randomVector(-1, 1)
+        rndDir.normalize()
+        return rndDir * agent.agentSettings.randomWeight;

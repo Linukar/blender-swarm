@@ -10,7 +10,7 @@ import bpy_extras
 import sys
 import time
 
-from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext
+from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext, randomVector
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -84,18 +84,15 @@ class Agent:
 
             else:
                 if context.scene.swarm_settings.randomStartLocation:
-                    self.position = mathutils.Vector((
-                        random.uniform(-spawnCubeSize, spawnCubeSize), 
-                        random.uniform(-spawnCubeSize, spawnCubeSize), 
-                        random.uniform(-spawnCubeSize, spawnCubeSize)
-                        ))
+                    self.position = randomVector(-spawnCubeSize, spawnCubeSize)
                 else:
                     self.position = context.active_object.location.copy()
 
+            rndAngles = randomVector(0, 360)
             eul = mathutils.Euler((
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartXYRotation else 0, 
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartXYRotation else 0, 
-                math.radians(random.uniform(0, 360)) if context.scene.swarm_settings.randomStartZRotation else 0,
+                math.radians(rndAngles.x) if context.scene.swarm_settings.randomStartXYRotation else 0, 
+                math.radians(rndAngles.y) if context.scene.swarm_settings.randomStartXYRotation else 0, 
+                math.radians(rndAngles.z) if context.scene.swarm_settings.randomStartZRotation else 0,
                 ))
             self.rotation = eul.to_quaternion()
 
@@ -107,7 +104,8 @@ class Agent:
 
         self.boidRules = [Separation(context, self), Alignement(context, self), 
                           Cohesion(context, self), CenterUrge(context, self), 
-                          Surface(context, self), ControlObjectAttraction(context, self)]
+                          Surface(context, self), ControlObjectAttraction(context, self),
+                          Random(context, self)]
         self.rewritingRules = []
 
         if context.scene.swarm_settings.visualizeAgents:

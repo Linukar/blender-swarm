@@ -3,6 +3,7 @@ from __future__ import annotations
 import bpy
 import bmesh
 import mathutils
+import random
 
 from mathutils.bvhtree import BVHTree
 
@@ -105,3 +106,9 @@ def findClosestPointInBVH(bvhTree: BVHTree, point: mathutils.Vector):
     return closestPoint
 
 
+def randomVector(min: float, max: float) -> mathutils.Vector:
+    return mathutils.Vector((
+        random.uniform(min, max), 
+        random.uniform(min, max), 
+        random.uniform(min, max)
+        ))

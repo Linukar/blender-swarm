@@ -30,6 +30,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     centerUrgeWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
     centerMaxDistance: bpy.props.FloatProperty(default=12, min=0, precision=1)
     surfaceWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
+    randomWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
     #sculpt
     tool: bpy.props.EnumProperty(items=tools)
