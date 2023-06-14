@@ -37,6 +37,7 @@ class Swarm:
         for spawner in self.spawner:
             if spawner.control_settings.spawnOnStart:
                 self.spawnFromSpawner(spawner)
+                spawner.control_settings.spawnerHasSpawned = True
 
         bpy.app.timers.register(self.update)
 
@@ -72,8 +73,10 @@ class Swarm:
             spawner.control_settings.spawnerTimer += Swarm.fixedTimeStep
             if (spawner.control_settings.spawnerTimer > spawner.control_settings.spawnerFrequency 
                 and timeSinceStart > spawner.control_settings.spawnerOffset
-                and spawner.control_settings.spawnerLimit > len([a for a in self.agents if a.agentSettings.name == spawner.control_settings.agentId])):
+                and spawner.control_settings.spawnerLimit > len([a for a in self.agents if a.agentSettings.name == spawner.control_settings.agentId])
+                and (spawner.control_settings.spawnerRepeat or (not spawner.control_settings.spawnerRepeat and not spawner.control_settings.spawnerHasSpawned))):
                     self.spawnFromSpawner(spawner)
+                    spawner.control_settings.spawnerHasSpawned = True
 
         if self.context.scene.swarm_settings.enableSurfaceAwareness:
             self.bvhTree = createBVH(self.context.active_object)

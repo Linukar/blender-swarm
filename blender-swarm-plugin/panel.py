@@ -140,10 +140,14 @@ class SWARM_PT_Panel(Panel):
                 resultRow.prop(context.active_object.control_settings, "replacementCount", text="Num")
                 resultRow.prop(context.active_object.control_settings, "replacementResult", text="Result")
                 controlObjectBox.prop(context.active_object.control_settings, "replacementRange", text="Replacement Range")
+                controlObjectBox.prop(context.active_object.control_settings, "replacementChance", text="Replacement Chance")
 
             if context.active_object.control_settings.type == "Spawner":
                 controlObjectBox.prop(context.active_object.control_settings, "spawnOnStart", text="Spawn on Start")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerOffset", text="Offset")
-                controlObjectBox.prop(context.active_object.control_settings, "spawnerFrequency", text="Frequency")
                 controlObjectBox.prop(context.active_object.control_settings, "spawnerAmount", text="Amount")
-                controlObjectBox.prop(context.active_object.control_settings, "spawnerLimit", text="Limit")
+                controlObjectBox.prop(context.active_object.control_settings, "spawnerRepeat", text="Repeat Spawning")
+
+                if context.active_object.control_settings.spawnerRepeat:
+                    controlObjectBox.prop(context.active_object.control_settings, "spawnerFrequency", text="Frequency")
+                    controlObjectBox.prop(context.active_object.control_settings, "spawnerLimit", text="Limit")

@@ -102,6 +102,8 @@ class Agent:
 
         self.resetAgent(agentSettings)
 
+        self.depsgraph = context.evaluated_depsgraph_get()
+
         self.boidRules = [Separation(context, self), Alignement(context, self), 
                           Cohesion(context, self), CenterUrge(context, self), 
                           Surface(context, self), ControlObjectAttraction(context, self),
@@ -257,7 +259,21 @@ class Agent:
         closestDistance = float("inf")
 
         for t in self.replicator:
-            vec = t.location - self.position
+            repCenterVec = t.location - self.position
+
+            if repCenterVec.magnitude > t.control_settings.replacementRange:
+                continue
+
+            hit, hitLoc, n, i, o, m  = self.context.scene.ray_cast(
+                depsgraph= self.depsgraph, 
+                origin= self.position, 
+                direction=repCenterVec)
+
+            if hit:
+                vec = hitLoc - self.position
+            else:
+                vec = repCenterVec
+
             mag = vec.magnitude
             replacementRange = t.control_settings.replacementRange
             chance += 1 - (clamp(mag, 0, replacementRange) / replacementRange)
@@ -266,12 +282,15 @@ class Agent:
                 closestDistance = mag
                 closestReplicator = t
 
-        chance /= 10
+        if closestReplicator is None:
+            return
+
+        chance *= closestReplicator.control_settings.replacementChance
         doNotReplace = random.random() > chance
         # try to slow down exponential explosion if agents are replaced by multiples of themself
         tooYoungToDie = self.lifetime < timeStep * 10 
 
-        if closestReplicator is None or doNotReplace or tooYoungToDie:
+        if doNotReplace or tooYoungToDie:
             return
                 
         i, agentDef = findAgentDefinition(self.context, closestReplicator.control_settings.replacementResult)
