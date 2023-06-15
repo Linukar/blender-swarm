@@ -91,7 +91,6 @@ class SWARM_PT_Panel(Panel):
                 agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
                 agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
                 agentSettings.prop(context.scene.current_agent_settings, "energy", text="Energy")
-                agentSettings.prop(context.scene.current_agent_settings, "applyAtEnd", text="Apply at End")
 
                 toolBox = agentSettings.box()
                 toolBox.label(text="Tool Settings")
@@ -101,6 +100,7 @@ class SWARM_PT_Panel(Panel):
                 toolBox.prop(context.scene.current_agent_settings, "toolStrength", text="Strength")
                 toolBox.prop(context.scene.current_agent_settings, "toolMode", text="Mode")
                 toolBox.prop(context.scene.current_agent_settings, "toolIgnoreBackground", text="Ignore Non-Surface")
+                toolBox.prop(context.scene.current_agent_settings, "applyAtEnd", text="Apply at End")
 
                 boidBox = agentSettings.box()
                 boidBox.label(text="Boid Settings")
