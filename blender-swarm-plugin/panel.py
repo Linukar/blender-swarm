@@ -73,6 +73,7 @@ class SWARM_PT_Panel(Panel):
                 dyntypoBox.prop(context.scene.swarm_settings, "dyntypoResolution", text="Resolution")
 
             swarmSettings.prop(context.scene.swarm_settings, "enableSurfaceAwareness", text="Enable Surface Awareness")
+            swarmSettings.prop(context.scene.swarm_settings, "showFlightPaths", text="Show Flight Paths")
 
 
             presetBox.separator()
@@ -105,6 +106,7 @@ class SWARM_PT_Panel(Panel):
                 boidBox.label(text="Boid Settings")
                 boidBox.prop(context.scene.current_agent_settings, "speed", text="Agent Speed")
                 boidBox.prop(context.scene.current_agent_settings, "steeringSpeed", text="Agent Steering Speed")
+                boidBox.prop(context.scene.current_agent_settings, "viewAngle", text="View Angle")
                 boidBox.prop(context.scene.current_agent_settings, "localAreaRadius", text="Neighbour Radius")
                 boidBox.prop(context.scene.current_agent_settings, "cohesionWeight", text="Cohesion Weight")
                 boidBox.prop(context.scene.current_agent_settings, "alignementWeight", text="Alignement Weight")

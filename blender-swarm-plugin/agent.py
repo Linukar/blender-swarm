@@ -64,6 +64,7 @@ class Agent:
 
         self.lifetime = 0
         self.strokes = []
+        self.flightPath = []
 
         area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
         self.region = next(region for region in area.regions if region.type == 'WINDOW')
@@ -118,7 +119,10 @@ class Agent:
         # do not add drawPoint as handler directly, as it uses references and won't use new values, if they get overwritten
         drawPyramid(self.position, self.rotation, self.agentSettings.color)
 
-        if self.agentSettings.applyAtEnd:
+        if self.context.scene.swarm_settings.showFlightPaths:
+            drawLine(self.flightPath, self.agentSettings.color)
+
+        elif self.agentSettings.applyAtEnd:
             drawLine([s["location"] for s in self.strokes], self.agentSettings.color)
 
         # draw steering vector for debugging
@@ -222,6 +226,9 @@ class Agent:
         if self.energy < 0:
             self.swarm.removeAgent(self)
 
+        if self.context.scene.swarm_settings.showFlightPaths:
+            self.flightPath.append(self.position.copy())
+
 
     def recalcForward(self):
         self.forward = self.rotation @ mathutils.Vector((1, 0, 0))
@@ -238,6 +245,9 @@ class Agent:
             distance = vec.magnitude
 
             angle = vec.angle(self.forward) if distance > 0 else 0 
+
+            if angle > self.agentSettings.viewAngle / 2:
+                continue
 
             for rule in self.boidRules:
                 rule.compareWithOther(distance=distance, angle=angle, agent=self, other=other)

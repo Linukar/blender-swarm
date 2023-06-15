@@ -60,6 +60,7 @@ class SwarmSettings(bpy.types.PropertyGroup):
     dyntypoResolution: bpy.props.FloatProperty(default=2, min=0.001)
 
     enableSurfaceAwareness: bpy.props.BoolProperty(default=True)
+    showFlightPaths: bpy.props.BoolProperty(default=False)
 
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
