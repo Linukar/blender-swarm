@@ -29,7 +29,7 @@ class Separation(BoidRule):
 
     def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
         if(distance < agent.agentSettings.noClumpRadius):
-            self.direction += other.position - agent.position
+            self.direction += agent.position - other.position
             self.count += 1
 
     def calcDirection(self, agent):
@@ -38,7 +38,6 @@ class Separation(BoidRule):
         
         self.direction /= self.count
         self.direction.normalize()
-        self.direction.negate()
         self.direction *= agent.agentSettings.separationWeight
             
         return self.direction

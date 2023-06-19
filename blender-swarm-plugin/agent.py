@@ -105,11 +105,14 @@ class Agent:
 
         self.depsgraph = context.evaluated_depsgraph_get()
 
-        self.boidRules = [Separation(context, self), Alignement(context, self), 
-                          Cohesion(context, self), CenterUrge(context, self), 
-                          Surface(context, self), ControlObjectAttraction(context, self),
-                          Random(context, self)]
-        self.rewritingRules = []
+        self.boidRules = [Separation(context, self),
+                          Alignement(context, self), 
+                          Cohesion(context, self), 
+                          CenterUrge(context, self), 
+                          Surface(context, self), 
+                          ControlObjectAttraction(context, self),
+                          Random(context, self)
+                          ]
 
         if context.scene.swarm_settings.visualizeAgents:
             self.handler = bpy.types.SpaceView3D.draw_handler_add(self.onDraw, (), 'WINDOW', 'POST_VIEW')
@@ -126,7 +129,7 @@ class Agent:
             drawLine([s["location"] for s in self.strokes], self.agentSettings.color)
 
         # draw steering vector for debugging
-        # drawLine([self.position, self.position + self.steering])
+        # drawLine([self.position, self.position + self.steering*10], [1, 1, 1, 1])
 
 
     def onStop(self):
@@ -259,44 +262,44 @@ class Agent:
         if(self.steering.length != 0):
             self.steering.normalize()
             quatDiff = self.forward.rotation_difference(self.steering)
-            rot = mathutils.Quaternion().slerp(quatDiff, clamp(fixedTimeStep * self.agentSettings.steeringSpeed, 0, 1))
+            rot = mathutils.Quaternion().slerp(quatDiff, clamp(self.agentSettings.steeringSpeed, 0, 1))
             self.rotation = rot @ self.rotation
 
 
     def replacement(self, timeStep):
-        chance = 0.0
+        chanceToReplace = 0.0
         closestReplicator = None
         closestDistance = float("inf")
 
-        for t in self.replicator:
-            repCenterVec = t.location - self.position
+        for rep in self.replicator:
+            vecToRepCenter = rep.location - self.position
 
-            if repCenterVec.magnitude > t.control_settings.replacementRange:
+            if vecToRepCenter.magnitude > rep.control_settings.replacementRange:
                 continue
 
-            hit, hitLoc, n, i, o, m  = self.context.scene.ray_cast(
+            hit, hitLocation, n, i, o, m  = self.context.scene.ray_cast(
                 depsgraph= self.depsgraph, 
                 origin= self.position, 
-                direction=repCenterVec)
+                direction=vecToRepCenter)
 
             if hit:
-                vec = hitLoc - self.position
+                vecToRep = hitLocation - self.position
             else:
-                vec = repCenterVec
+                vecToRep = vecToRepCenter
 
-            mag = vec.magnitude
-            replacementRange = t.control_settings.replacementRange
-            chance += 1 - (clamp(mag, 0, replacementRange) / replacementRange)
+            magnitude = vecToRep.magnitude
+            replacementRange = rep.control_settings.replacementRange
+            chanceToReplace += 1 - (clamp(magnitude, 0, replacementRange) / replacementRange)
 
-            if closestDistance > mag:
-                closestDistance = mag
-                closestReplicator = t
+            if closestDistance > magnitude:
+                closestDistance = magnitude
+                closestReplicator = rep
 
         if closestReplicator is None:
             return
 
-        chance *= closestReplicator.control_settings.replacementChance
-        doNotReplace = random.random() > chance
+        chanceToReplace *= closestReplicator.control_settings.replacementChance
+        doNotReplace = random.random() > chanceToReplace
         # try to slow down exponential explosion if agents are replaced by multiples of themself
         tooYoungToDie = self.lifetime < timeStep * 10 
 

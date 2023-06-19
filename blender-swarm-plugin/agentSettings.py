@@ -15,10 +15,8 @@ class AgentSettings(bpy.types.PropertyGroup):
 
     energy: bpy.props.FloatProperty(name="Energy", default=30, min=0, precision=1)
 
-    snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
-    applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
-
     # boid
+    snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
     viewAngle: bpy.props.IntProperty(default=180, min=0, max=360)
 
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
@@ -35,6 +33,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     randomWeight: bpy.props.FloatProperty(default=0.2, min=0, max = 1, precision=2)
 
     #sculpt
+    applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
     tool: bpy.props.EnumProperty(items=tools)
     toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
     toolCooldown: bpy.props.FloatProperty(name="Tool Cooldown", default=0, min=0)
