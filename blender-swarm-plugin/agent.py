@@ -249,7 +249,7 @@ class Agent:
 
             angle = vec.angle(self.forward) if distance > 0 else 0 
 
-            if angle > self.agentSettings.viewAngle / 2:
+            if degrees(angle) > self.agentSettings.viewAngle / 2:
                 continue
 
             for rule in self.boidRules:

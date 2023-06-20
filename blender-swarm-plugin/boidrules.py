@@ -1,8 +1,10 @@
 import mathutils
 import bpy
 
+from math import degrees
 from mathutils.bvhtree import BVHTree
 from .utils import findClosestPointInBVH, randomVector
+from .visualization import drawLine
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -155,35 +157,61 @@ class ControlObjectAttraction(BoidRule):
         attractorsInRangeCounter = 0
 
         for obj in agent.attractors:
-            vec = obj.location - agent.position
-            dist = vec.magnitude
+            vecToOrigin = obj.location - agent.position
+            dist = vecToOrigin.magnitude
 
             if dist < obj.control_settings.attractionRange:
-                norm = vec.normalized()
+                angle = vecToOrigin.angle(agent.forward) if dist > 0 else 0 
 
-                # only attract if target is in front of agent
-                if agent.forward.dot(norm) > 0:
+                # object origin is in view cone
+                if degrees(angle) < agent.agentSettings.viewAngle / 2:
+                    print("see center")
+                    attractorsInRangeCounter += 1
+
                     hit, l, n, i, o, m  = self.context.scene.ray_cast(
                         depsgraph= self.depsgraph, 
                         origin= agent.position, 
                         direction= agent.forward,
                         distance= obj.control_settings.attractionRange)
 
+                    # forward hits mesh
                     if hit:
-                        dirSum += agent.forward if obj.control_settings.type != "Deflector" else -agent.forward
+                        targetVector = agent.forward if obj.control_settings.type != "Deflector" else -agent.forward
+                    # forward misses -> adjust to object origin
                     else:
-                        dirSum += vec if obj.control_settings.type != "Deflector" else -vec
+                        targetVector = vecToOrigin if obj.control_settings.type != "Deflector" else -vecToOrigin
 
-                    strengthSum += obj.control_settings.strength
-                    attractorsInRangeCounter += 1
+                # object origin is outside of viewcone
+                else:
+                    print("tryseeedge")
+                    rotationAxis = agent.forward.cross(vecToOrigin).normalized()
+                    rotationQuaternion = mathutils.Quaternion(rotationAxis, agent.agentSettings.viewAngle / 2)
+
+                    edgeVec = agent.forward.copy()
+                    edgeVec.rotate(rotationQuaternion)
+
+                    drawLine([agent.position, agent.position + edgeVec * 100])
+
+                    hit, l, n, i, o, m  = self.context.scene.ray_cast(
+                        depsgraph= self.depsgraph, 
+                        origin= agent.position, 
+                        direction= edgeVec,
+                        distance= obj.control_settings.attractionRange)
+                    
+                    # can see object at the edge of viewcone -> adjust to that
+                    if hit:
+                        print("didseeedge")
+                        targetVector = edgeVec if obj.control_settings.type != "Deflector" else -edgeVec
+
+                dirSum += targetVector * obj.control_settings.strength
 
         count = max(attractorsInRangeCounter, 1)
         dirSum /= count
 
-        strengthSum /= count #average strength
-        dirSum *= strengthSum
+        # print("In range: " + str(attractorsInRangeCounter))
+        drawLine([agent.position, agent.position + dirSum * 10])
 
-        return dirSum
+        return dirSum * agent.agentSettings.controlObjectWeight
     
 
 class Random(BoidRule):

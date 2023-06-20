@@ -7,7 +7,7 @@ from gpu_extras.batch import batch_for_shader
 shaderLine = gpu.shader.from_builtin('3D_UNIFORM_COLOR')
 
 
-def drawLine(points: list, color: tuple[float, float, float, float]):
+def drawLine(points: list, color: tuple[float, float, float, float] = (1, 1, 1, 1)):
     shaderLine.bind()
     shaderLine.uniform_float("color", color)
 

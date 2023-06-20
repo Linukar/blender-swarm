@@ -116,6 +116,7 @@ class SWARM_PT_Panel(Panel):
                 boidBox.prop(context.scene.current_agent_settings, "centerUrgeWeight", text="Center Weight")
                 boidBox.prop(context.scene.current_agent_settings, "centerMaxDistance", text="Max Distance to Center")
                 boidBox.prop(context.scene.current_agent_settings, "randomWeight", text="Random Weight")
+                boidBox.prop(context.scene.current_agent_settings, "controlObjectWeight", text="Control Object Weight")
                 if context.scene.swarm_settings.enableSurfaceAwareness:
                     boidBox.prop(context.scene.current_agent_settings, "surfaceWeight", text="Surface Urge")
                     boidBox.prop(context.scene.current_agent_settings, "snapToSurface", text="Snap to Surface")
