@@ -153,20 +153,18 @@ class ControlObjectAttraction(BoidRule):
 
     def calcDirection(self, agent: "Agent"):
         dirSum = mathutils.Vector()
-        strengthSum = 0
         attractorsInRangeCounter = 0
 
         for obj in agent.attractors:
             vecToOrigin = obj.location - agent.position
             dist = vecToOrigin.magnitude
+            foundTarget = False
 
             if dist < obj.control_settings.attractionRange:
                 angle = vecToOrigin.angle(agent.forward) if dist > 0 else 0 
 
                 # object origin is in view cone
                 if degrees(angle) < agent.agentSettings.viewAngle / 2:
-                    print("see center")
-                    attractorsInRangeCounter += 1
 
                     hit, l, n, i, o, m  = self.context.scene.ray_cast(
                         depsgraph= self.depsgraph, 
@@ -177,13 +175,14 @@ class ControlObjectAttraction(BoidRule):
                     # forward hits mesh
                     if hit:
                         targetVector = agent.forward if obj.control_settings.type != "Deflector" else -agent.forward
+                        foundTarget = True
                     # forward misses -> adjust to object origin
                     else:
                         targetVector = vecToOrigin if obj.control_settings.type != "Deflector" else -vecToOrigin
+                        foundTarget = True
 
                 # object origin is outside of viewcone
                 else:
-                    print("tryseeedge")
                     rotationAxis = agent.forward.cross(vecToOrigin).normalized()
                     rotationQuaternion = mathutils.Quaternion(rotationAxis, agent.agentSettings.viewAngle / 2)
 
@@ -200,10 +199,12 @@ class ControlObjectAttraction(BoidRule):
                     
                     # can see object at the edge of viewcone -> adjust to that
                     if hit:
-                        print("didseeedge")
                         targetVector = edgeVec if obj.control_settings.type != "Deflector" else -edgeVec
+                        foundTarget = True
 
-                dirSum += targetVector * obj.control_settings.strength
+                if foundTarget:
+                    dirSum += targetVector * obj.control_settings.strength
+                    attractorsInRangeCounter += 1
 
         count = max(attractorsInRangeCounter, 1)
         dirSum /= count
