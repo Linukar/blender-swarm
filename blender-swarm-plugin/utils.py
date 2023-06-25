@@ -60,7 +60,7 @@ def clamp(value, lower, upper):
     return lower if value < lower else upper if value > upper else value
 
 
-def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
+def createBVH(obj: bpy.types.Object) -> BVHTree:
     # Ensure object has a mesh
     if not isinstance(obj.data, bpy.types.Mesh):
         raise ValueError("Object must have a mesh")
@@ -76,7 +76,7 @@ def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
 
     # delete the bmesh, it creates c++ data, that python wont clean up
     bm.free()
-    return (bvhTree, bm)
+    return bvhTree
 
 
 def findInCollection(prop, when):
