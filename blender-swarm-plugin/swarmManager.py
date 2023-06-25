@@ -28,6 +28,8 @@ def stopSwarm(context: bpy.types.Context):
     _swarm.setShouldStop()
     _swarm = None
 
+    #bpy.ops.wm.memory_statistics()
+
     # snapshot = tracemalloc.take_snapshot()
     # top_stats = snapshot.statistics('lineno')
     # for stat in top_stats[:10]:

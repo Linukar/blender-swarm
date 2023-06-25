@@ -76,7 +76,7 @@ def createBVH(obj: bpy.types.Object) -> tuple[BVHTree, bmesh.types.BMesh]:
 
     # delete the bmesh, it creates c++ data, that python wont clean up
     bm.free()
-    return bvhTree
+    return (bvhTree, bm)
 
 
 def findInCollection(prop, when):
@@ -90,6 +90,17 @@ def copyPropertyGroup(src, target, ignore=[]):
     for prop in src.bl_rna.properties:
         if prop.identifier == "rna_type" or prop.identifier in ignore:
             continue
+        setattr(target, prop.identifier, getattr(src, prop.identifier))
+
+
+def compareAndCopyPropertyGroup(src, target, ignore=[]):
+    for prop in src.bl_rna.properties:
+        if prop.identifier == "rna_type" or prop.identifier in ignore:
+            continue
+
+        if getattr(target, prop.identifier) == getattr(src, prop.identifier):
+            continue
+
         setattr(target, prop.identifier, getattr(src, prop.identifier))
 
 

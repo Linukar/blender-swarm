@@ -3,6 +3,7 @@ import bpy
 from itertools import groupby
 
 from .materials import updateControlObjectMaterial
+from .utils import compareAndCopyPropertyGroup
 
 
 coTypes = ["None", "Spawner", "Attractor", "Deflector", "Replicator"]
@@ -23,29 +24,41 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
         update=lambda s, c: onAgentUpdate(s, c)
     )
 
-    strength: bpy.props.FloatProperty(name="Strength", default=0.5, min=0)
+    strength: bpy.props.FloatProperty(name="Strength", default=0.5, min=0,
+        update=lambda s, c: applyForAllSelected(s, c))
     
-    attractionRange: bpy.props.FloatProperty(name="Radius", default=30, min=0)
+    attractionRange: bpy.props.FloatProperty(name="Radius", default=30, min=0,
+        update=lambda s, c: applyForAllSelected(s, c))
 
     replacementResult: bpy.props.EnumProperty(name="Replacement Result", 
         items=lambda self, context: collectAgentIds(context),
         update=lambda s, c: onReplacementUpdate(s, c)
     )
 
-    replacementRange: bpy.props.FloatProperty(name="Replacement Range", default=5, min=0)
-    replacementChance: bpy.props.FloatProperty(name="Replacement Chance", default=1, min=0, precision=2)
+    replacementRange: bpy.props.FloatProperty(name="Replacement Range", default=5, min=0,
+        update=lambda s, c: applyForAllSelected(s, c))
+    replacementChance: bpy.props.FloatProperty(name="Replacement Chance", default=1, min=0, precision=4,
+        update=lambda s, c: applyForAllSelected(s, c))
 
-    replacementCount: bpy.props.IntProperty(name="Replacement Count", default=1, min=1)
+    replacementCount: bpy.props.IntProperty(name="Replacement Count", default=1, min=1,
+        update=lambda s, c: applyForAllSelected(s, c))
 
-    spawnerRepeat: bpy.props.BoolProperty(name="Spawner Repeat", default=True)
-    spawnerFrequency: bpy.props.FloatProperty(name="Spawner Frequency", default=1, min=0, precision=1)
-    spawnerAmount: bpy.props.IntProperty(name="Spawner Amount", default=5, min=1)
+    spawnerRepeat: bpy.props.BoolProperty(name="Spawner Repeat", default=True,
+        update=lambda s, c: applyForAllSelected(s, c))
+    spawnerFrequency: bpy.props.FloatProperty(name="Spawner Frequency", default=1, min=0, precision=1,
+        update=lambda s, c: applyForAllSelected(s, c))
+    spawnerAmount: bpy.props.IntProperty(name="Spawner Amount", default=5, min=1,
+        update=lambda s, c: applyForAllSelected(s, c))
     spawnerLimit: bpy.props.IntProperty(name="Spawner Limit", default=1000, min=1)
-    spawnOnStart: bpy.props.BoolProperty(name="Spawner Start", default=True)
-    spawnerOffset: bpy.props.FloatProperty(name="Spawner Offset", default=0, min = 0, precision=1)
+    spawnOnStart: bpy.props.BoolProperty(name="Spawner Start", default=True,
+        update=lambda s, c: applyForAllSelected(s, c))
+    spawnerOffset: bpy.props.FloatProperty(name="Spawner Offset", default=0, min = 0, precision=1,
+        update=lambda s, c: applyForAllSelected(s, c))
 
-    spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0, min=0)
-    spawnerHasSpawned: bpy.props.BoolProperty(name="Spawner Has Spawned", default=False)
+    spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0, min=0,
+        update=lambda s, c: applyForAllSelected(s, c))
+    spawnerHasSpawned: bpy.props.BoolProperty(name="Spawner Has Spawned", default=False,
+        update=lambda s, c: applyForAllSelected(s, c))
 
 
 
@@ -72,6 +85,7 @@ def addControlObject(context: bpy.types.Context):
 
 def updateControlObjectName(self, context: bpy.types.Context):
     context.active_object.name = controlObjectNameIdentifier + self.type + "_" + self.agentId
+    applyForAllSelected(self, context)
 
 
 def onTypeUpdate(self, context: bpy.types.Context):
@@ -103,3 +117,9 @@ def collectControlObjects(context: bpy.types.Context) -> list[bpy.types.Object]:
     controlObjects = list(filter(lambda o: isControlObject(o), allObjects))
 
     return controlObjects
+
+
+def applyForAllSelected(self, context: bpy.types.Context):
+    for o in context.selected_objects:
+        if o.control_settings.useAsControl:
+            compareAndCopyPropertyGroup(self, o.control_settings, ["useAsControl"])

@@ -1,5 +1,7 @@
 import mathutils
 import bpy
+import numpy
+import random
 
 from math import degrees
 from mathutils.bvhtree import BVHTree
@@ -215,7 +217,7 @@ class ControlObjectAttraction(BoidRule):
         return dirSum * agent.agentSettings.controlObjectWeight
     
 
-class Random(BoidRule):
+class TrueRandom(BoidRule):
     def __init__(self, context: bpy.types.Context, agent: "Agent"):
         super().__init__(context, agent)
 
@@ -226,3 +228,20 @@ class Random(BoidRule):
         rndDir = randomVector(-1, 1)
         rndDir.normalize()
         return rndDir * agent.agentSettings.randomWeight;
+
+
+class BetterRandom(BoidRule):
+    def __init__(self, context: bpy.types.Context, agent: "Agent"):
+        super().__init__(context, agent)
+
+    def compareWithOther(self, distance: float, angle: float, agent: "Agent", other: "Agent"):
+        pass
+
+    def calcDirection(self, agent: "Agent"):
+        rndDir = randomVector(-1, 1).normalized()
+
+        rndAngle = numpy.random.exponential(scale=numpy.pi / 100)
+
+        rotQuat = mathutils.Quaternion(rndDir, rndAngle)
+        newDirection = rotQuat @ agent.forward
+        return newDirection * agent.agentSettings.randomWeight;

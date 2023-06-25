@@ -111,7 +111,7 @@ class Agent:
                           CenterUrge(context, self), 
                           Surface(context, self), 
                           ControlObjectAttraction(context, self),
-                          Random(context, self)
+                          BetterRandom(context, self)
                           ]
 
         if context.scene.swarm_settings.visualizeAgents:
