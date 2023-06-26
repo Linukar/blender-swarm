@@ -12,7 +12,6 @@ collectionName = "SwarmControlObjects"
 controlObjectNameIdentifier = "swarm_co_"
 
 class ControlObjectSettings(bpy.types.PropertyGroup):
-    useAsControl: bpy.props.BoolProperty(name="Use as Control", default=False)
 
     type: bpy.props.EnumProperty(
         items=lambda s, c: map(lambda t: (t, t, ""), coTypes),
@@ -55,10 +54,10 @@ class ControlObjectSettings(bpy.types.PropertyGroup):
     spawnerOffset: bpy.props.FloatProperty(name="Spawner Offset", default=0, min = 0, precision=1,
         update=lambda s, c: applyForAllSelected(s, c))
 
-    spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0, min=0,
-        update=lambda s, c: applyForAllSelected(s, c))
-    spawnerHasSpawned: bpy.props.BoolProperty(name="Spawner Has Spawned", default=False,
-        update=lambda s, c: applyForAllSelected(s, c))
+    #not editable by user
+    useAsControl: bpy.props.BoolProperty(name="Use as Control", default=False)
+    spawnerTimer: bpy.props.FloatProperty(name="Spawner Timer", default=0)
+    spawnerHasSpawned: bpy.props.BoolProperty(name="Spawner Has Spawned", default=False)
 
 
 

@@ -29,7 +29,9 @@ class Swarm:
         self.shouldStop = False
         self.context = context
         self.startTime = time.time()
-        self.bvhTree = None
+
+        if context.scene.swarm_settings.enableSurfaceAwareness:
+            self.bvhTree = createBVH(self.context.active_object)
 
         agentDefinitions = context.scene.swarm_settings.agent_definitions
         if len(agentDefinitions) < 1: return
@@ -80,7 +82,7 @@ class Swarm:
                 self.spawnFromSpawner(spawner)
                 
 
-        if self.context.scene.swarm_settings.enableSurfaceAwareness:
+        if self.context.scene.swarm_settings.enableSurfaceAwareness and self.context.scene.swarm_settings.enablePreciseSurfaceMode:
             if self.context.scene.swarm_settings.useDyntypo and self.context.active_object.use_dynamic_topology_sculpting:
                 bpy.ops.sculpt.dynamic_topology_toggle()
 

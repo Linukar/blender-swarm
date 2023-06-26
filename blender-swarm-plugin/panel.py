@@ -73,6 +73,9 @@ class SWARM_PT_Panel(Panel):
                 dyntypoBox.prop(context.scene.swarm_settings, "dyntypoResolution", text="Resolution")
 
             swarmSettings.prop(context.scene.swarm_settings, "enableSurfaceAwareness", text="Enable Surface Awareness")
+            if context.scene.swarm_settings.enableSurfaceAwareness:
+                swarmSettings.prop(context.scene.swarm_settings, "enablePreciseSurfaceMode", text="Enable Precise Mode")
+            
             swarmSettings.prop(context.scene.swarm_settings, "showFlightPaths", text="Show Flight Paths")
 
 
