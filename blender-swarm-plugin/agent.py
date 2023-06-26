@@ -184,6 +184,7 @@ class Agent:
 
         brush = self.context.tool_settings.unified_paint_settings
         brush.unprojected_radius = self.agentSettings.toolRadius
+        brush.use_unified_strength = True
         brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
 

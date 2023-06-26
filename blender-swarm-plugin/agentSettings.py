@@ -19,7 +19,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
     viewAngle: bpy.props.IntProperty(default=180, min=0, max=360)
 
-    noClumpRadius: bpy.props.FloatProperty(default=3, min=0, max=10, step=0.01, precision=3)
+    noClumpRadius: bpy.props.FloatProperty(default=3, min=0, step=0.01, precision=2)
     localAreaRadius: bpy.props.FloatProperty(default=10, min=0, precision=3)
     speed: bpy.props.FloatProperty(default=2, min=0, precision=3)
     steeringSpeed: bpy.props.FloatProperty(default=1, min=0, precision=3)
