@@ -12,10 +12,10 @@ def startSwarm(context: bpy.types.Context):
     bpy.context.scene.tool_settings.sculpt.use_symmetry_x = False
     # tracemalloc.start()
 
-    # if context.scene.swarm_settings.useDyntypo:
-    #     if not context.active_object.use_dynamic_topology_sculpting:
-    #         bpy.ops.sculpt.dynamic_topology_toggle()
-    #     bpy.context.scene.tool_settings.sculpt.detail_size = context.scene.swarm_settings.dyntypoResolution
+    if context.scene.swarm_settings.useDyntypo:
+        if not context.active_object.use_dynamic_topology_sculpting:
+            bpy.ops.sculpt.dynamic_topology_toggle()
+        # bpy.context.scene.tool_settings.sculpt.detail_size = context.scene.swarm_settings.dyntypoResolution
 
     global _swarm 
     _swarm = Swarm(context)

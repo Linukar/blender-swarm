@@ -81,7 +81,14 @@ class Swarm:
                 
 
         if self.context.scene.swarm_settings.enableSurfaceAwareness:
+            if self.context.scene.swarm_settings.useDyntypo and self.context.active_object.use_dynamic_topology_sculpting:
+                bpy.ops.sculpt.dynamic_topology_toggle()
+
             self.bvhTree = createBVH(self.context.active_object)
+
+            if self.context.scene.swarm_settings.useDyntypo and not self.context.active_object.use_dynamic_topology_sculpting:
+                bpy.ops.sculpt.dynamic_topology_toggle()
+
 
         for agent in self.agents:
             agent.update(Swarm.fixedTimeStep, self.step, self.agents)
