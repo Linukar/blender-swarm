@@ -37,6 +37,8 @@ class Swarm:
         if len(agentDefinitions) < 1: return
 
         for spawner in self.spawner:
+            spawner.control_settings.spawnerHasSpawned = False
+            spawner.control_settings.spawnerTimer = 0
             if spawner.control_settings.spawnOnStart:
                 self.spawnFromSpawner(spawner)
 

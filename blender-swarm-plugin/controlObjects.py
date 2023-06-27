@@ -108,14 +108,25 @@ def isControlObject(object):
 
 def collectControlObjects(context: bpy.types.Context) -> list[bpy.types.Object]:
     collection = bpy.data.collections.get(collectionName)
-    if collection is not None:
-        allObjects = collection.objects
-    else:
+    if collection is None:
         allObjects = context.scene.objects
+    else:
+        allObjects = getObjectsFromCollectionAndSubcollections(collection, context)
     
     controlObjects = list(filter(lambda o: isControlObject(o), allObjects))
 
     return controlObjects
+
+def getObjectsFromCollectionAndSubcollections(collection: bpy.types.Collection, context: bpy.types.Context) -> list[bpy.types.Object]:
+
+    objects = []
+    
+    if collection.name in context.view_layer.layer_collection.children:
+        objects.extend(collection.objects)  
+        for subcollection in collection.children:
+            objects.extend(getObjectsFromCollectionAndSubcollections(subcollection, context))
+    
+    return objects
 
 
 def applyForAllSelected(self, context: bpy.types.Context):

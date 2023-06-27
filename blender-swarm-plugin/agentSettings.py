@@ -41,6 +41,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)
     toolMode: bpy.props.EnumProperty(items=toolModes)
     toolIgnoreBackground: bpy.props.BoolProperty(name="Ignore Background", default=False)
+    refreshTopology: bpy.props.BoolProperty(name="Refres Topo", default=False)
 
 
 def findAgents(self, context):

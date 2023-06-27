@@ -134,6 +134,13 @@ class Agent:
 
     def onStop(self):
         self.endStroke()
+
+        # refresh topology if agent has done too big changes
+        if self.context.scene.swarm_settings.useDyntypo and self.agentSettings.refreshTopology and self.context.active_object.use_dynamic_topology_sculpting:
+            bpy.ops.sculpt.dynamic_topology_toggle()
+            bpy.ops.sculpt.dynamic_topology_toggle()
+
+
         if self.context.scene.swarm_settings.visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
