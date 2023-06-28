@@ -120,13 +120,28 @@ def collectControlObjects(context: bpy.types.Context) -> list[bpy.types.Object]:
 def getObjectsFromCollectionAndSubcollections(collection: bpy.types.Collection, context: bpy.types.Context) -> list[bpy.types.Object]:
 
     objects = []
+
+    layerCollection = getLayerCollection(context.view_layer, collection.name)
     
-    if collection.name in context.view_layer.layer_collection.children:
+    if not layerCollection.exclude:
         objects.extend(collection.objects)  
         for subcollection in collection.children:
             objects.extend(getObjectsFromCollectionAndSubcollections(subcollection, context))
     
     return objects
+
+
+def getLayerCollection(viewLayer: bpy.types.ViewLayer, collectionName: str):
+    def getLayerCollectionRecursive(layerCollection: bpy.types.LayerCollection, collectionName):
+        if layerCollection.name == collectionName:
+            return layerCollection
+        for child in layerCollection.children:
+            res = getLayerCollectionRecursive(child, collectionName)
+            if res is not None:
+                return res
+        return None
+    
+    return getLayerCollectionRecursive(viewLayer.layer_collection, collectionName)
 
 
 def applyForAllSelected(self, context: bpy.types.Context):

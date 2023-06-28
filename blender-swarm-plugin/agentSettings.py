@@ -7,6 +7,14 @@ from .controlObjects import collectControlObjects
 
 toolModes = [("NORMAL", "Normal", ""), ("INVERT", "Inverted", "")]
 
+def getBrushes(self, context):
+    items = []
+    if hasattr(bpy.data, 'brushes'):
+        for b in bpy.data.brushes:
+            if b.use_paint_sculpt:
+                items.append((b.name, b.name, ""))
+    return items
+
 class AgentSettings(bpy.types.PropertyGroup):
 
     #general
@@ -14,6 +22,7 @@ class AgentSettings(bpy.types.PropertyGroup):
     color: bpy.props.FloatVectorProperty(name="Color", subtype='COLOR_GAMMA', size=4, default=(1, 1, 1, 1), min=0, max=1)
 
     energy: bpy.props.FloatProperty(name="Energy", default=30, min=0, precision=1)
+    minimumLifetime: bpy.props.FloatProperty(name="Min Lifetime", default=0.5, min=0, precision=2)
 
     # boid
     snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
@@ -35,7 +44,11 @@ class AgentSettings(bpy.types.PropertyGroup):
 
     #sculpt
     applyAtEnd: bpy.props.BoolProperty(name="Apply at end", default=False)
-    tool: bpy.props.EnumProperty(items=tools)
+    tool: bpy.props.EnumProperty(
+        name="Sculpting Brushes",
+        description="Available sculpting brushes",
+        items=getBrushes
+    )
     toolRadius: bpy.props.FloatProperty(name="Tool Radius", default=1, min=0.001, precision=1)
     toolCooldown: bpy.props.FloatProperty(name="Tool Cooldown", default=0, min=0)
     toolStrength: bpy.props.FloatProperty(name="Tool Strength", default=0.5, min=0, max=1, precision=3)

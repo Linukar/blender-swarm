@@ -187,7 +187,13 @@ class Agent:
 
 
     def applyBrush(self, stroke):
-        bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
+        # bpy.ops.paint.brush_select(sculpt_tool = self.agentSettings.tool, toggle = False)
+
+        sculpt = bpy.context.tool_settings.sculpt
+        if not self.agentSettings.tool in bpy.data.brushes:
+            return
+        
+        sculpt.brush = bpy.data.brushes[self.agentSettings.tool]
 
         brush = self.context.tool_settings.unified_paint_settings
         brush.unprojected_radius = self.agentSettings.toolRadius
@@ -309,7 +315,7 @@ class Agent:
         chanceToReplace *= closestReplicator.control_settings.replacementChance
         doNotReplace = random.random() > chanceToReplace
         # try to slow down exponential explosion if agents are replaced by multiples of themself
-        tooYoungToDie = self.lifetime < timeStep * 10 
+        tooYoungToDie = self.lifetime < self.agentSettings.minimumLifetime
 
         if doNotReplace or tooYoungToDie:
             return
@@ -320,6 +326,7 @@ class Agent:
 
         replacementCount = closestReplicator.control_settings.replacementCount
 
+        print("replace")
         if replacementCount > 1:
             for i in range(replacementCount - 1):
                 self.swarm.addAgent(
@@ -344,3 +351,4 @@ class Agent:
         self.strokes.clear()
         self.strokes.append(self.createStrokeAtCurrent(isStart=True))
         self.toolCooldown = agentSettings.toolCooldown
+        self.lifetime = 0

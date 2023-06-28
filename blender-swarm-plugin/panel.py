@@ -94,6 +94,7 @@ class SWARM_PT_Panel(Panel):
                 agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
                 agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
                 agentSettings.prop(context.scene.current_agent_settings, "energy", text="Energy")
+                agentSettings.prop(context.scene.current_agent_settings, "minimumLifetime", text="Min Lifetime")
 
                 toolBox = agentSettings.box()
                 toolBox.label(text="Tool Settings")
