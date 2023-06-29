@@ -101,7 +101,7 @@ class Agent:
 
         self.steering = self.forward
 
-        self.resetAgent(agentSettings)
+        self.setAgentSettings(agentSettings)
 
         self.depsgraph = context.evaluated_depsgraph_get()
 
@@ -135,12 +135,6 @@ class Agent:
     def onStop(self):
         self.endStroke()
 
-        # refresh topology if agent has done too big changes
-        if self.context.scene.swarm_settings.useDyntypo and self.agentSettings.refreshTopology and self.context.active_object.use_dynamic_topology_sculpting:
-            bpy.ops.sculpt.dynamic_topology_toggle()
-            bpy.ops.sculpt.dynamic_topology_toggle()
-
-
         if self.context.scene.swarm_settings.visualizeAgents:
             bpy.types.SpaceView3D.draw_handler_remove(self.handler, 'WINDOW')
 
@@ -149,6 +143,11 @@ class Agent:
         if self.agentSettings.applyAtEnd:
             self.applyBrush(self.strokes)
             self.strokes.clear()
+
+        # refresh topology if agent has done too big changes
+        if self.context.scene.swarm_settings.useDyntypo and self.agentSettings.refreshTopology and self.context.active_object.use_dynamic_topology_sculpting:
+            bpy.ops.sculpt.dynamic_topology_toggle()
+            bpy.ops.sculpt.dynamic_topology_toggle()
 
 
     def createStrokeAtCurrent(self, isStart: bool):
@@ -326,7 +325,6 @@ class Agent:
 
         replacementCount = closestReplicator.control_settings.replacementCount
 
-        print("replace")
         if replacementCount > 1:
             for i in range(replacementCount - 1):
                 self.swarm.addAgent(
@@ -342,13 +340,13 @@ class Agent:
 
     def setAgentSettings(self, agentSettings: AgentSettings):
         self.agentSettings = agentSettings
+        self.toolCooldown = agentSettings.toolCooldown
+        self.lifetime = 0
         self.energy = agentSettings.energy
+        self.setFilteredControlObjects()
+        self.strokes.append(self.createStrokeAtCurrent(isStart=True))
 
 
     def resetAgent(self, agentSettings: AgentSettings):
+        self.endStroke()
         self.setAgentSettings(agentSettings)
-        self.setFilteredControlObjects()
-        self.strokes.clear()
-        self.strokes.append(self.createStrokeAtCurrent(isStart=True))
-        self.toolCooldown = agentSettings.toolCooldown
-        self.lifetime = 0

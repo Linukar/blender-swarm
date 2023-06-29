@@ -99,7 +99,7 @@ class Swarm:
 
         self.step += 1
 
-        if self.step > self.totalSteps:
+        if self.step > self.totalSteps or len(self.agents) == 0:
             self.shouldStop = True
 
         if self.shouldStop:
