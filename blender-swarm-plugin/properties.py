@@ -63,6 +63,8 @@ class SwarmSettings(bpy.types.PropertyGroup):
     enablePreciseSurfaceMode: bpy.props.BoolProperty(default=False)
     showFlightPaths: bpy.props.BoolProperty(default=False)
 
+    autoStop: bpy.props.BoolProperty(default=True)
+
     # agent properties
     agent_definitions: bpy.props.CollectionProperty(type=AgentSettings)
 

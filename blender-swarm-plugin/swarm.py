@@ -99,7 +99,7 @@ class Swarm:
 
         self.step += 1
 
-        if self.step > self.totalSteps or len(self.agents) == 0:
+        if (self.step > self.totalSteps or len(self.agents) == 0) and self.context.scene.swarm_settings.autoStop:
             self.shouldStop = True
 
         if self.shouldStop:

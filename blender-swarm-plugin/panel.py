@@ -77,7 +77,7 @@ class SWARM_PT_Panel(Panel):
                 swarmSettings.prop(context.scene.swarm_settings, "enablePreciseSurfaceMode", text="Enable Precise Mode")
             
             swarmSettings.prop(context.scene.swarm_settings, "showFlightPaths", text="Show Flight Paths")
-
+            swarmSettings.prop(context.scene.swarm_settings, "autoStop", text="Auto Stop")
 
             presetBox.separator()
 
