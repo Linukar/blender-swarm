@@ -109,12 +109,16 @@ def findAgentDefinition(context: bpy.types.Context, name: str) -> tuple[int, Age
 
 
 def findClosestPointInBVH(bvhTree: BVHTree, point: mathutils.Vector):
-    closestPoint, _, __, ___ = bvhTree.find_nearest(point)
+    return tryfindClosestPoint(bvhTree, point)[0]
+
+
+def tryfindClosestPoint(bvhTree: BVHTree, point: mathutils.Vector) -> tuple[mathutils.Vector, mathutils.Vector, int, float]:
+    closestPoint, normal, index, distance = bvhTree.find_nearest(point)
 
     if closestPoint is None:
         return None
 
-    return closestPoint
+    return (closestPoint, normal, index, distance)
 
 
 def randomVector(min: float, max: float) -> mathutils.Vector:

@@ -10,7 +10,7 @@ import bpy_extras
 import sys
 import time
 
-from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext, randomVector
+from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext, randomVector, tryfindClosestPoint
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -235,7 +235,15 @@ class Agent:
         self.position += self.forward * self.agentSettings.speed * fixedTimeStep
 
         if self.agentSettings.snapToSurface and self.context.scene.swarm_settings.enableSurfaceAwareness:
-            self.position = findClosestPointInBVH(self.swarm.bvhTree, self.position)
+            (pos, norm, i, dis) = tryfindClosestPoint(self.swarm.bvhTree, self.position)
+
+            if pos is not None:
+                self.position = pos
+
+                projectedForward = self.forward - norm * self.forward.dot(norm)
+                rot = self.forward.rotation_difference(projectedForward)
+
+                self.rotation = rot @ self.rotation
 
         if self.context.scene.swarm_settings.useSculpting: self.sculptUpdate(fixedTimeStep)
 
