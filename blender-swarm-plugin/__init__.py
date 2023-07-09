@@ -12,7 +12,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bl_info = {
-    "name" : "Swarm",
+    "name" : "blender-swarm-plugin",
     "author" : "Me",
     "description" : "",
     "blender" : (3, 3, 2),
