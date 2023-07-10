@@ -106,3 +106,13 @@ def removeAgent(context: bpy.types.Context) -> None:
     if i is not None and len(agents) > 1:
         agents.remove(i)
         setAgentAsCurrent(agents[i-1], context)
+
+
+def cloneCurrentAgent(context: bpy.types.Context) -> None:
+    agents = context.scene.swarm_settings.agent_definitions
+    current_agent_settings = context.scene.current_agent_settings
+
+    new_agent = agents.add()
+    copyPropertyGroup(current_agent_settings, new_agent)
+
+    new_agent.name = current_agent_settings.name + "-copy"

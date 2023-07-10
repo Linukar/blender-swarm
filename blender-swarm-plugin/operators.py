@@ -7,8 +7,8 @@ import bpy_extras
 from bpy.types import Operator
 from .swarmManager import startSwarm, stopSwarm, isRunning, pauseSwarm
 from .constants import maxPropSize
-from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges
-from .agentSettings import saveAgentChanges, addAgent, removeAgent
+from .presets import importPresets, exportPresets, addPreset, removePreset, savePresetChanges, cloneCurrentPreset
+from .agentSettings import saveAgentChanges, addAgent, removeAgent, cloneCurrentAgent
 from .controlObjects import addControlObject
 
 class Swarm_OT_Start_Simulation(Operator):
@@ -203,6 +203,16 @@ class SWARM_OT_AddPreset(bpy.types.Operator):
         return {'FINISHED'}
     
 
+class SWARM_OT_ClonePreset(bpy.types.Operator):
+    bl_idname = "swarm.clone_preset"
+    bl_label = "Clone Preset"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        cloneCurrentPreset(context)
+        return {'FINISHED'}
+    
+
 class SWARM_OT_RemovePreset(bpy.types.Operator):
     bl_idname = "swarm.remove_preset"
     bl_label = "Remove Preset"
@@ -230,6 +240,16 @@ class SWARM_OT_RemoveAgentType(bpy.types.Operator):
 
     def execute(self, context):
         removeAgent(context)
+        return {'FINISHED'}
+    
+
+class SWARM_OT_CloneAgentType(bpy.types.Operator):
+    bl_idname = "swarm.clone_agent_type"
+    bl_label = "Clone Agent Type"
+    bl_options = {'REGISTER'}
+
+    def execute(self, context):
+        cloneCurrentAgent(context)
         return {'FINISHED'}
     
 
