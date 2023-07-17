@@ -63,7 +63,7 @@ class SWARM_PT_Panel(Panel):
             swarmSettings.prop(context.scene.swarm_settings, "maxSimulationSteps", text="Simulation Steps")
             swarmSettings.prop(context.scene.swarm_settings, "visualizeAgents", text="Visualize Agents")
             swarmSettings.prop(context.scene.swarm_settings, "useSculpting", text="use Sculpting")
-            swarmSettings.prop(context.scene.swarm_settings, "randomStartLocation", text="Random Start Location")
+            # swarmSettings.prop(context.scene.swarm_settings, "randomStartLocation", text="Random Start Location")
             swarmSettings.prop(context.scene.swarm_settings, "randomStartXYRotation", text="Random Start XY Rotation")
             swarmSettings.prop(context.scene.swarm_settings, "randomStartZRotation", text="Random Start Z Rotation")
 
@@ -93,7 +93,7 @@ class SWARM_PT_Panel(Panel):
                 agentSettings.operator("swarm.save_agent", text="Save")
                 agentSettings.prop(context.scene.current_agent_settings, "name", text="Name")
                 agentSettings.prop(context.scene.current_agent_settings, "color", text="Color")
-                agentSettings.prop(context.scene.current_agent_settings, "energy", text="Energy")
+                agentSettings.prop(context.scene.current_agent_settings, "energy", text="Max Lifetime")
                 agentSettings.prop(context.scene.current_agent_settings, "minimumLifetime", text="Min Lifetime")
 
                 toolBox = agentSettings.box()

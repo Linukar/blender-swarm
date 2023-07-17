@@ -53,7 +53,7 @@ class Agent:
             swarmIndex: int, 
             agentSettings: AgentSettings, 
             controlObjects: list[bpy.types.Object],
-            spawnPosition: mathutils.Vector = None,
+            spawnPosition: mathutils.Vector,
             inheritTransformFrom: Agent = None):
 
         self.context = context
@@ -80,14 +80,8 @@ class Agent:
             self.rotation = inheritTransformFrom.rotation
         else:
 
-            if spawnPosition is not None:
-                self.position = spawnPosition.copy()
+            self.position = spawnPosition.copy()
 
-            else:
-                if context.scene.swarm_settings.randomStartLocation:
-                    self.position = randomVector(-spawnCubeSize, spawnCubeSize)
-                else:
-                    self.position = context.active_object.location.copy()
 
             rndAngles = randomVector(0, 360)
             eul = mathutils.Euler((
