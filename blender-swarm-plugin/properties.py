@@ -92,7 +92,6 @@ def updatePreset(self, context: bpy.types.Context):
 def setPresetAsCurrent(preset: "SwarmSettings", context: bpy.types.Context):
     copyPropertyGroup(preset, context.scene.swarm_settings, ["agent_definitions"])
 
-    # Update agent_definitions
     context.scene.swarm_settings.agent_definitions.clear()
     for agent_def in preset.agent_definitions:
         new_agent_def = context.scene.swarm_settings.agent_definitions.add()

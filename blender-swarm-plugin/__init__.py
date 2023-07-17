@@ -12,7 +12,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 bl_info = {
-    "name" : "Swarm",
+    "name" : "blender-swarm-plugin",
     "author" : "Me",
     "description" : "",
     "blender" : (3, 3, 2),
@@ -44,10 +44,12 @@ classes = (Swarm_OT_Start_Simulation,
            SWARM_OT_ImportPresets,
            SWARM_OT_AddPreset,
            SWARM_OT_RemovePreset,
+           SWARM_OT_ClonePreset,
            SWARM_OT_SavePreset,
            SWARM_OT_AddControlObject,
            SWARM_OT_AddAgentType,
            SWARM_OT_RemoveAgentType,
+           SWARM_OT_CloneAgentType,
            SWARM_OT_SaveAgent,
 
            SWARM_PT_Panel, 

@@ -88,6 +88,7 @@ class SWARM_PT_Panel(Panel):
             agentRow = agentSettings.row()
             agentRow.operator("swarm.add_agent_type", text="+")
             agentRow.operator("swarm.remove_agent_type", text="-")
+            agentRow.operator("swarm.clone_agent_type", text="clone")
 
             if context.scene.selected_agent != "":
                 agentSettings.operator("swarm.save_agent", text="Save")

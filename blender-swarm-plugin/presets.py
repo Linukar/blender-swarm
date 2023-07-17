@@ -88,6 +88,22 @@ def addPreset(context: bpy.types.Context) -> None:
     setPresetAsCurrent(newPreset, context)
 
 
+def cloneCurrentPreset(context: bpy.types.Context) -> None:
+    presets = context.scene.swarm_presets.presets
+    swarm_settings = context.scene.swarm_settings
+
+    newPreset = presets.add()
+    copyPropertyGroup(swarm_settings, newPreset, ["agent_definitions"])
+
+    for agent_def in swarm_settings.agent_definitions:
+        new_agent_def = newPreset.agent_definitions.add()
+        copyPropertyGroup(agent_def, new_agent_def)
+
+    # Set the name of the new preset
+    newPreset.name += "-copy"
+    setPresetAsCurrent(newPreset, context)
+
+
 def removePreset(context: bpy.types.Context) -> None:
     presets = context.scene.swarm_presets.presets
     i, _ = findInCollection(presets, lambda p: p.name == context.scene.selected_preset)
