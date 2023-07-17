@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 import bpy
 import bmesh
 import mathutils
@@ -128,3 +130,24 @@ def randomVector(min: float, max: float) -> mathutils.Vector:
         random.uniform(min, max)
         ))
 
+
+def multiRaycast(depsgraph: bpy.types.Depsgraph, origin: mathutils.Vector, target: bpy.types.Object, direction: mathutils.Vector, maxAttempts: int = 1000, distance: float = 1.70141e+38) -> tuple[bool, mathutils.Vector, mathutils.Vector, int, bpy.types.Object, mathutils.Matrix]:
+
+    # Start and end points of the ray in world coordinates
+    attempts = 0
+    while attempts < maxAttempts:
+        result, location, normal, index, hitObj, matrix = bpy.context.scene.ray_cast(
+            depsgraph= depsgraph, origin=origin, direction=direction, distance=distance)
+        if result:
+            if hitObj == target:
+                return (result, location, normal, index, hitObj, matrix)
+            else:
+                hitDistance = (location - origin).length
+                distance -= hitDistance
+                # Start next raycast from the hit location plus a small offset
+                origin = location + direction * 0.0001
+        else:
+            break  # No hit, exit the loop
+        attempts += 1
+
+    return (None, None, None, None, None, None)

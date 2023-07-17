@@ -107,6 +107,7 @@ class SWARM_PT_Panel(Panel):
                 toolBox.prop(context.scene.current_agent_settings, "toolIgnoreBackground", text="Ignore Non-Surface")
                 toolBox.prop(context.scene.current_agent_settings, "applyAtEnd", text="Apply at End")
                 toolBox.prop(context.scene.current_agent_settings, "refreshTopology", text="Refresh Topology After Death")
+                toolBox.prop(context.scene.current_agent_settings, "seeThroughWalls", text="See Through Walls")
 
                 boidBox = agentSettings.box()
                 boidBox.label(text="Boid Settings")

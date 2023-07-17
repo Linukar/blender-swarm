@@ -26,6 +26,7 @@ class AgentSettings(bpy.types.PropertyGroup):
 
     # boid
     snapToSurface: bpy.props.BoolProperty(name="Snap to Surface", default=False)
+    seeThroughWalls: bpy.props.BoolProperty(name="See through walls", default=False)
     viewAngle: bpy.props.IntProperty(default=180, min=0, max=360)
 
     noClumpRadius: bpy.props.FloatProperty(default=3, min=0, step=0.01, precision=2)

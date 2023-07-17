@@ -10,7 +10,7 @@ import bpy_extras
 import sys
 import time
 
-from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext, randomVector, tryfindClosestPoint
+from .utils import clamp, findAgentDefinition, findClosestPointInBVH, find3dViewportContext, randomVector, tryfindClosestPoint, multiRaycast
 from .visualization import drawTriangle, drawLine, drawPyramid
 from typing import List
 from .boidrules import *
@@ -53,7 +53,7 @@ class Agent:
             swarmIndex: int, 
             agentSettings: AgentSettings, 
             controlObjects: list[bpy.types.Object],
-            spawnPosition: mathutils.Vector,
+            spawnPosition: mathutils.Vector = None,
             inheritTransformFrom: Agent = None):
 
         self.context = context
@@ -78,7 +78,7 @@ class Agent:
             eps = sys.float_info.epsilon
             self.position = inheritTransformFrom.position + mathutils.Vector((eps, eps, eps)) 
             self.rotation = inheritTransformFrom.rotation
-        else:
+        elif spawnPosition is not None:
 
             self.position = spawnPosition.copy()
 
@@ -90,6 +90,10 @@ class Agent:
                 math.radians(rndAngles.z) if context.scene.swarm_settings.randomStartZRotation else 0,
                 ))
             self.rotation = eul.to_quaternion()
+        
+        else:
+            self.position = mathutils.Vector()
+            self.rotation = mathutils.Quaternion()
 
         self.recalcForward()
 
@@ -292,10 +296,18 @@ class Agent:
             if vecToRepCenter.magnitude > rep.control_settings.replacementRange:
                 continue
 
-            hit, hitLocation, n, i, o, m  = self.context.scene.ray_cast(
-                depsgraph= self.depsgraph, 
-                origin= self.position, 
-                direction=vecToRepCenter)
+            if self.agentSettings.seeThroughWalls:
+                hit, hitLocation, n, i, o, m  = multiRaycast(
+                    depsgraph= self.depsgraph, 
+                    origin= self.position, 
+                    target= rep,
+                    direction=vecToRepCenter)
+                
+            else:
+                    hit, hitLocation, n, i, o, m  = self.context.scene.ray_cast(
+                    depsgraph= self.depsgraph, 
+                    origin= self.position, 
+                    direction=vecToRepCenter)
 
             if hit:
                 vecToRep = hitLocation - self.position

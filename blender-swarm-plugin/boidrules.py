@@ -5,7 +5,7 @@ import random
 
 from math import degrees
 from mathutils.bvhtree import BVHTree
-from .utils import findClosestPointInBVH, randomVector
+from .utils import findClosestPointInBVH, randomVector, multiRaycast
 from .visualization import drawLine
 
 from typing import TYPE_CHECKING
@@ -168,11 +168,21 @@ class ControlObjectAttraction(BoidRule):
                 # object origin is in view cone
                 if degrees(angle) < agent.agentSettings.viewAngle / 2:
 
-                    hit, l, n, i, o, m  = self.context.scene.ray_cast(
-                        depsgraph= self.depsgraph, 
-                        origin= agent.position, 
-                        direction= agent.forward,
-                        distance= obj.control_settings.attractionRange)
+                    if agent.agentSettings.seeThroughWalls:
+
+                        hit, l, n, i, o, m  = multiRaycast(
+                            depsgraph= self.depsgraph, 
+                            origin= agent.position, 
+                            target=obj,
+                            direction= agent.forward,
+                            distance= obj.control_settings.attractionRange)
+                        
+                    else:
+                        hit, l, n, i, o, m  = self.context.scene.ray_cast(
+                            depsgraph= self.depsgraph, 
+                            origin= agent.position, 
+                            direction= agent.forward,
+                            distance= obj.control_settings.attractionRange)
 
                     # forward hits mesh
                     if hit:
@@ -193,11 +203,21 @@ class ControlObjectAttraction(BoidRule):
 
                     drawLine([agent.position, agent.position + edgeVec * 100])
 
-                    hit, l, n, i, o, m  = self.context.scene.ray_cast(
-                        depsgraph= self.depsgraph, 
-                        origin= agent.position, 
-                        direction= edgeVec,
-                        distance= obj.control_settings.attractionRange)
+                    if agent.agentSettings.seeThroughWalls:
+
+                        hit, l, n, i, o, m  = multiRaycast(
+                            depsgraph= self.depsgraph, 
+                            origin= agent.position, 
+                            target=obj,
+                            direction= edgeVec,
+                            distance= obj.control_settings.attractionRange)
+                        
+                    else:
+                        hit, l, n, i, o, m  = self.context.scene.ray_cast(
+                            depsgraph= self.depsgraph, 
+                            origin= agent.position, 
+                            direction= edgeVec,
+                            distance= obj.control_settings.attractionRange)
                     
                     # can see object at the edge of viewcone -> adjust to that
                     if hit:
