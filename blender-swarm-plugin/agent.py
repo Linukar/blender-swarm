@@ -64,6 +64,7 @@ class Agent:
 
         self.lifetime = 0
         self.strokes = []
+        self.path = []
         self.flightPath = []
 
         area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
@@ -124,7 +125,7 @@ class Agent:
             drawLine(self.flightPath, self.agentSettings.color)
 
         elif self.agentSettings.applyAtEnd:
-            drawLine([s["location"] for s in self.strokes], self.agentSettings.color)
+            drawLine(self.path, self.agentSettings.color)
 
         # draw steering vector for debugging
         # drawLine([self.position, self.position + self.steering*10], [1, 1, 1, 1])
@@ -149,13 +150,13 @@ class Agent:
 
 
     def createStrokeAtCurrent(self, isStart: bool):
-        location = self.position.copy()
-        mouse = bpy_extras.view3d_utils.location_3d_to_region_2d(self.region, self.spaceData.region_3d, location)
+        localPos = self.context.active_object.matrix_world.inverted() @ self.position
+        mouse = bpy_extras.view3d_utils.location_3d_to_region_2d(self.region, self.spaceData.region_3d, localPos)
 
         return {
                 "name": "stroke",
                 "is_start": isStart,
-                "location": location,
+                "location": localPos,
                 "mouse": mouse,
                 "mouse_event": mouse,
                 "pen_flip": False,
@@ -193,7 +194,10 @@ class Agent:
         sculpt.brush = bpy.data.brushes[self.agentSettings.tool]
 
         brush = self.context.tool_settings.unified_paint_settings
-        brush.unprojected_radius = self.agentSettings.toolRadius
+
+        averageScale = sum(self.context.active_object.scale) / 3
+        brush.unprojected_radius = self.agentSettings.toolRadius / averageScale
+
         brush.use_unified_strength = True
         brush.strength = self.agentSettings.toolStrength
         brush.use_locked_size = "SCENE"
@@ -217,6 +221,9 @@ class Agent:
     def update(self,fixedTimeStep: float, step: int, agents: List["Agent"]):
         self.lifetime += fixedTimeStep
         self.energy -= fixedTimeStep
+
+        self.path.append(self.position.copy())
+
         self.recalcForward()
 
         self.replacement(fixedTimeStep)
