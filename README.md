@@ -1,14 +1,13 @@
-# blender.swarm
 
 # A Blender Plugin for Sculpting with Swarm Grammars
 
-# Installation
+## Installation
 
 - pack the blender-swarm-plugin folder into a .zip
 - in Blender go to Preferences->Addons->Install and select .zip
 
 
-# How-To-Use
+## How-To-Use
 There is a new Panel on the right side of the viewport called Swarm Generator, all the settings are here
 
 On the top there are general utilities and settings of the entire swarm. Most stuff is not explained, so good luck.
